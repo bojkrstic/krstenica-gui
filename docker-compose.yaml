@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  krstenica_service:
+    image: postgres:16-alpine
+    container_name: krstenica_db
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=pfg-feed-db
+    ports:
+        - "5560:5432"
+    volumes:
+      - krstenica_db:/var/lib/postgresql/data/

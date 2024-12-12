@@ -1,0 +1,15 @@
+db:
+  url: postgresql://admin:secret@localhost:5560/krstenica-db?sslmode=disable
+  maxidletime: 1h
+  maxlifetime: 1h
+  maxopenconn: 100
+  maxidleconn: 10
+
+http_port: ":8001"
+
+migration:
+  direction: "up"
+  version: 0
+
+jwt_secret: "krstenica-backend-secret"
+admin_jwt_secret: "krstenica-backend-secret"
