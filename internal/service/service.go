@@ -1,11 +1,14 @@
 package service
 
 import (
+	"context"
 	"krstenica/internal/config"
+	"krstenica/internal/dto"
 	"krstenica/internal/repository"
 )
 
 type Service interface {
+	GetTampleByID(ctx context.Context, id int64) (*dto.Tample, error)
 }
 
 type service struct {

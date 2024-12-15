@@ -1,8 +1,14 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"context"
+	"krstenica/internal/model"
+
+	"gorm.io/gorm"
+)
 
 type Repo interface {
+	GetTampleByID(ctx context.Context, id int64) (*model.Tample, error)
 }
 
 type repo struct {

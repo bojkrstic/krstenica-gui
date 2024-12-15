@@ -1,0 +1,7 @@
+BEGIN; 
+
+DROP TABLE IF EXISTS priest;
+DROP TABLE IF EXISTS tample;
+
+
+COMMIT;
