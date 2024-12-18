@@ -1,5 +1,5 @@
 db:
-  url: postgresql://admin:secret@localhost:5560/krstenica-db?sslmode=disable
+  url: postgresql://admin:secret@localhost:5560/krstenica?sslmode=disable
   maxidletime: 1h
   maxlifetime: 1h
   maxopenconn: 100

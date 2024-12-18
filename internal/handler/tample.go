@@ -23,7 +23,9 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 			return
 		}
 
-		tample, err := h.service.GetTampleByID(context.Background(), int64(id))
+		cx := context.Background()
+
+		tample, err := h.service.GetTampleByID(cx, int64(id))
 		if err != nil {
 			if err == errorx.ErrTampleNotFound {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

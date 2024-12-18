@@ -9,3 +9,7 @@ type Tample struct {
 	City      string       `gorm:"column:city"`
 	CreatedAt sql.NullTime `gorm:"column:created_at"`
 }
+
+func (Tample) TableName() string {
+	return "tamples"
+}

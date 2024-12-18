@@ -1,0 +1,4 @@
+main
+/build
+cmd/krstenica/main_test.go
+.vscode
