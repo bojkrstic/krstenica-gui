@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *httpHandler) createKrstenica() gin.HandlerFunc {
+func (h *httpHandler) createBirthCertificate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// req := &dto.ManualWalletUpdateReq{}
 
@@ -41,19 +41,19 @@ func (h *httpHandler) createKrstenica() gin.HandlerFunc {
 	}
 }
 
-func (h *httpHandler) getKrstenica() gin.HandlerFunc {
+func (h *httpHandler) getBirthCertificate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 	}
 }
 
-func (h *httpHandler) updateKrstenica() gin.HandlerFunc {
+func (h *httpHandler) updateBirthCertificate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 	}
 }
 
-func (h *httpHandler) deleteKrstenica() gin.HandlerFunc {
+func (h *httpHandler) deleteBirthCertificate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 	}
