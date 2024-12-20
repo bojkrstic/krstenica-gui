@@ -11,3 +11,14 @@ type Tample struct {
 	City      string    `json:"city"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type TampleCreateReq struct {
+	Name string `json:"name"`
+	City string `json:"city"`
+}
+
+type TampleUpdateReq struct {
+	Name   *string `json:"name"`
+	City   *string `json:"city"`
+	Status *string `json:"status"`
+}

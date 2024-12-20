@@ -11,15 +11,15 @@ const routePrefix = "api/v1"
 func (h *httpHandler) addRoutes() {
 	adminRouter := h.router.Group("", h.needAdminAccess())
 
-	adminRouter.POST(pathWithAction("adminv2", "krstenica"), h.needAdminAccess(), h.createKrstenica())
-	adminRouter.GET(pathWithAction("adminv2", "krstenica/:id"), h.needAdminAccess(), h.getKrstenica())
-	adminRouter.PUT(pathWithAction("adminv2", "krstenica/:id"), h.needAdminAccess(), h.updateKrstenica())
-	adminRouter.DELETE(pathWithAction("adminv2", "krstenica/:id"), h.needAdminAccess(), h.deleteKrstenica())
+	adminRouter.POST(pathWithAction("adminv2", "birth-certificates"), h.needAdminAccess(), h.createBirthCertificate())
+	adminRouter.GET(pathWithAction("adminv2", "birth-certificates/:id"), h.needAdminAccess(), h.getBirthCertificate())
+	adminRouter.PUT(pathWithAction("adminv2", "birth-certificates/:id"), h.needAdminAccess(), h.updateBirthCertificate())
+	adminRouter.DELETE(pathWithAction("adminv2", "birth-certificates/:id"), h.needAdminAccess(), h.deleteBirthCertificate())
 
-	adminRouter.POST(pathWithAction("adminv2", "tample"), h.needAdminAccess(), h.createTample())
-	adminRouter.GET(pathWithAction("adminv2", "tample/:id"), h.needAdminAccess(), h.getTample())
-	adminRouter.PUT(pathWithAction("adminv2", "tample/:id"), h.needAdminAccess(), h.updateTample())
-	adminRouter.DELETE(pathWithAction("adminv2", "tample/:id"), h.needAdminAccess(), h.deleteTample())
+	adminRouter.POST(pathWithAction("adminv2", "tamples"), h.needAdminAccess(), h.createTample())
+	adminRouter.GET(pathWithAction("adminv2", "tamples/:id"), h.needAdminAccess(), h.getTample())
+	adminRouter.PUT(pathWithAction("adminv2", "tamples/:id"), h.needAdminAccess(), h.updateTample())
+	adminRouter.DELETE(pathWithAction("adminv2", "tamples/:id"), h.needAdminAccess(), h.deleteTample())
 }
 
 func (h *httpHandler) needAdminAccess() gin.HandlerFunc {
