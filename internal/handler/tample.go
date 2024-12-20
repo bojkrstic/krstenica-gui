@@ -58,6 +58,12 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 	}
 }
 
+func (h *httpHandler) listTample() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
 func (h *httpHandler) updateTample() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 

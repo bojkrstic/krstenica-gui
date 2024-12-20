@@ -18,6 +18,7 @@ func (h *httpHandler) addRoutes() {
 
 	adminRouter.POST(pathWithAction("adminv2", "tamples"), h.needAdminAccess(), h.createTample())
 	adminRouter.GET(pathWithAction("adminv2", "tamples/:id"), h.needAdminAccess(), h.getTample())
+	adminRouter.GET(pathWithAction("adminv2", "tamples"), h.needAdminAccess(), h.listTample())
 	adminRouter.PUT(pathWithAction("adminv2", "tamples/:id"), h.needAdminAccess(), h.updateTample())
 	adminRouter.DELETE(pathWithAction("adminv2", "tamples/:id"), h.needAdminAccess(), h.deleteTample())
 }
