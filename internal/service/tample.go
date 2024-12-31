@@ -80,6 +80,20 @@ func (s *service) GetTampleByID(ctx context.Context, id int64) (*dto.Tample, err
 	return makeTampleReponse(tample), nil
 }
 
+func (s *service) ListTamples(ctx context.Context) ([]*dto.Tample, error) {
+	tample, err := s.repo.ListTamples(ctx)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	res := make([]*dto.Tample, len(tample))
+	for i, list := range tample {
+		res[i] = makeTampleReponse(&list)
+	}
+	return res, nil
+}
+
 func makeTampleReponse(tample *model.Tample) *dto.Tample {
 	return &dto.Tample{
 		ID:        tample.ID,

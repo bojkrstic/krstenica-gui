@@ -9,6 +9,7 @@ import (
 
 type Service interface {
 	GetTampleByID(ctx context.Context, id int64) (*dto.Tample, error)
+	ListTamples(ctx context.Context) ([]*dto.Tample, error)
 	CreateTample(ctx context.Context, tampleReq *dto.TampleCreateReq) (*dto.Tample, error)
 	UpdateTample(ctx context.Context, id int64, tampleReq *dto.TampleUpdateReq) (*dto.Tample, error)
 	DeleteTample(ctx context.Context, id int64) error

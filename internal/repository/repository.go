@@ -11,6 +11,7 @@ type Repo interface {
 	GetTampleByID(ctx context.Context, id int64) (*model.Tample, error)
 	CreateTample(ctx context.Context, tample *model.Tample) (*model.Tample, error)
 	UpdateTample(ctx context.Context, id int64, updates map[string]interface{}) error
+	ListTamples(ctx context.Context) ([]model.Tample, error)
 }
 
 type repo struct {

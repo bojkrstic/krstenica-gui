@@ -24,6 +24,22 @@ func (r *repo) GetTampleByID(ctx context.Context, id int64) (*model.Tample, erro
 	return &tample, nil
 }
 
+func (r *repo) ListTamples(ctx context.Context) ([]model.Tample, error) {
+
+	var tample []model.Tample
+
+	err := r.db.WithContext(ctx).
+		Find(&tample).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errorx.ErrTampleNotFound
+		}
+		return nil, err
+	}
+
+	return tample, nil
+}
+
 func (r *repo) CreateTample(ctx context.Context, tample *model.Tample) (*model.Tample, error) {
 	err := r.db.WithContext(ctx).Create(tample).Error
 	if err != nil {

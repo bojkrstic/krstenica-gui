@@ -60,7 +60,18 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 
 func (h *httpHandler) listTample() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		cx := context.Background()
+		tample, err := h.service.ListTamples(cx)
+		if err != nil {
+			if err == errorx.ErrTampleNotFound {
+				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+				return
+			}
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
+		ctx.JSON(http.StatusOK, tample)
 	}
 }
 
