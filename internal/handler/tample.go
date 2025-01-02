@@ -60,6 +60,13 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 
 func (h *httpHandler) listTample() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
+		path := ctx.Request.URL.Path
+		query := ctx.Request.URL.RawQuery
+		fmt.Println("Path ", path)
+		fmt.Println("Query ", query)
+		fmt.Printf("Path: %s, Query: %s\n", path, query)
+
 		cx := context.Background()
 		tample, err := h.service.ListTamples(cx)
 		if err != nil {
