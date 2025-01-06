@@ -43,7 +43,7 @@ func (s *service) UpdateTample(ctx context.Context, id int64, tampleReq *dto.Tam
 		return nil, err
 	}
 
-	return makeTampleReponse(tample), nil
+	return makeTampleResponse(tample), nil
 
 }
 
@@ -67,7 +67,7 @@ func (s *service) CreateTample(ctx context.Context, tampleReq *dto.TampleCreateR
 		return nil, err
 	}
 
-	return makeTampleReponse(newTample), nil
+	return makeTampleResponse(newTample), nil
 }
 
 func (s *service) GetTampleByID(ctx context.Context, id int64) (*dto.Tample, error) {
@@ -77,7 +77,7 @@ func (s *service) GetTampleByID(ctx context.Context, id int64) (*dto.Tample, err
 		return nil, err
 	}
 
-	return makeTampleReponse(tample), nil
+	return makeTampleResponse(tample), nil
 }
 
 func (s *service) ListTamples(ctx context.Context) ([]*dto.Tample, error) {
@@ -89,12 +89,12 @@ func (s *service) ListTamples(ctx context.Context) ([]*dto.Tample, error) {
 
 	res := make([]*dto.Tample, len(tample))
 	for i, list := range tample {
-		res[i] = makeTampleReponse(&list)
+		res[i] = makeTampleResponse(&list)
 	}
 	return res, nil
 }
 
-func makeTampleReponse(tample *model.Tample) *dto.Tample {
+func makeTampleResponse(tample *model.Tample) *dto.Tample {
 	return &dto.Tample{
 		ID:        tample.ID,
 		Name:      tample.Name,

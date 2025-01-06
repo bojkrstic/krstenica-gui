@@ -16,6 +16,7 @@ func (h *httpHandler) addRoutes() {
 	adminRouter.PUT(pathWithAction("adminv2", "birth-certificates/:id"), h.needAdminAccess(), h.updateBirthCertificate())
 	adminRouter.DELETE(pathWithAction("adminv2", "birth-certificates/:id"), h.needAdminAccess(), h.deleteBirthCertificate())
 
+	//tamples
 	adminRouter.POST(pathWithAction("adminv2", "tamples"), h.needAdminAccess(), h.createTample())
 	adminRouter.GET(pathWithAction("adminv2", "tamples/:id"), h.needAdminAccess(), h.getTample())
 	adminRouter.GET(pathWithAction("adminv2", "tamples"), h.needAdminAccess(), h.listTample())

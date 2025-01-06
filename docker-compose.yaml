@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   krstenica_database:
     image: postgres:16-alpine
@@ -11,6 +10,7 @@ services:
         - "5560:5432"
     volumes:
       - krstenica_db:/var/lib/postgresql/data/
+      - ./init_db:/docker-entrypoint-initdb.d
   
 volumes:
   krstenica_db: 
