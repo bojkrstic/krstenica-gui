@@ -51,7 +51,7 @@ func (r *repo) CreatePriest(ctx context.Context, priest *model.Priest) (*model.P
 
 func (r *repo) UpdatePriest(ctx context.Context, id int64, updates map[string]interface{}) error {
 	err := r.db.WithContext(ctx).
-		Table("priest").
+		Table("priests").
 		Where("id = ? ", id).
 		Updates(updates).Error
 	if err != nil {
