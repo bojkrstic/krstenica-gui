@@ -7,6 +7,7 @@ import (
 
 var (
 	ErrTampleNotFound = errors.New("tample not found")
+	ErrPriestNotFound = errors.New("priest not found")
 )
 
 type ValidationError error

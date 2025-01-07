@@ -12,6 +12,11 @@ type Repo interface {
 	CreateTample(ctx context.Context, tample *model.Tample) (*model.Tample, error)
 	UpdateTample(ctx context.Context, id int64, updates map[string]interface{}) error
 	ListTamples(ctx context.Context) ([]model.Tample, error)
+
+	GetPriestByID(ctx context.Context, id int64) (*model.Priest, error)
+	CreatePriest(ctx context.Context, priest *model.Priest) (*model.Priest, error)
+	UpdatePriest(ctx context.Context, id int64, updates map[string]interface{}) error
+	ListPriests(ctx context.Context) ([]model.Priest, error)
 }
 
 type repo struct {
