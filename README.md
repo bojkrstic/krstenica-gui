@@ -14,3 +14,6 @@ brisanje servisa
 1. lsof -i :8001
 2. kill -9 PID    ---- PID id broj servisa
 3. kill -9 5778
+
+execution version
+make build-linux
