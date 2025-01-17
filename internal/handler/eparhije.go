@@ -11,10 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// *************************************************************Tamples*************************************
-func (h *httpHandler) createTample() gin.HandlerFunc {
+// *************************************************************Eparhije*************************************
+func (h *httpHandler) createEparhije() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		req := &dto.TampleCreateReq{}
+		req := &dto.EparhijeCreateReq{}
 
 		if err := ctx.Bind(req); err != nil {
 			fmt.Println("Error when parsing body", err)
@@ -24,17 +24,17 @@ func (h *httpHandler) createTample() gin.HandlerFunc {
 
 		cx := context.Background()
 
-		tample, err := h.service.CreateTample(cx, req)
+		eparhija, err := h.service.CreateEparhije(cx, req)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, tample)
+		ctx.JSON(http.StatusOK, eparhija)
 	}
 }
 
-func (h *httpHandler) getTample() gin.HandlerFunc {
+func (h *httpHandler) getEparhije() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -45,9 +45,9 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 
 		cx := context.Background()
 
-		tample, err := h.service.GetTampleByID(cx, int64(id))
+		eparhija, err := h.service.GetEparhijeByID(cx, int64(id))
 		if err != nil {
-			if err == errorx.ErrTampleNotFound {
+			if err == errorx.ErrEparhijeNotFound {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
 			}
@@ -55,11 +55,11 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, tample)
+		ctx.JSON(http.StatusOK, eparhija)
 	}
 }
 
-func (h *httpHandler) listTample() gin.HandlerFunc {
+func (h *httpHandler) listEparhije() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		path := ctx.Request.URL.Path
@@ -69,9 +69,9 @@ func (h *httpHandler) listTample() gin.HandlerFunc {
 		fmt.Printf("Path: %s, Query: %s\n", path, query)
 
 		cx := context.Background()
-		tample, err := h.service.ListTamples(cx)
+		eparhija, err := h.service.ListEparhije(cx)
 		if err != nil {
-			if err == errorx.ErrTampleNotFound {
+			if err == errorx.ErrEparhijeNotFound {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
 			}
@@ -79,11 +79,11 @@ func (h *httpHandler) listTample() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, tample)
+		ctx.JSON(http.StatusOK, eparhija)
 	}
 }
 
-func (h *httpHandler) updateTample() gin.HandlerFunc {
+func (h *httpHandler) updateEparhije() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -92,7 +92,7 @@ func (h *httpHandler) updateTample() gin.HandlerFunc {
 			return
 		}
 
-		req := &dto.TampleUpdateReq{}
+		req := &dto.EparhijeUpdateReq{}
 
 		if err := ctx.Bind(req); err != nil {
 			fmt.Println("Error when parsing body", err)
@@ -102,17 +102,17 @@ func (h *httpHandler) updateTample() gin.HandlerFunc {
 
 		cx := context.Background()
 
-		tample, err := h.service.UpdateTample(cx, int64(id), req)
+		eparhija, err := h.service.UpdateEparhije(cx, int64(id), req)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, tample)
+		ctx.JSON(http.StatusOK, eparhija)
 	}
 }
 
-func (h *httpHandler) deleteTample() gin.HandlerFunc {
+func (h *httpHandler) deleteEparhije() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -121,7 +121,7 @@ func (h *httpHandler) deleteTample() gin.HandlerFunc {
 			return
 		}
 
-		err = h.service.DeleteTample(ctx, int64(id))
+		err = h.service.DeleteEparhije(ctx, int64(id))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -131,4 +131,4 @@ func (h *httpHandler) deleteTample() gin.HandlerFunc {
 	}
 }
 
-//****************************************************end******Tamples*************************************
+//****************************************************end******Eparhije*************************************

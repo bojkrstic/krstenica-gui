@@ -29,6 +29,7 @@ func (r *repo) ListPriests(ctx context.Context) ([]model.Priest, error) {
 	var priest []model.Priest
 
 	err := r.db.WithContext(ctx).
+		Where("status !=?", "deleted").
 		Find(&priest).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

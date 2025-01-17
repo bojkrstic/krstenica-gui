@@ -28,6 +28,12 @@ func (h *httpHandler) addRoutes() {
 	adminRouter.GET(pathWithAction("adminv2", "priests"), h.needAdminAccess(), h.listPriest())
 	adminRouter.PUT(pathWithAction("adminv2", "priests/:id"), h.needAdminAccess(), h.updatePriest())
 	adminRouter.DELETE(pathWithAction("adminv2", "priests/:id"), h.needAdminAccess(), h.deletePriest())
+	//eparhije
+	adminRouter.POST(pathWithAction("adminv2", "eparhije"), h.needAdminAccess(), h.createEparhije())
+	adminRouter.GET(pathWithAction("adminv2", "eparhije/:id"), h.needAdminAccess(), h.getEparhije())
+	adminRouter.GET(pathWithAction("adminv2", "eparhije"), h.needAdminAccess(), h.listEparhije())
+	adminRouter.PUT(pathWithAction("adminv2", "eparhije/:id"), h.needAdminAccess(), h.updateEparhije())
+	adminRouter.DELETE(pathWithAction("adminv2", "eparhije/:id"), h.needAdminAccess(), h.deleteEparhije())
 }
 
 func (h *httpHandler) needAdminAccess() gin.HandlerFunc {

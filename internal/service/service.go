@@ -19,6 +19,12 @@ type Service interface {
 	CreatePriest(ctx context.Context, priestReq *dto.PriestCreateReq) (*dto.Priest, error)
 	UpdatePriest(ctx context.Context, id int64, priestReq *dto.PriestUpdateReq) (*dto.Priest, error)
 	DeletePriest(ctx context.Context, id int64) error
+
+	GetEparhijeByID(ctx context.Context, id int64) (*dto.Eparhije, error)
+	ListEparhije(ctx context.Context) ([]*dto.Eparhije, error)
+	CreateEparhije(ctx context.Context, eparhijeReq *dto.EparhijeCreateReq) (*dto.Eparhije, error)
+	UpdateEparhije(ctx context.Context, id int64, eparhijeReq *dto.EparhijeUpdateReq) (*dto.Eparhije, error)
+	DeleteEparhije(ctx context.Context, id int64) error
 }
 
 type service struct {

@@ -29,6 +29,7 @@ func (r *repo) ListTamples(ctx context.Context) ([]model.Tample, error) {
 	var tample []model.Tample
 
 	err := r.db.WithContext(ctx).
+		Where("status !=?", "deleted").
 		Find(&tample).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

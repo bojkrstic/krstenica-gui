@@ -11,10 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// *************************************************************Tamples*************************************
-func (h *httpHandler) createTample() gin.HandlerFunc {
+//*************************************************************Priests*************************************
+
+func (h *httpHandler) createPriest() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		req := &dto.TampleCreateReq{}
+		req := &dto.PriestCreateReq{}
 
 		if err := ctx.Bind(req); err != nil {
 			fmt.Println("Error when parsing body", err)
@@ -24,17 +25,17 @@ func (h *httpHandler) createTample() gin.HandlerFunc {
 
 		cx := context.Background()
 
-		tample, err := h.service.CreateTample(cx, req)
+		priest, err := h.service.CreatePriest(cx, req)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, tample)
+		ctx.JSON(http.StatusOK, priest)
 	}
 }
 
-func (h *httpHandler) getTample() gin.HandlerFunc {
+func (h *httpHandler) getPriest() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -45,9 +46,9 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 
 		cx := context.Background()
 
-		tample, err := h.service.GetTampleByID(cx, int64(id))
+		priest, err := h.service.GetPriestByID(cx, int64(id))
 		if err != nil {
-			if err == errorx.ErrTampleNotFound {
+			if err == errorx.ErrPriestNotFound {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
 			}
@@ -55,11 +56,11 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, tample)
+		ctx.JSON(http.StatusOK, priest)
 	}
 }
 
-func (h *httpHandler) listTample() gin.HandlerFunc {
+func (h *httpHandler) listPriest() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		path := ctx.Request.URL.Path
@@ -69,9 +70,9 @@ func (h *httpHandler) listTample() gin.HandlerFunc {
 		fmt.Printf("Path: %s, Query: %s\n", path, query)
 
 		cx := context.Background()
-		tample, err := h.service.ListTamples(cx)
+		priest, err := h.service.ListPriests(cx)
 		if err != nil {
-			if err == errorx.ErrTampleNotFound {
+			if err == errorx.ErrPriestNotFound {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
 			}
@@ -79,11 +80,11 @@ func (h *httpHandler) listTample() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, tample)
+		ctx.JSON(http.StatusOK, priest)
 	}
 }
 
-func (h *httpHandler) updateTample() gin.HandlerFunc {
+func (h *httpHandler) updatePriest() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -92,7 +93,7 @@ func (h *httpHandler) updateTample() gin.HandlerFunc {
 			return
 		}
 
-		req := &dto.TampleUpdateReq{}
+		req := &dto.PriestUpdateReq{}
 
 		if err := ctx.Bind(req); err != nil {
 			fmt.Println("Error when parsing body", err)
@@ -102,17 +103,17 @@ func (h *httpHandler) updateTample() gin.HandlerFunc {
 
 		cx := context.Background()
 
-		tample, err := h.service.UpdateTample(cx, int64(id), req)
+		priest, err := h.service.UpdatePriest(cx, int64(id), req)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, tample)
+		ctx.JSON(http.StatusOK, priest)
 	}
 }
 
-func (h *httpHandler) deleteTample() gin.HandlerFunc {
+func (h *httpHandler) deletePriest() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -121,7 +122,7 @@ func (h *httpHandler) deleteTample() gin.HandlerFunc {
 			return
 		}
 
-		err = h.service.DeleteTample(ctx, int64(id))
+		err = h.service.DeletePriest(ctx, int64(id))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -130,5 +131,3 @@ func (h *httpHandler) deleteTample() gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, nil)
 	}
 }
-
-//****************************************************end******Tamples*************************************
