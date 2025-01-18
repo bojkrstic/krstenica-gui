@@ -9,6 +9,7 @@ var (
 	ErrTampleNotFound   = errors.New("tample not found")
 	ErrPriestNotFound   = errors.New("priest not found")
 	ErrEparhijeNotFound = errors.New("eparhija not found")
+	ErrPersonNotFound   = errors.New("person not found")
 )
 
 type ValidationError error

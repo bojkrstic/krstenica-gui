@@ -22,6 +22,11 @@ type Repo interface {
 	CreateEparhije(ctx context.Context, eparhija *model.Eparhija) (*model.Eparhija, error)
 	UpdateEparhije(ctx context.Context, id int64, updates map[string]interface{}) error
 	ListEparhije(ctx context.Context) ([]model.Eparhija, error)
+
+	GetPersonByID(ctx context.Context, id int64) (*model.Person, error)
+	CreatePerson(ctx context.Context, person *model.Person) (*model.Person, error)
+	UpdatePerson(ctx context.Context, id int64, updates map[string]interface{}) error
+	ListPersons(ctx context.Context) ([]model.Person, error)
 }
 
 type repo struct {
