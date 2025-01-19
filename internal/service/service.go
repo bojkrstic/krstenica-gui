@@ -31,6 +31,12 @@ type Service interface {
 	CreatePerson(ctx context.Context, personReq *dto.PersonCreateReq) (*dto.Person, error)
 	UpdatePerson(ctx context.Context, id int64, personReq *dto.PersonUpdateReq) (*dto.Person, error)
 	DeletePerson(ctx context.Context, id int64) error
+
+	GetKrstenicaByID(ctx context.Context, id int64) (*dto.Krstenica, error)
+	ListKrstenice(ctx context.Context) ([]*dto.Krstenica, error)
+	CreateKrstenica(ctx context.Context, personReq *dto.KrstenicaCreateReq) (*dto.Krstenica, error)
+	UpdateKrstenica(ctx context.Context, id int64, personReq *dto.KrstenicaUpdateReq) (*dto.Krstenica, error)
+	DeleteKrstenica(ctx context.Context, id int64) error
 }
 
 type service struct {

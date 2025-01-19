@@ -27,6 +27,11 @@ type Repo interface {
 	CreatePerson(ctx context.Context, person *model.Person) (*model.Person, error)
 	UpdatePerson(ctx context.Context, id int64, updates map[string]interface{}) error
 	ListPersons(ctx context.Context) ([]model.Person, error)
+
+	GetKrstenicaByID(ctx context.Context, id int64) (*model.Krstenica, error)
+	CreateKrstenica(ctx context.Context, krstenica *model.Krstenica) (*model.Krstenica, error)
+	UpdateKrstenica(ctx context.Context, id int64, updates map[string]interface{}) error
+	ListKrstenice(ctx context.Context) ([]model.Krstenica, error)
 }
 
 type repo struct {
