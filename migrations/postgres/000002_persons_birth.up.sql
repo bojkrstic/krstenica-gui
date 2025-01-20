@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE persons ADD birth_date TIMESTAMP;
+
+COMMIT;
+

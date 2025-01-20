@@ -10,7 +10,6 @@ services:
         - "5560:5432"
     volumes:
       - krstenica_db:/var/lib/postgresql/data/
-      - ./init_db:/docker-entrypoint-initdb.d
   
 volumes:
   krstenica_db: 

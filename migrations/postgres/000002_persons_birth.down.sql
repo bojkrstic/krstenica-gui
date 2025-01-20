@@ -1,0 +1,5 @@
+BEGIN;
+
+ALTER TABLE persons DROP COLUMN birth_date;
+
+COMMIT;
