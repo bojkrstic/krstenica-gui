@@ -114,6 +114,7 @@ func makePersonResponse(person *model.Person) *dto.Person {
 		Role:       person.Role,
 		Status:     string(person.Status),
 		City:       person.City,
+		BirthDate:  person.BirthDate.Time,
 		CreatedAt:  person.CreatedAt.Time,
 	}
 }
@@ -197,6 +198,10 @@ func validatePersonUpdateRequest(personReq *dto.PersonUpdateReq) (map[string]int
 		}
 
 		updates["religion"] = *personReq.Religion
+	}
+
+	if personReq.BirthDate != nil {
+		updates["birth_date"] = *personReq.BirthDate
 	}
 
 	if personReq.Status != nil {

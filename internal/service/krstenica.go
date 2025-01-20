@@ -172,25 +172,88 @@ func validateKrstenicaCreaterequest(krstenicaReq *dto.KrstenicaCreateReq) error 
 func validateKrstenicaUpdateRequest(krstenicaReq *dto.KrstenicaUpdateReq) (map[string]interface{}, error) {
 	updates := map[string]interface{}{}
 
+	if krstenicaReq.Book != nil {
+		updates["book"] = *krstenicaReq.Book
+	}
+	if krstenicaReq.Page != nil {
+		updates["page"] = *krstenicaReq.Page
+	}
+	if krstenicaReq.CurrentNumber != nil {
+		updates["current_number"] = *krstenicaReq.CurrentNumber
+	}
+	if krstenicaReq.EparhijaId != nil {
+		updates["eparhija_id"] = *krstenicaReq.EparhijaId
+	}
+	if krstenicaReq.TampleId != nil {
+		updates["tample_id"] = *krstenicaReq.TampleId
+	}
+	if krstenicaReq.ParentId != nil {
+		updates["parent_id"] = *krstenicaReq.ParentId
+	}
+	if krstenicaReq.GodfatherId != nil {
+		updates["godfather_id"] = *krstenicaReq.GodfatherId
+	}
+	if krstenicaReq.ParohId != nil {
+		updates["paroh_id"] = *krstenicaReq.ParohId
+	}
+	if krstenicaReq.PriestId != nil {
+		updates["priest_id"] = *krstenicaReq.PriestId
+	}
+	if krstenicaReq.Gender != nil {
+		updates["gender"] = *krstenicaReq.Gender
+	}
+	if krstenicaReq.BirthDate != nil {
+		updates["birth_date"] = *krstenicaReq.BirthDate
+	}
+	if krstenicaReq.BirthOrder != nil {
+		updates["birth_order"] = *krstenicaReq.BirthOrder
+	}
+	if krstenicaReq.PlaceOfBirthday != nil {
+		updates["place_of_birthday"] = *krstenicaReq.PlaceOfBirthday
+	}
+	if krstenicaReq.MunicipalityOfBirthday != nil {
+		updates["municipality_of_birthday"] = *krstenicaReq.MunicipalityOfBirthday
+	}
+	if krstenicaReq.Baptism != nil {
+		updates["baptism"] = *krstenicaReq.Baptism
+	}
+	if krstenicaReq.IsChurchMarried != nil {
+		updates["is_church_married"] = *krstenicaReq.IsChurchMarried
+	}
+	if krstenicaReq.IsTwin != nil {
+		updates["is_twin"] = *krstenicaReq.IsTwin
+	}
+	if krstenicaReq.HasPhysicalDisability != nil {
+		updates["has_physical_disability"] = *krstenicaReq.HasPhysicalDisability
+	}
+	if krstenicaReq.Anagrafa != nil {
+		updates["anagrafa"] = *krstenicaReq.Anagrafa
+	}
+	if krstenicaReq.NumberOfCertificate != nil {
+		updates["number_of_certificate"] = *krstenicaReq.NumberOfCertificate
+	}
+	if krstenicaReq.Certificate != nil {
+		updates["certificate"] = *krstenicaReq.Certificate
+	}
+	if krstenicaReq.Comment != nil {
+		updates["comment"] = *krstenicaReq.Comment
+	}
 	if krstenicaReq.FirstName != nil {
 		if len(*krstenicaReq.FirstName) > 255 {
 			return nil, errorx.GetValidationError("Krstenica", "validation", "First name of krstenica can not be longer than 255 characters")
 		}
-
 		updates["first_name"] = *krstenicaReq.FirstName
 	}
 	if krstenicaReq.LastName != nil {
 		if len(*krstenicaReq.LastName) > 255 {
 			return nil, errorx.GetValidationError("Krstenica", "validation", "Last name of krstenica can not be longer than 255 characters")
 		}
-
 		updates["last_name"] = *krstenicaReq.LastName
 	}
 	if krstenicaReq.City != nil {
 		if len(*krstenicaReq.City) > 255 {
 			return nil, errorx.GetValidationError("Krstenica", "validation", "city of krstenica can not be longer than 255 characters")
 		}
-
 		updates["city"] = *krstenicaReq.City
 	}
 
@@ -198,7 +261,6 @@ func validateKrstenicaUpdateRequest(krstenicaReq *dto.KrstenicaUpdateReq) (map[s
 		if len(*krstenicaReq.Country) > 255 {
 			return nil, errorx.GetValidationError("Krstenica", "validation", "Country of krstenica can not be longer than 255 characters")
 		}
-
 		updates["country"] = *krstenicaReq.Country
 	}
 

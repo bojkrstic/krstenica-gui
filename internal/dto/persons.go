@@ -14,32 +14,35 @@ type Person struct {
 	Address    string    `json:"address"`
 	Country    string    `json:"country"`
 	Role       string    `json:"role"`
+	BirthDate  time.Time `json:"birth_date"`
 	Status     string    `json:"status"`
 	City       string    `json:"city"`
 	CreatedAt  time.Time `json:"created_at"`
 }
 
 type PersonCreateReq struct {
-	FirstName  string `json:"first_name"`
-	LastName   string `json:"last_name"`
-	BriefName  string `json:"brief_name"`
-	Occupation string `json:"occupation"`
-	Religion   string `json:"religion"`
-	Address    string `json:"address"`
-	Country    string `json:"country"`
-	Role       string `json:"role"`
-	City       string `json:"city"`
+	FirstName  string    `json:"first_name"`
+	LastName   string    `json:"last_name"`
+	BriefName  string    `json:"brief_name"`
+	Occupation string    `json:"occupation"`
+	Religion   string    `json:"religion"`
+	Address    string    `json:"address"`
+	Country    string    `json:"country"`
+	Role       string    `json:"role"`
+	BirthDate  time.Time `json:"birth_date"`
+	City       string    `json:"city"`
 }
 
 type PersonUpdateReq struct {
-	FirstName  *string `json:"first_name"`
-	LastName   *string `json:"last_name"`
-	BriefName  *string `json:"brief_name"`
-	Occupation *string `json:"occupation"`
-	Religion   *string `json:"religion"`
-	Address    *string `json:"address"`
-	Country    *string `json:"country"`
-	Role       *string `json:"role"`
-	City       *string `json:"city"`
-	Status     *string `json:"status"`
+	FirstName  *string    `json:"first_name"`
+	LastName   *string    `json:"last_name"`
+	BriefName  *string    `json:"brief_name"`
+	Occupation *string    `json:"occupation"`
+	Religion   *string    `json:"religion"`
+	Address    *string    `json:"address"`
+	Country    *string    `json:"country"`
+	Role       *string    `json:"role"`
+	City       *string    `json:"city"`
+	BirthDate  *time.Time `json:"birth_date"`
+	Status     *string    `json:"status"`
 }
