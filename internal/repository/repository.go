@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"krstenica/internal/model"
+	"krstenica/pkg"
 
 	"gorm.io/gorm"
 )
@@ -11,7 +12,7 @@ type Repo interface {
 	GetTampleByID(ctx context.Context, id int64) (*model.Tample, error)
 	CreateTample(ctx context.Context, tample *model.Tample) (*model.Tample, error)
 	UpdateTample(ctx context.Context, id int64, updates map[string]interface{}) error
-	ListTamples(ctx context.Context) ([]model.Tample, error)
+	ListTamples(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]model.Tample, int64, error)
 
 	GetPriestByID(ctx context.Context, id int64) (*model.Priest, error)
 	CreatePriest(ctx context.Context, priest *model.Priest) (*model.Priest, error)

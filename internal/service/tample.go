@@ -6,6 +6,7 @@ import (
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
 	"krstenica/internal/model"
+	"krstenica/pkg"
 	"log"
 	"time"
 )
@@ -80,18 +81,18 @@ func (s *service) GetTampleByID(ctx context.Context, id int64) (*dto.Tample, err
 	return makeTampleResponse(tample), nil
 }
 
-func (s *service) ListTamples(ctx context.Context) ([]*dto.Tample, error) {
-	tample, err := s.repo.ListTamples(ctx)
+func (s *service) ListTamples(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Tample, int64, error) {
+	tample, totalCount, err := s.repo.ListTamples(ctx, filterAndSort)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := make([]*dto.Tample, len(tample))
 	for i, list := range tample {
 		res[i] = makeTampleResponse(&list)
 	}
-	return res, nil
+	return res, totalCount, nil
 }
 
 func makeTampleResponse(tample *model.Tample) *dto.Tample {

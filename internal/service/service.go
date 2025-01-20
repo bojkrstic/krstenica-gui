@@ -5,11 +5,12 @@ import (
 	"krstenica/internal/config"
 	"krstenica/internal/dto"
 	"krstenica/internal/repository"
+	"krstenica/pkg"
 )
 
 type Service interface {
 	GetTampleByID(ctx context.Context, id int64) (*dto.Tample, error)
-	ListTamples(ctx context.Context) ([]*dto.Tample, error)
+	ListTamples(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Tample, int64, error)
 	CreateTample(ctx context.Context, tampleReq *dto.TampleCreateReq) (*dto.Tample, error)
 	UpdateTample(ctx context.Context, id int64, tampleReq *dto.TampleUpdateReq) (*dto.Tample, error)
 	DeleteTample(ctx context.Context, id int64) error

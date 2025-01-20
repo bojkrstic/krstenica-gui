@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
+	"krstenica/pkg"
 	"net/http"
 	"strconv"
 
@@ -61,25 +62,20 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 
 func (h *httpHandler) listTample() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
-		path := ctx.Request.URL.Path
-		query := ctx.Request.URL.RawQuery
-		fmt.Println("Path ", path)
-		fmt.Println("Query ", query)
-		fmt.Printf("Path: %s, Query: %s\n", path, query)
-
 		cx := context.Background()
-		tample, err := h.service.ListTamples(cx)
+
+		filters := pkg.ParseUrlQuery(ctx)
+
+		tamples, totalCount, err := h.service.ListTamples(cx, filters)
 		if err != nil {
-			if err == errorx.ErrTampleNotFound {
-				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-				return
-			}
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, tample)
+		ctx.JSON(http.StatusOK, gin.H{
+			"data":  tamples,
+			"total": totalCount,
+		})
 	}
 }
 
