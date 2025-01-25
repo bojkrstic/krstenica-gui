@@ -6,6 +6,7 @@ import (
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
 	"krstenica/internal/model"
+	"krstenica/pkg"
 	"log"
 	"time"
 )
@@ -87,18 +88,18 @@ func (s *service) GetPersonByID(ctx context.Context, id int64) (*dto.Person, err
 	return makePersonResponse(person), nil
 }
 
-func (s *service) ListPersons(ctx context.Context) ([]*dto.Person, error) {
-	person, err := s.repo.ListPersons(ctx)
+func (s *service) ListPersons(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Person, int64, error) {
+	person, totalCount, err := s.repo.ListPersons(ctx, filterAndSort)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := make([]*dto.Person, len(person))
 	for i, list := range person {
 		res[i] = makePersonResponse(&list)
 	}
-	return res, nil
+	return res, totalCount, nil
 }
 
 func makePersonResponse(person *model.Person) *dto.Person {

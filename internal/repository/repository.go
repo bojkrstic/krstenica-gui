@@ -27,7 +27,7 @@ type Repo interface {
 	GetPersonByID(ctx context.Context, id int64) (*model.Person, error)
 	CreatePerson(ctx context.Context, person *model.Person) (*model.Person, error)
 	UpdatePerson(ctx context.Context, id int64, updates map[string]interface{}) error
-	ListPersons(ctx context.Context) ([]model.Person, error)
+	ListPersons(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]model.Person, int64, error)
 
 	GetKrstenicaByID(ctx context.Context, id int64) (*model.Krstenica, error)
 	CreateKrstenica(ctx context.Context, krstenica *model.Krstenica) (*model.Krstenica, error)

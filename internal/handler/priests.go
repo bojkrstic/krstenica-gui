@@ -64,7 +64,9 @@ func (h *httpHandler) getPriest() gin.HandlerFunc {
 func (h *httpHandler) listPriest() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		cx := context.Background()
+
 		filters := pkg.ParseUrlQuery(ctx)
+
 		priest, totalCount, err := h.service.ListPriests(cx, filters)
 		if err != nil {
 			if err == errorx.ErrPriestNotFound {

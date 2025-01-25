@@ -22,7 +22,7 @@ type Person struct {
 	Role       string       `gorm:"column:role"`
 	Status     string       `gorm:"column:status"`
 	City       string       `gorm:"column:city"`
-	BirthDate  sql.NullTime `gotm:"birth_date"`
+	BirthDate  sql.NullTime `gorm:"column:birth_date"`
 	CreatedAt  sql.NullTime `gorm:"column:created_at"`
 }
 

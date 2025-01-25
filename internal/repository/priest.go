@@ -91,6 +91,22 @@ var allowedAtributesInPriestSort = []string{
 	"id", "first_name", "last_name", "city", "title", "status", "created_at",
 }
 
+func transformPriestSortAttribute(p string) (string, error) {
+	if !pkg.InList(p, allowedAtributesInPriestSort) {
+		return "", fmt.Errorf("UNSUPPORTED_SORT_PROPERTY")
+	}
+
+	return "t." + p, nil
+}
+
+func validatePriestFilterAttr(p string, v []string) (string, error) {
+	if !pkg.InList(p, allowedAtributesInPriestFilters) {
+		return "", fmt.Errorf("UNSUPPORTED_FILTER_PROPERTY")
+	}
+
+	return "t." + p, nil
+}
+
 func (r *repo) CreatePriest(ctx context.Context, priest *model.Priest) (*model.Priest, error) {
 	err := r.db.WithContext(ctx).Create(priest).Error
 	if err != nil {
@@ -110,20 +126,4 @@ func (r *repo) UpdatePriest(ctx context.Context, id int64, updates map[string]in
 	}
 
 	return nil
-}
-
-func transformPriestSortAttribute(p string) (string, error) {
-	if !pkg.InList(p, allowedAtributesInPriestSort) {
-		return "", fmt.Errorf("UNSUPPORTED_SORT_PROPERTY")
-	}
-
-	return "t." + p, nil
-}
-
-func validatePriestFilterAttr(p string, v []string) (string, error) {
-	if !pkg.InList(p, allowedAtributesInPriestFilters) {
-		return "", fmt.Errorf("UNSUPPORTED_FILTER_PROPERTY")
-	}
-
-	return "t." + p, nil
 }

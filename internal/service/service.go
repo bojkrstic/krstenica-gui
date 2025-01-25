@@ -28,7 +28,7 @@ type Service interface {
 	DeleteEparhije(ctx context.Context, id int64) error
 
 	GetPersonByID(ctx context.Context, id int64) (*dto.Person, error)
-	ListPersons(ctx context.Context) ([]*dto.Person, error)
+	ListPersons(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Person, int64, error)
 	CreatePerson(ctx context.Context, personReq *dto.PersonCreateReq) (*dto.Person, error)
 	UpdatePerson(ctx context.Context, id int64, personReq *dto.PersonUpdateReq) (*dto.Person, error)
 	DeletePerson(ctx context.Context, id int64) error
