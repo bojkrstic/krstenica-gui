@@ -17,7 +17,7 @@ type Repo interface {
 	GetPriestByID(ctx context.Context, id int64) (*model.Priest, error)
 	CreatePriest(ctx context.Context, priest *model.Priest) (*model.Priest, error)
 	UpdatePriest(ctx context.Context, id int64, updates map[string]interface{}) error
-	ListPriests(ctx context.Context) ([]model.Priest, error)
+	ListPriests(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]model.Priest, int64, error)
 
 	GetEparhijeByID(ctx context.Context, id int64) (*model.Eparhija, error)
 	CreateEparhije(ctx context.Context, eparhija *model.Eparhija) (*model.Eparhija, error)

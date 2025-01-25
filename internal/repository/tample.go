@@ -110,7 +110,7 @@ var allowedAtributesInTampleSort = []string{
 }
 
 func transformTamplesSortAttribute(p string) (string, error) {
-	if !inList(p, allowedAtributesInTampleSort) {
+	if !pkg.InList(p, allowedAtributesInTampleSort) {
 		return "", fmt.Errorf("UNSUPPORTED_SORT_PROPERTY")
 	}
 
@@ -118,18 +118,18 @@ func transformTamplesSortAttribute(p string) (string, error) {
 }
 
 func validateTampleFilterAttr(p string, v []string) (string, error) {
-	if !inList(p, allowedAtributesInTampleFilters) {
+	if !pkg.InList(p, allowedAtributesInTampleFilters) {
 		return "", fmt.Errorf("UNSUPPORTED_FILTER_PROPERTY")
 	}
 
 	return "t." + p, nil
 }
 
-func inList(elem string, list []string) bool {
-	for _, el := range list {
-		if el == elem {
-			return true
-		}
-	}
-	return false
-}
+// func inList(elem string, list []string) bool {
+// 	for _, el := range list {
+// 		if el == elem {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }

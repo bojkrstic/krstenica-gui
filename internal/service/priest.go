@@ -6,6 +6,7 @@ import (
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
 	"krstenica/internal/model"
+	"krstenica/pkg"
 	"log"
 	"time"
 )
@@ -82,18 +83,18 @@ func (s *service) GetPriestByID(ctx context.Context, id int64) (*dto.Priest, err
 	return makePriestResponse(priest), nil
 }
 
-func (s *service) ListPriests(ctx context.Context) ([]*dto.Priest, error) {
-	priest, err := s.repo.ListPriests(ctx)
+func (s *service) ListPriests(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Priest, int64, error) {
+	priest, totalCount, err := s.repo.ListPriests(ctx, filterAndSort)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := make([]*dto.Priest, len(priest))
 	for i, list := range priest {
 		res[i] = makePriestResponse(&list)
 	}
-	return res, nil
+	return res, totalCount, nil
 }
 
 func makePriestResponse(priest *model.Priest) *dto.Priest {

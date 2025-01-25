@@ -111,7 +111,7 @@ func ParseUrlQuery(ctx *gin.Context) *FilterAndSort {
 	queryParams := ctx.Request.URL.Query()
 
 	for key, val := range queryParams {
-		if !Contains(keysWords, key) {
+		if InList(key, keysWords) {
 			continue
 		}
 		//filters
@@ -137,11 +137,11 @@ func ParseUrlQuery(ctx *gin.Context) *FilterAndSort {
 }
 
 // if key exists into slice keys
-func Contains(keys []string, key string) bool {
-	for _, v := range keys {
-		if v == key {
-			return false
+func InList(elem string, list []string) bool {
+	for _, el := range list {
+		if el == elem {
+			return true
 		}
 	}
-	return true
+	return false
 }

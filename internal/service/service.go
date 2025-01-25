@@ -16,7 +16,7 @@ type Service interface {
 	DeleteTample(ctx context.Context, id int64) error
 
 	GetPriestByID(ctx context.Context, id int64) (*dto.Priest, error)
-	ListPriests(ctx context.Context) ([]*dto.Priest, error)
+	ListPriests(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Priest, int64, error)
 	CreatePriest(ctx context.Context, priestReq *dto.PriestCreateReq) (*dto.Priest, error)
 	UpdatePriest(ctx context.Context, id int64, priestReq *dto.PriestUpdateReq) (*dto.Priest, error)
 	DeletePriest(ctx context.Context, id int64) error
