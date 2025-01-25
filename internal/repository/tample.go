@@ -90,6 +90,8 @@ func (r *repo) ListTamples(ctx context.Context, filterAndSort *pkg.FilterAndSort
 	//totalCount
 	err = r.db.Table("tamples AS t").
 		Where("t.status != 'deleted' ").
+		Where(where, whereParams...).
+		Order(orderBy).
 		Count(&totalCount).
 		Error
 	if err != nil {

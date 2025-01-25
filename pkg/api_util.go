@@ -67,11 +67,9 @@ func ParseUrlQuery(ctx *gin.Context) *FilterAndSort {
 	}
 
 	sort, exist := ctx.GetQuery("sort")
+
 	if exist {
-		start := strings.Index(sort, "(")
-		end := strings.Index(sort, ")")
-		substringKeySort := sort[start+1 : end]
-		sortKeys := strings.Split(substringKeySort, ",")
+		sortKeys := strings.Split(sort, ",")
 		for _, v := range sortKeys {
 			if strings.HasPrefix(v, "-") {
 				m.Sort = append(m.Sort, &SortOptions{
@@ -87,10 +85,35 @@ func ParseUrlQuery(ctx *gin.Context) *FilterAndSort {
 		}
 	}
 
+	// if exist {
+	// 	start := strings.Index(sort, "(")
+	// 	end := strings.Index(sort, ")")
+	// 	substringKeySort := sort[start+1 : end]
+	// 	sortKeys := strings.Split(substringKeySort, ",")
+	// 	for _, v := range sortKeys {
+	// 		if strings.HasPrefix(v, "-") {
+	// 			m.Sort = append(m.Sort, &SortOptions{
+	// 				Property:  v[1:],
+	// 				Direction: "DESC",
+	// 			})
+	// 		} else {
+	// 			m.Sort = append(m.Sort, &SortOptions{
+	// 				Property:  v,
+	// 				Direction: "ASC",
+	// 			})
+	// 		}
+	// 	}
+	// }
+
+	// create maps
+	keysWords := []string{"sort", "page_number", "page_size", "paging", "all"}
+
 	queryParams := ctx.Request.URL.Query()
 
 	for key, val := range queryParams {
-
+		if !Contains(keysWords, key) {
+			continue
+		}
 		//filters
 		if !strings.Contains(key, "(") {
 			m.Filters[FilterKey{
@@ -111,4 +134,14 @@ func ParseUrlQuery(ctx *gin.Context) *FilterAndSort {
 	}
 
 	return m
+}
+
+// if key exists into slice keys
+func Contains(keys []string, key string) bool {
+	for _, v := range keys {
+		if v == key {
+			return false
+		}
+	}
+	return true
 }
