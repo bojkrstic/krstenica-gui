@@ -124,12 +124,3 @@ func validateTampleFilterAttr(p string, v []string) (string, error) {
 
 	return "t." + p, nil
 }
-
-// func inList(elem string, list []string) bool {
-// 	for _, el := range list {
-// 		if el == elem {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }

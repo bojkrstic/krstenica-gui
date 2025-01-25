@@ -22,7 +22,7 @@ type Service interface {
 	DeletePriest(ctx context.Context, id int64) error
 
 	GetEparhijeByID(ctx context.Context, id int64) (*dto.Eparhije, error)
-	ListEparhije(ctx context.Context) ([]*dto.Eparhije, error)
+	ListEparhije(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Eparhije, int64, error)
 	CreateEparhije(ctx context.Context, eparhijeReq *dto.EparhijeCreateReq) (*dto.Eparhije, error)
 	UpdateEparhije(ctx context.Context, id int64, eparhijeReq *dto.EparhijeUpdateReq) (*dto.Eparhije, error)
 	DeleteEparhije(ctx context.Context, id int64) error

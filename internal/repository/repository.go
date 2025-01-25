@@ -22,7 +22,7 @@ type Repo interface {
 	GetEparhijeByID(ctx context.Context, id int64) (*model.Eparhija, error)
 	CreateEparhije(ctx context.Context, eparhija *model.Eparhija) (*model.Eparhija, error)
 	UpdateEparhije(ctx context.Context, id int64, updates map[string]interface{}) error
-	ListEparhije(ctx context.Context) ([]model.Eparhija, error)
+	ListEparhije(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]model.Eparhija, int64, error)
 
 	GetPersonByID(ctx context.Context, id int64) (*model.Person, error)
 	CreatePerson(ctx context.Context, person *model.Person) (*model.Person, error)

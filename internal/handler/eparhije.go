@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
+	"krstenica/pkg"
 	"net/http"
 	"strconv"
 
@@ -61,15 +62,9 @@ func (h *httpHandler) getEparhije() gin.HandlerFunc {
 
 func (h *httpHandler) listEparhije() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
-		path := ctx.Request.URL.Path
-		query := ctx.Request.URL.RawQuery
-		fmt.Println("Path ", path)
-		fmt.Println("Query ", query)
-		fmt.Printf("Path: %s, Query: %s\n", path, query)
-
 		cx := context.Background()
-		eparhija, err := h.service.ListEparhije(cx)
+		filters := pkg.ParseUrlQuery(ctx)
+		eparhija, totalCount, err := h.service.ListEparhije(cx, filters)
 		if err != nil {
 			if err == errorx.ErrEparhijeNotFound {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -79,7 +74,10 @@ func (h *httpHandler) listEparhije() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, eparhija)
+		ctx.JSON(http.StatusOK, gin.H{
+			"data":  eparhija,
+			"total": totalCount,
+		})
 	}
 }
 

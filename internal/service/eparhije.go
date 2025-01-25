@@ -6,6 +6,7 @@ import (
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
 	"krstenica/internal/model"
+	"krstenica/pkg"
 	"log"
 	"time"
 )
@@ -80,18 +81,18 @@ func (s *service) GetEparhijeByID(ctx context.Context, id int64) (*dto.Eparhije,
 	return makeEparhijeResponse(eparhija), nil
 }
 
-func (s *service) ListEparhije(ctx context.Context) ([]*dto.Eparhije, error) {
-	eparhije, err := s.repo.ListEparhije(ctx)
+func (s *service) ListEparhije(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Eparhije, int64, error) {
+	eparhije, totalCount, err := s.repo.ListEparhije(ctx, filterAndSort)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := make([]*dto.Eparhije, len(eparhije))
 	for i, list := range eparhije {
 		res[i] = makeEparhijeResponse(&list)
 	}
-	return res, nil
+	return res, totalCount, nil
 }
 
 func makeEparhijeResponse(eparhije *model.Eparhija) *dto.Eparhije {
