@@ -32,7 +32,7 @@ type Repo interface {
 	GetKrstenicaByID(ctx context.Context, id int64) (*model.Krstenica, error)
 	CreateKrstenica(ctx context.Context, krstenica *model.Krstenica) (*model.Krstenica, error)
 	UpdateKrstenica(ctx context.Context, id int64, updates map[string]interface{}) error
-	ListKrstenice(ctx context.Context) ([]model.Krstenica, error)
+	ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]model.Krstenica, int64, error)
 }
 
 type repo struct {

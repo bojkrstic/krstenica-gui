@@ -2,8 +2,11 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"krstenica/internal/errorx"
 	"krstenica/internal/model"
+	"krstenica/pkg"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -24,21 +27,89 @@ func (r *repo) GetKrstenicaByID(ctx context.Context, id int64) (*model.Krstenica
 	return &krstenica, nil
 }
 
-func (r *repo) ListKrstenice(ctx context.Context) ([]model.Krstenica, error) {
+func (r *repo) ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]model.Krstenica, int64, error) {
 
 	var krstenica []model.Krstenica
 
-	err := r.db.WithContext(ctx).
-		Where("status !=?", "deleted").
+	where, whereParams, err := pkg.FilterToSQL(filterAndSort.Filters, validateKrstenicaFilterAttr)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if where == "" {
+		where += "t.status != 'deleted' "
+	} else {
+		where += " AND t.status != 'deleted' "
+	}
+
+	orderBy, err := pkg.SortSQL(filterAndSort.Sort, transformKrstenicaSortAttribute)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if orderBy != "" {
+		if !strings.Contains(orderBy, "t.id") {
+			orderBy += ", t.id"
+		}
+	} else {
+		orderBy = "t.id"
+	}
+	err = r.db.WithContext(ctx).
+		Table("krstenice AS t").
+		Where(where, whereParams...).
+		Order(orderBy).
 		Find(&krstenica).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, errorx.ErrKrstenicaNotFound
+			return nil, 0, errorx.ErrKrstenicaNotFound
 		}
-		return nil, err
+		return nil, 0, err
 	}
 
-	return krstenica, nil
+	var totalCount int64
+
+	//totalCount
+	err = r.db.Table("krstenice AS t").
+		Where("t.status != 'deleted' ").
+		Where(where, whereParams...).
+		Order(orderBy).
+		Count(&totalCount).
+		Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return krstenica, totalCount, nil
+}
+
+var allowedAtributesInKrstenicaFilters = []string{
+	"id", "book", "page", "current_number", "eparhija_id", "tample_id", "parent_id", "godfather_id", "paroh_id", "priest_id",
+	"first_name", "last_name", "gender", "city", "country", "birth_date", "birth_order", "place_of_birthday", "municipality_of_birthday", "baptism",
+	"is_church_married", "is_twin", "has_physical_disability", "anagrafa", "number_of_certificate", "town_of_certificate", "certificate",
+	"comment", "status", "created_at",
+}
+
+var allowedAtributesInKrstenicaSort = []string{
+	"id", "book", "page", "current_number", "eparhija_id", "tample_id", "parent_id", "godfather_id", "paroh_id", "priest_id",
+	"first_name", "last_name", "gender", "city", "country", "birth_date", "birth_order", "place_of_birthday", "municipality_of_birthday", "baptism",
+	"is_church_married", "is_twin", "has_physical_disability", "anagrafa", "number_of_certificate", "town_of_certificate", "certificate",
+	"comment", "status", "created_at",
+}
+
+func transformKrstenicaSortAttribute(p string) (string, error) {
+	if !pkg.InList(p, allowedAtributesInKrstenicaSort) {
+		return "", fmt.Errorf("UNSUPPORTED_SORT_PROPERTY")
+	}
+
+	return "t." + p, nil
+}
+
+func validateKrstenicaFilterAttr(p string, v []string) (string, error) {
+	if !pkg.InList(p, allowedAtributesInKrstenicaFilters) {
+		return "", fmt.Errorf("UNSUPPORTED_FILTER_PROPERTY")
+	}
+
+	return "t." + p, nil
 }
 
 func (r *repo) CreateKrstenica(ctx context.Context, krstenica *model.Krstenica) (*model.Krstenica, error) {

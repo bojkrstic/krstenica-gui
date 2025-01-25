@@ -6,6 +6,7 @@ import (
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
 	"krstenica/internal/model"
+	"krstenica/pkg"
 	"log"
 	"time"
 )
@@ -105,18 +106,18 @@ func (s *service) GetKrstenicaByID(ctx context.Context, id int64) (*dto.Krstenic
 	return makeKrstenicaResponse(krstenica), nil
 }
 
-func (s *service) ListKrstenice(ctx context.Context) ([]*dto.Krstenica, error) {
-	krstenica, err := s.repo.ListKrstenice(ctx)
+func (s *service) ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Krstenica, int64, error) {
+	krstenica, totalCount, err := s.repo.ListKrstenice(ctx, filterAndSort)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := make([]*dto.Krstenica, len(krstenica))
 	for i, list := range krstenica {
 		res[i] = makeKrstenicaResponse(&list)
 	}
-	return res, nil
+	return res, totalCount, nil
 }
 
 func makeKrstenicaResponse(krstenica *model.Krstenica) *dto.Krstenica {

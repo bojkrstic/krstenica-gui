@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
+	"krstenica/pkg"
 	"net/http"
 	"strconv"
 
@@ -61,15 +62,11 @@ func (h *httpHandler) getKrstenice() gin.HandlerFunc {
 
 func (h *httpHandler) listKrstenice() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
-		path := ctx.Request.URL.Path
-		query := ctx.Request.URL.RawQuery
-		fmt.Println("Path ", path)
-		fmt.Println("Query ", query)
-		fmt.Printf("Path: %s, Query: %s\n", path, query)
-
 		cx := context.Background()
-		krstenica, err := h.service.ListKrstenice(cx)
+
+		filters := pkg.ParseUrlQuery(ctx)
+
+		krstenica, totalCount, err := h.service.ListKrstenice(cx, filters)
 		if err != nil {
 			if err == errorx.ErrKrstenicaNotFound {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -79,7 +76,10 @@ func (h *httpHandler) listKrstenice() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, krstenica)
+		ctx.JSON(http.StatusOK, gin.H{
+			"data":  krstenica,
+			"total": totalCount,
+		})
 	}
 }
 

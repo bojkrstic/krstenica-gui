@@ -34,7 +34,7 @@ type Service interface {
 	DeletePerson(ctx context.Context, id int64) error
 
 	GetKrstenicaByID(ctx context.Context, id int64) (*dto.Krstenica, error)
-	ListKrstenice(ctx context.Context) ([]*dto.Krstenica, error)
+	ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Krstenica, int64, error)
 	CreateKrstenica(ctx context.Context, personReq *dto.KrstenicaCreateReq) (*dto.Krstenica, error)
 	UpdateKrstenica(ctx context.Context, id int64, personReq *dto.KrstenicaUpdateReq) (*dto.Krstenica, error)
 	DeleteKrstenica(ctx context.Context, id int64) error
