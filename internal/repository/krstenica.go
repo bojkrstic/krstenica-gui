@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"krstenica/internal/errorx"
 	"krstenica/internal/model"
@@ -13,12 +14,39 @@ import (
 
 func (r *repo) GetKrstenicaByID(ctx context.Context, id int64) (*model.Krstenica, error) {
 	var krstenica model.Krstenica
+	if id <= 0 {
+		return nil, errors.New("invalid ID provided")
+	}
+
+	eparhijaJoin := "LEFT JOIN eparhije as ep on ep.id = t.eparhija_id AND ep.status != 'deleted'"
+	tampleJoin := "LEFT JOIN tamples as tm on tm.id = t.tample_id AND tm.status != 'deleted'"
+	parentJoin := "LEFT JOIN persons as par on par.id = t.parent_id AND par.status != 'deleted'"
+	godFatherJoin := "LEFT JOIN persons as fat on fat.id = t.godfather_id AND fat.status != 'deleted'"
 
 	err := r.db.WithContext(ctx).
-		Where("id = ?", id).
+		Debug().
+		Table("krstenice AS t").
+		Where("t.id = ?", id).
+		Joins(eparhijaJoin).
+		Joins(tampleJoin).
+		Joins(parentJoin).
+		Joins(godFatherJoin).
+		Select(`t.*, ep.name as eparhija_name,
+		tm.name as tample_name,
+		tm.city as tample_city, 
+		par.first_name as parent_first_name, 
+		par.last_name as parent_last_name, 
+		par.occupation as parent_occupation, 
+		par.city as parent_city, 
+		par.religion as parent_religion,
+		fat.first_name as godfather_first_name, 
+		fat.last_name as godfather_last_name, 
+		fat.occupation as godfather_occupation, 
+		fat.city as godfather_city, 
+		fat.religion as godfather_religion`).
 		First(&krstenica).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) { // Umesto `err == gorm.ErrRecordNotFound`
 			return nil, errorx.ErrKrstenicaNotFound
 		}
 		return nil, err

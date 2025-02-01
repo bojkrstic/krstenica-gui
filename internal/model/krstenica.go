@@ -11,14 +11,27 @@ const (
 )
 
 type Krstenica struct {
-	ID                     int64        `gorm:"column:id"`
-	Book                   int64        `gorm:"column:book"`
-	Page                   int64        `gorm:"column:page"`
-	CurrentNumber          int64        `gorm:"column:current_number"`
-	EparhijaId             int64        `gorm:"column:eparhija_id"`
-	TampleId               int64        `gorm:"column:tample_id"`
-	ParentId               int64        `gorm:"column:parent_id"`
-	GodfatherId            int64        `gorm:"column:godfather_id"`
+	ID            int64 `gorm:"column:id"`
+	Book          int64 `gorm:"column:book"`
+	Page          int64 `gorm:"column:page"`
+	CurrentNumber int64 `gorm:"column:current_number"`
+	// EparhijaId             int64        `gorm:"column:eparhija_id"`
+	EparhijaName string `gorm:"column:eparhija_name"`
+	// TampleId               int64        `gorm:"column:tample_id"`
+	TampleName string `gorm:"column:tample_name"`
+	TampleCity string `gorm:"column:tample_city"`
+	// ParentId               int64        `gorm:"column:parent_id"`
+	ParentFirstName  string `gorm:"column:parent_first_name"`
+	ParentLastName   string `gorm:"column:parent_last_name"`
+	ParentOccupation string `gorm:"column:parent_occupation"`
+	ParentCity       string `gorm:"column:parent_city"`
+	ParentReligion   string `gorm:"column:parent_religion"`
+	// GodfatherId            int64        `gorm:"column:godfather_id"`
+	GodfatherFirstName     string       `gorm:"column:godfather_first_name"`
+	GodfatherLastName      string       `gorm:"column:godfather_last_name"`
+	GodfatherOccupation    string       `gorm:"column:godfather_occupation"`
+	GodfatherCity          string       `gorm:"column:godfather_city"`
+	GodfatherReligion      string       `gorm:"column:godfather_religion"`
 	ParohId                int64        `gorm:"column:paroh_id"`
 	PriestId               int64        `gorm:"column:priest_id"`
 	FirstName              string       `gorm:"column:first_name"`
