@@ -21,13 +21,17 @@ type Krstenica struct {
 	ParentCity       string `json:"parent_city"`
 	ParentReligion   string `json:"parent_religion"`
 	// GodfatherId            int64     `json:"godfather_id"`
-	GodfatherFirstName     string    `json:"godfather_first_name"`
-	GodfatherLastName      string    `json:"godfather_last_name"`
-	GodfatherOccupation    string    `json:"godfather_occupation"`
-	GodfatherCity          string    `json:"godfather_city"`
-	GodfatherReligion      string    `json:"godfather_religion"`
-	ParohId                int64     `json:"paroh_id"`
-	PriestId               int64     `json:"priest_id"`
+	GodfatherFirstName  string `json:"godfather_first_name"`
+	GodfatherLastName   string `json:"godfather_last_name"`
+	GodfatherOccupation string `json:"godfather_occupation"`
+	GodfatherCity       string `json:"godfather_city"`
+	GodfatherReligion   string `json:"godfather_religion"`
+	// ParohId                int64     `json:"paroh_id"`
+	ParohFirstName string `json:"paroh_first_name"`
+	ParohLastName  string `json:"paroh_last_name"`
+	// PriestId               int64     `json:"priest_id"`
+	PriestFirstName        string    `json:"priest_first_name"`
+	PriestLastName         string    `json:"priest_last_name"`
 	FirstName              string    `json:"first_name"`
 	LastName               string    `json:"last_name"`
 	Gender                 string    `json:"gender"`

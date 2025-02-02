@@ -22,6 +22,8 @@ func (r *repo) GetKrstenicaByID(ctx context.Context, id int64) (*model.Krstenica
 	tampleJoin := "LEFT JOIN tamples as tm on tm.id = t.tample_id AND tm.status != 'deleted'"
 	parentJoin := "LEFT JOIN persons as par on par.id = t.parent_id AND par.status != 'deleted'"
 	godFatherJoin := "LEFT JOIN persons as fat on fat.id = t.godfather_id AND fat.status != 'deleted'"
+	parohJoin := "LEFT JOIN persons as pa on pa.id = t.paroh_id AND pa.status != 'deleted'"
+	priestJoin := "LEFT JOIN priests as pr on pr.id = t.priest_id AND pr.status != 'deleted'"
 
 	err := r.db.WithContext(ctx).
 		Debug().
@@ -31,6 +33,8 @@ func (r *repo) GetKrstenicaByID(ctx context.Context, id int64) (*model.Krstenica
 		Joins(tampleJoin).
 		Joins(parentJoin).
 		Joins(godFatherJoin).
+		Joins(parohJoin).
+		Joins(priestJoin).
 		Select(`t.*, ep.name as eparhija_name,
 		tm.name as tample_name,
 		tm.city as tample_city, 
@@ -43,7 +47,11 @@ func (r *repo) GetKrstenicaByID(ctx context.Context, id int64) (*model.Krstenica
 		fat.last_name as godfather_last_name, 
 		fat.occupation as godfather_occupation, 
 		fat.city as godfather_city, 
-		fat.religion as godfather_religion`).
+		fat.religion as godfather_religion, 
+		pa.first_name as paroh_first_name,
+		pa.last_name as paroh_last_name,
+		pr.first_name as priest_first_name,
+		pr.last_name as priest_last_name`).
 		First(&krstenica).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) { // Umesto `err == gorm.ErrRecordNotFound`
