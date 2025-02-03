@@ -7,6 +7,7 @@ import (
 	"krstenica/internal/errorx"
 	"krstenica/internal/model"
 	"krstenica/pkg"
+	"log"
 	"strings"
 
 	"gorm.io/gorm"
@@ -148,9 +149,15 @@ func validateKrstenicaFilterAttr(p string, v []string) (string, error) {
 	return "t." + p, nil
 }
 
-func (r *repo) CreateKrstenica(ctx context.Context, krstenica *model.Krstenica) (*model.Krstenica, error) {
-	err := r.db.WithContext(ctx).Create(krstenica).Error
+func (r *repo) CreateKrstenica(ctx context.Context, krstenicaPost *model.KrstenicaPost) (*model.Krstenica, error) {
+	err := r.db.WithContext(ctx).Create(krstenicaPost).Error
 	if err != nil {
+		return nil, err
+	}
+
+	krstenica, err := r.GetKrstenicaByID(ctx, krstenicaPost.ID)
+	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 

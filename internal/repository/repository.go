@@ -30,7 +30,7 @@ type Repo interface {
 	ListPersons(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]model.Person, int64, error)
 
 	GetKrstenicaByID(ctx context.Context, id int64) (*model.Krstenica, error)
-	CreateKrstenica(ctx context.Context, krstenica *model.Krstenica) (*model.Krstenica, error)
+	CreateKrstenica(ctx context.Context, krstenica *model.KrstenicaPost) (*model.Krstenica, error)
 	UpdateKrstenica(ctx context.Context, id int64, updates map[string]interface{}) error
 	ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]model.Krstenica, int64, error)
 }

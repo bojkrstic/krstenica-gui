@@ -55,16 +55,16 @@ func (s *service) CreateKrstenica(ctx context.Context, krstenicaReq *dto.Krsteni
 		return nil, err
 	}
 
-	krstenica := &model.Krstenica{
-		Book:          krstenicaReq.Book,
-		Page:          krstenicaReq.Page,
-		CurrentNumber: krstenicaReq.CurrentNumber,
-		// EparhijaId:             krstenicaReq.EparhijaId,
-		// TampleId:               krstenicaReq.TampleId,
-		// ParentId:               krstenicaReq.ParentId,
-		// GodfatherId:            krstenicaReq.GodfatherId,
-		// ParohId:                krstenicaReq.ParohId,
-		// PriestId:               krstenicaReq.PriestId,
+	krstenica := &model.KrstenicaPost{
+		Book:                   krstenicaReq.Book,
+		Page:                   krstenicaReq.Page,
+		CurrentNumber:          krstenicaReq.CurrentNumber,
+		EparhijaId:             krstenicaReq.EparhijaId,
+		TampleId:               krstenicaReq.TampleId,
+		ParentId:               krstenicaReq.ParentId,
+		GodfatherId:            krstenicaReq.GodfatherId,
+		ParohId:                krstenicaReq.ParohId,
+		PriestId:               krstenicaReq.PriestId,
 		FirstName:              krstenicaReq.FirstName,
 		LastName:               krstenicaReq.LastName,
 		Gender:                 krstenicaReq.Gender,
@@ -119,6 +119,58 @@ func (s *service) ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAn
 	}
 	return res, totalCount, nil
 }
+
+// func makeKrstenicaPostResponse(krstenica *model.KrstenicaPost) *dto.Krstenica {
+// 	return &dto.Krstenica{
+// 		ID:            krstenica.ID,
+// 		Book:          krstenica.Book,
+// 		Page:          krstenica.Page,
+// 		CurrentNumber: krstenica.CurrentNumber,
+// 		EparhijaId:    krstenica.EparhijaId,
+// 		// EparhijaName: krstenica.EparhijaName,
+// 		TampleId: krstenica.TampleId,
+// 		// TampleName: krstenica.TampleName,
+// 		// TampleCity: krstenica.TampleCity,
+// 		ParentId: krstenica.ParentId,
+// 		// ParentFirstName:  krstenica.ParentFirstName,
+// 		// ParentLastName:   krstenica.ParentLastName,
+// 		// ParentOccupation: krstenica.ParentOccupation,
+// 		// ParentCity:       krstenica.ParentCity,
+// 		// ParentReligion:   krstenica.ParentReligion,
+// 		GodfatherId: krstenica.GodfatherId,
+// 		// GodfatherFirstName:  krstenica.GodfatherFirstName,
+// 		// GodfatherLastName:   krstenica.GodfatherLastName,
+// 		// GodfatherOccupation: krstenica.GodfatherOccupation,
+// 		// GodfatherCity:       krstenica.GodfatherCity,
+// 		// GodfatherReligion:   krstenica.GodfatherReligion,
+// 		ParohId: krstenica.ParohId,
+// 		// ParohFirstName: krstenica.ParohFirstName,
+// 		// ParohLastName:  krstenica.ParohLastName,
+// 		PriestId: krstenica.PriestId,
+// 		// PriestFirstName:        krstenica.PriestFirstName,
+// 		// PriestLastName:         krstenica.PriestLastName,
+// 		FirstName:              krstenica.FirstName,
+// 		LastName:               krstenica.LastName,
+// 		Gender:                 krstenica.Gender,
+// 		City:                   krstenica.City,
+// 		Country:                krstenica.Country,
+// 		BirthDate:              krstenica.BirthDate.Time,
+// 		BirthOrder:             krstenica.BirthOrder,
+// 		PlaceOfBirthday:        krstenica.PlaceOfBirthday,
+// 		MunicipalityOfBirthday: krstenica.MunicipalityOfBirthday,
+// 		Baptism:                krstenica.Baptism.Time,
+// 		IsChurchMarried:        krstenica.IsChurchMarried,
+// 		IsTwin:                 krstenica.IsTwin,
+// 		HasPhysicalDisability:  krstenica.HasPhysicalDisability,
+// 		Anagrafa:               krstenica.Anagrafa,
+// 		NumberOfCertificate:    krstenica.NumberOfCertificate,
+// 		TownOfCertificate:      krstenica.TownOfCertificate,
+// 		Certificate:            krstenica.Certificate.Time,
+// 		Comment:                krstenica.Comment,
+// 		Status:                 string(krstenica.Status),
+// 		CreatedAt:              krstenica.CreatedAt.Time,
+// 	}
+// }
 
 func makeKrstenicaResponse(krstenica *model.Krstenica) *dto.Krstenica {
 	return &dto.Krstenica{

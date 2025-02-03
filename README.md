@@ -1,6 +1,9 @@
 # krstenica
 projekat za pravoslavnu crkvu za dodavanje krstenica
 
+Pokrenese docker-compose
+1. docker compose up -d
+
 
 get http://localhost:8001/api/v1/adminv2/tample/1
 
@@ -10,9 +13,11 @@ get http://localhost:8001/api/v1/adminv2/tample/1
 docker krstenica
 docker exec -it krstenica_db psql -U admin krstenica
 Kad se udje u kontejner onda se udje u posgress
-1. / # psql -U admin krstenica
-2. \dt 
-3. select * from public.eparhije;
+
+1. docker exec -it krstenica_db sh
+2. / # psql -U admin krstenica
+3. \dt 
+4. select * from public.eparhije;
 
 brisanje servisa
 1. lsof -i :8001

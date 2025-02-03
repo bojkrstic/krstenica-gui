@@ -178,6 +178,13 @@ func validatePersonUpdateRequest(personReq *dto.PersonUpdateReq) (map[string]int
 
 		updates["country"] = *personReq.Country
 	}
+	if personReq.Address != nil {
+		if len(*personReq.Address) > 255 {
+			return nil, errorx.GetValidationError("Person", "validation", "Address of person can not be longer than 255 characters")
+		}
+
+		updates["address"] = *personReq.Address
+	}
 
 	if personReq.Occupation != nil {
 		if len(*personReq.Occupation) > 300 {
