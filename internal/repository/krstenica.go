@@ -91,9 +91,14 @@ func (r *repo) ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSo
 	} else {
 		orderBy = "t.id"
 	}
+	eparhijaJoin := "LEFT JOIN eparhije as ep on ep.id = t.eparhija_id AND ep.status != 'deleted'"
 	err = r.db.WithContext(ctx).
 		Table("krstenice AS t").
+		Joins(eparhijaJoin).
 		Where(where, whereParams...).
+		Select(`t.*, ep.name as eparhija_name,
+		tm.name as tample_name,
+		tm.city as tample_city`).
 		Order(orderBy).
 		Find(&krstenica).Error
 	if err != nil {
