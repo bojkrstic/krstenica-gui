@@ -7,11 +7,11 @@ services:
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=krstenica
     ports:
-        - "5560:5432" 
+      - "5560:5432"
     volumes:
-      - krstenica-db:/var/lib/postgresql/data/ 
+      - krstenica-db:/var/lib/postgresql/data
     networks:
-      - global 
+      - global
     
   krstenica-svc:
     image: krstenica-svc
@@ -21,8 +21,7 @@ services:
     ports:
       - "8001:8001"
     depends_on:
-      krstenica_database:
-        condition: service_started 
+      - krstenica_database
     restart: on-failure
     networks:
       - global
@@ -30,7 +29,6 @@ services:
       - ./config:/app/config
   
 volumes:
-  krstenica-db: 
+  krstenica-db:
 networks:
   global:
-    driver: bridge
