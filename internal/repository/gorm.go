@@ -4,6 +4,8 @@ import (
 	"krstenica/internal/config"
 	"log"
 	"os"
+	"regexp"
+	"strings"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -46,4 +48,19 @@ func InitORM(dbConf config.DBConfig) (*gorm.DB, error) {
 	//Connection = db
 
 	return db, nil
+}
+
+var reUnderscore *regexp.Regexp
+
+func init() {
+	reUnderscore, _ = regexp.Compile("([a-z])([A-Z])")
+}
+
+// Underscore converts string from CamelCase to underscore case
+func Underscore(in string) string {
+	return strings.ToLower(reUnderscore.ReplaceAllStringFunc(in, convertToUnderscore))
+}
+
+func convertToUnderscore(s string) string {
+	return string(s[0]) + "_" + string(s[1])
 }
