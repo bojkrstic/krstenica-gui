@@ -11,10 +11,10 @@ const (
 )
 
 type Krstenica struct {
-	ID            int64 `gorm:"column:id"`
-	Book          int64 `gorm:"column:book"`
-	Page          int64 `gorm:"column:page"`
-	CurrentNumber int64 `gorm:"column:current_number"`
+	ID            int64  `gorm:"column:id"`
+	Book          string `gorm:"column:book"`
+	Page          int64  `gorm:"column:page"`
+	CurrentNumber int64  `gorm:"column:current_number"`
 	// EparhijaId             int64        `gorm:"column:eparhija_id"`
 	EparhijaName string `gorm:"column:eparhija_name"`
 	// TampleId               int64        `gorm:"column:tample_id"`
@@ -65,11 +65,11 @@ func (Krstenica) TableName() string {
 }
 
 type KrstenicaPost struct {
-	ID            int64 `gorm:"column:id"`
-	Book          int64 `gorm:"column:book"`
-	Page          int64 `gorm:"column:page"`
-	CurrentNumber int64 `gorm:"column:current_number"`
-	EparhijaId    int64 `gorm:"column:eparhija_id"`
+	ID            int64  `gorm:"column:id"`
+	Book          string `gorm:"column:book"`
+	Page          int64  `gorm:"column:page"`
+	CurrentNumber int64  `gorm:"column:current_number"`
+	EparhijaId    int64  `gorm:"column:eparhija_id"`
 	//EparhijaName           string       `gorm:"column:eparhija_name"`
 	TampleId int64 `gorm:"column:tample_id"`
 	//TampleName             string       `gorm:"column:tample_name"`

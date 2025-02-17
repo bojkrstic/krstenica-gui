@@ -5,10 +5,10 @@ import (
 )
 
 type Krstenica struct {
-	ID            int64 `json:"id"`
-	Book          int64 `json:"book"`
-	Page          int64 `json:"page"`
-	CurrentNumber int64 `json:"current_number"`
+	ID            int64  `json:"id"`
+	Book          string `json:"book"`
+	Page          int64  `json:"page"`
+	CurrentNumber int64  `json:"current_number"`
 	// EparhijaId             int64     `json:"eparhija_id"`
 	EparhijaName string `json:"eparhija_name"`
 	// TampleId               int64     `json:"tample_id"`
@@ -55,7 +55,7 @@ type Krstenica struct {
 }
 
 type KrstenicaCreateReq struct {
-	Book                   int64     `json:"book"`
+	Book                   string    `json:"book"`
 	Page                   int64     `json:"page"`
 	CurrentNumber          int64     `json:"current_number"`
 	EparhijaId             int64     `json:"eparhija_id"`
@@ -85,7 +85,7 @@ type KrstenicaCreateReq struct {
 }
 
 type KrstenicaUpdateReq struct {
-	Book                   *int64     `json:"book"`
+	Book                   *string    `json:"book"`
 	Page                   *int64     `json:"page"`
 	CurrentNumber          *int64     `json:"current_number"`
 	EparhijaId             *int64     `json:"eparhija_id"`
