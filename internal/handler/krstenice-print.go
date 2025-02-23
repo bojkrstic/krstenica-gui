@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"io"
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
 	"log"
@@ -14,6 +15,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/xuri/excelize/v2"
 )
+
+var invoiceXlsxTemplateFile = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template.xlsx"
 
 // *************************************************************Krstenica Print*************************************
 func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
@@ -37,6 +40,14 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 			return
 		}
 
+		//copying template
+		from, err := os.Open(invoiceXlsxTemplateFile)
+		if err != nil {
+			log.Println("Can't open Excel template file:", err)
+			return
+		}
+		defer from.Close()
+
 		// Using a temporary directory
 		targetDir, err := os.MkdirTemp("", "krstenica")
 		if err != nil {
@@ -45,6 +56,20 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		}
 		defer os.RemoveAll(targetDir) // Cleanup after function execution
 		targetFile := filepath.Join(targetDir, "krstenica.xlsx")
+
+		to, err := os.OpenFile(targetFile, os.O_RDWR|os.O_CREATE, 0666)
+		log.Printf("to %v", to)
+		if err != nil {
+			log.Print(err)
+			return
+		}
+		defer to.Close()
+
+		_, err = io.Copy(to, from)
+		if err != nil {
+			log.Print(err)
+			return
+		}
 
 		// Generate Excel file
 		err = fillKrstenicaExcelFile(ctx, krstenica, targetFile)
@@ -143,12 +168,42 @@ func fillKrstenicaExcelFile(ctx context.Context, krstenica *dto.Krstenica, targe
 	// 	cell := fmt.Sprintf("%s1", string(rune('A'+i))) // Generiše A1, B1, C1...
 	// 	xlsxEx.SetCellValue(sheetName, cell, header)
 	// }
-	xlsxEx.SetCellValue(sheetName, "A3", "Knjiga")
-	xlsxEx.SetCellValue(sheetName, "B3", krstenica.Book)
-	xlsxEx.SetCellValue(sheetName, "A4", "Strana knjige")
-	xlsxEx.SetCellValue(sheetName, "B4", krstenica.Page)
-	xlsxEx.SetCellValue(sheetName, "A5", "Tekuci broj")
-	xlsxEx.SetCellValue(sheetName, "B5", krstenica.CurrentNumber)
+	// xlsxEx.SetCellValue(sheetName, "A3", "Knjiga")
+	xlsxEx.SetCellValue(sheetName, "C2", krstenica.Book)
+	// xlsxEx.SetCellValue(sheetName, "A4", "Strana knjige")
+	xlsxEx.SetCellValue(sheetName, "C3", krstenica.Page)
+	// xlsxEx.SetCellValue(sheetName, "A5", "Tekuci broj")
+	xlsxEx.SetCellValue(sheetName, "C4", krstenica.CurrentNumber)
+	xlsxEx.SetCellValue(sheetName, "C9", krstenica.EparhijaName)
+	xlsxEx.SetCellValue(sheetName, "C11", krstenica.TampleName)
+	xlsxEx.SetCellValue(sheetName, "H11", krstenica.TampleCity)
+	xlsxEx.SetCellValue(sheetName, "K11", krstenica.Baptism.Year())
+	xlsxEx.SetCellValue(sheetName, "F14", krstenica.BirthDate)
+	xlsxEx.SetCellValue(sheetName, "E17", krstenica.BirthDate)
+	xlsxEx.SetCellValue(sheetName, "G17", krstenica.PlaceOfBirthday)
+	xlsxEx.SetCellValue(sheetName, "E20", krstenica.Baptism)
+	xlsxEx.SetCellValue(sheetName, "F24", krstenica.TampleCity)
+	xlsxEx.SetCellValue(sheetName, "H24", krstenica.TampleName)
+	xlsxEx.SetCellValue(sheetName, "D27", krstenica.FirstName)
+	xlsxEx.SetCellValue(sheetName, "F27", krstenica.LastName)
+	xlsxEx.SetCellValue(sheetName, "H27", krstenica.Gender)
+	xlsxEx.SetCellValue(sheetName, "E30", krstenica.ParentFirstName)
+	xlsxEx.SetCellValue(sheetName, "G30", krstenica.ParentLastName)
+	xlsxEx.SetCellValue(sheetName, "I30", krstenica.ParentOccupation)
+	xlsxEx.SetCellValue(sheetName, "E31", krstenica.ParentCity)
+	xlsxEx.SetCellValue(sheetName, "G31", krstenica.ParentReligion)
+	//G32 narodnost da se doda
+	xlsxEx.SetCellValue(sheetName, "G35", krstenica.NumberOfCertificate)
+	xlsxEx.SetCellValue(sheetName, "E38", krstenica.IsChurchMarried)
+	xlsxEx.SetCellValue(sheetName, "E41", krstenica.IsTwin)
+	xlsxEx.SetCellValue(sheetName, "G44", krstenica.HasPhysicalDisability)
+	xlsxEx.SetCellValue(sheetName, "F47", krstenica.PriestFirstName)
+	xlsxEx.SetCellValue(sheetName, "H47", krstenica.PriestLastName)
+	xlsxEx.SetCellValue(sheetName, "E51", krstenica.ParohFirstName)
+	xlsxEx.SetCellValue(sheetName, "G51", krstenica.ParohLastName)
+	xlsxEx.SetCellValue(sheetName, "E52", krstenica.ParentOccupation)
+	xlsxEx.SetCellValue(sheetName, "E55", krstenica.Anagrafa)
+	xlsxEx.SetCellValue(sheetName, "D58", krstenica.Status)
 
 	// Snimanje fajla
 	if err := xlsxEx.SaveAs(targetFile); err != nil {

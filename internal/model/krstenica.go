@@ -1,6 +1,8 @@
 package model
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 type KrstenicaStatus string
 
@@ -36,14 +38,15 @@ type Krstenica struct {
 	ParohFirstName string `gorm:"column:paroh_first_name"`
 	ParohLastName  string `gorm:"column:paroh_last_name"`
 	// PriestId               int64        `gorm:"column:priest_id"`
-	PriestFirstName        string       `gorm:"column:priest_first_name"`
-	PriestLastName         string       `gorm:"column:priest_last_name"`
-	FirstName              string       `gorm:"column:first_name"`
-	LastName               string       `gorm:"column:last_name"`
-	Gender                 string       `gorm:"column:gender"`
-	City                   string       `gorm:"column:city"`
-	Country                string       `gorm:"column:country"`
-	BirthDate              sql.NullTime `gorm:"column:birth_date"`
+	PriestFirstName string       `gorm:"column:priest_first_name"`
+	PriestLastName  string       `gorm:"column:priest_last_name"`
+	FirstName       string       `gorm:"column:first_name"`
+	LastName        string       `gorm:"column:last_name"`
+	Gender          string       `gorm:"column:gender"`
+	City            string       `gorm:"column:city"`
+	Country         string       `gorm:"column:country"`
+	BirthDate       sql.NullTime `gorm:"column:birth_date"`
+	// BirthDate              JSONDate     `gorm:"column:birth_date" json:"birth_date"`
 	BirthOrder             int64        `gorm:"column:birth_order"`
 	PlaceOfBirthday        string       `gorm:"column:place_of_birthday"`
 	MunicipalityOfBirthday string       `gorm:"column:municipality_of_birthday"`
@@ -92,12 +95,13 @@ type KrstenicaPost struct {
 	PriestId int64 `gorm:"column:priest_id"`
 	//PriestFirstName        string       `gorm:"column:priest_first_name"`
 	//PriestLastName         string       `gorm:"column:priest_last_name"`
-	FirstName              string       `gorm:"column:first_name"`
-	LastName               string       `gorm:"column:last_name"`
-	Gender                 string       `gorm:"column:gender"`
-	City                   string       `gorm:"column:city"`
-	Country                string       `gorm:"column:country"`
-	BirthDate              sql.NullTime `gorm:"column:birth_date"`
+	FirstName string       `gorm:"column:first_name"`
+	LastName  string       `gorm:"column:last_name"`
+	Gender    string       `gorm:"column:gender"`
+	City      string       `gorm:"column:city"`
+	Country   string       `gorm:"column:country"`
+	BirthDate sql.NullTime `gorm:"column:birth_date"`
+	// BirthDate              JSONDate     `gorm:"column:birth_date" json:"birth_date"`
 	BirthOrder             int64        `gorm:"column:birth_order"`
 	PlaceOfBirthday        string       `gorm:"column:place_of_birthday"`
 	MunicipalityOfBirthday string       `gorm:"column:municipality_of_birthday"`
