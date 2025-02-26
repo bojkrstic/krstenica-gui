@@ -72,7 +72,7 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		}
 
 		// Generate Excel file
-		err = fillKrstenicaExcelFile(ctx, krstenica, targetFile)
+		err = fillKrstenicaExcelFile(krstenica, targetFile)
 		if err != nil {
 			log.Println("Error generating Excel file:", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate Excel file"})
@@ -131,7 +131,7 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 	}
 }
 
-func fillKrstenicaExcelFile(ctx context.Context, krstenica *dto.Krstenica, targetFile string) error {
+func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string) error {
 
 	// Proveriti da li fajl postoji
 	if _, err := os.Stat(targetFile); os.IsNotExist(err) {
@@ -152,6 +152,20 @@ func fillKrstenicaExcelFile(ctx context.Context, krstenica *dto.Krstenica, targe
 		return err
 	}
 	defer xlsxEx.Close()
+
+	dateFormat := "yyyy, mmmm, dd, hh:mm"
+	dataStyle, err := xlsxEx.NewStyle(&excelize.Style{
+		CustomNumFmt: &dateFormat,
+		Alignment: &excelize.Alignment{
+			Horizontal: "right",
+		},
+		Font: &excelize.Font{
+			Bold: true,
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Dodavanje Sheet-a
 	sheetName := "Krstenica"
@@ -178,10 +192,18 @@ func fillKrstenicaExcelFile(ctx context.Context, krstenica *dto.Krstenica, targe
 	xlsxEx.SetCellValue(sheetName, "C11", krstenica.TampleName)
 	xlsxEx.SetCellValue(sheetName, "H11", krstenica.TampleCity)
 	xlsxEx.SetCellValue(sheetName, "K11", krstenica.Baptism.Year())
+	// xlsxEx.SetCellValue(sheetName, "F14", krstenica.BirthDate.Format("2006-01-02"))
+	// xlsxEx.SetCellStyle(sheetName, "F14", "F14", dataStyle)
+	// column 1
 	xlsxEx.SetCellValue(sheetName, "F14", krstenica.BirthDate)
-	xlsxEx.SetCellValue(sheetName, "E17", krstenica.BirthDate)
-	xlsxEx.SetCellValue(sheetName, "G17", krstenica.PlaceOfBirthday)
+	xlsxEx.SetCellStyle(sheetName, "F14", "F14", dataStyle)
+	// column 2
+	xlsxEx.SetCellValue(sheetName, "E17", krstenica.PlaceOfBirthday)
+	xlsxEx.SetCellValue(sheetName, "G17", krstenica.MunicipalityOfBirthday)
+	// column 3
 	xlsxEx.SetCellValue(sheetName, "E20", krstenica.Baptism)
+	xlsxEx.SetCellStyle(sheetName, "E20", "E20", dataStyle)
+
 	xlsxEx.SetCellValue(sheetName, "F24", krstenica.TampleCity)
 	xlsxEx.SetCellValue(sheetName, "H24", krstenica.TampleName)
 	xlsxEx.SetCellValue(sheetName, "D27", krstenica.FirstName)
