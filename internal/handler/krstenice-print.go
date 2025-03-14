@@ -16,7 +16,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-var invoiceXlsxTemplateFile = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template.xlsx"
+var invoiceXlsxTemplateFile = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template-empty.xlsx"
 
 // *************************************************************Krstenica Print*************************************
 func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
