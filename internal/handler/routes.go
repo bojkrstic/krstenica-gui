@@ -45,7 +45,7 @@ func (h *httpHandler) addRoutes() {
 	adminRouter.DELETE(pathWithAction("adminv2", "krstenice/:id"), h.deleteKrstenice())
 
 	//print
-	adminRouter.GET(pathWithAction("adminv2", "krstenice-print/:id"), h.getKrstenicePrint())
+	adminRouter.GET(pathWithAction("adminv2", "krstenice-print/:id"), h.getKrstenicePrint()) //preview=true or default value is false
 }
 
 func (h *httpHandler) needAdminAccess() gin.HandlerFunc {

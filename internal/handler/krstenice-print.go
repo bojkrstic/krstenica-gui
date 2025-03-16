@@ -6,6 +6,7 @@ import (
 	"io"
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
+	"krstenica/pkg"
 	"log"
 	"net/http"
 	"os"
@@ -17,6 +18,7 @@ import (
 )
 
 var invoiceXlsxTemplateFile = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template-empty.xlsx"
+var invoiceXlsxTemplateFilePreview = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template.xlsx"
 
 // *************************************************************Krstenica Print*************************************
 func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
@@ -29,6 +31,8 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		}
 
 		cx := context.Background()
+		filters := pkg.ParseUrlQuery(ctx)
+		log.Println("filters", filters)
 
 		krstenica, err := h.service.GetKrstenicaByID(cx, int64(id))
 		if err != nil {
@@ -39,9 +43,18 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		var file string
+
+		v, ok := filters.Filters[pkg.FilterKey{Property: "preview", Operator: "eq"}]
+		if ok && len(v) > 0 && v[0] == "true" {
+			file = invoiceXlsxTemplateFilePreview
+		} else {
+			file = invoiceXlsxTemplateFile
+
+		}
 
 		//copying template
-		from, err := os.Open(invoiceXlsxTemplateFile)
+		from, err := os.Open(file)
 		if err != nil {
 			log.Println("Can't open Excel template file:", err)
 			return
