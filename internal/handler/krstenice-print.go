@@ -17,8 +17,11 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-var invoiceXlsxTemplateFile = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template-empty.xlsx"
-var invoiceXlsxTemplateFilePreview = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template.xlsx"
+// var invoiceXlsxTemplateFile = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template-empty.xlsx"
+// var invoiceXlsxTemplateFilePreview = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template.xlsx"
+
+var templateFileRelative = "krstenica/doc/template_files/krstenica-template-empty.xlsx"
+var templateEmptyFileRelative = "krstenica/doc/template_files/krstenica-template.xlsx"
 
 // *************************************************************Krstenica Print*************************************
 func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
@@ -43,7 +46,20 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		exePath, err := os.Getwd()
+		if err != nil {
+			fmt.Println("Error to get working dir:", err)
+			return
+		}
+
+		projectRoot := filepath.Join(filepath.Dir(exePath), "../..")
+
 		var file string
+		invoiceXlsxTemplateFilePreview := filepath.Join(projectRoot, templateFileRelative)
+		invoiceXlsxTemplateFile := filepath.Join(projectRoot, templateEmptyFileRelative)
+
+		fmt.Println("Template file preview:", invoiceXlsxTemplateFilePreview)
+		fmt.Println("Empty template file:", invoiceXlsxTemplateFile)
 
 		v, ok := filters.Filters[pkg.FilterKey{Property: "preview", Operator: "eq"}]
 		if ok && len(v) > 0 && v[0] == "true" {
@@ -92,12 +108,12 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 			return
 		}
 
-		// Dodavanje slike
-		imagePath := "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/krstenica_obrada.jpg" // Podesite putanju do slike
-		if _, err := os.Stat(imagePath); os.IsNotExist(err) {
-			log.Println("Slika ne postoji:", imagePath)
-			return
-		}
+		// // Dodavanje slike
+		// imagePath := "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/krstenica_obrada.jpg" // Podesite putanju do slike
+		// if _, err := os.Stat(imagePath); os.IsNotExist(err) {
+		// 	log.Println("Slika ne postoji:", imagePath)
+		// 	return
+		// }
 
 		// err = addBackgroundImageToExcel(targetFile, imagePath)
 		// if err != nil {
