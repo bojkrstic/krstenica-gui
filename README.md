@@ -26,3 +26,9 @@ brisanje servisa
 
 execution version
 make build-linux
+
+Ako imamo problema prilikom kreiranja baze, moze biti razlog tabela schema_migrations, ona ima dva polja version i dirty, dirty mora da bude na f=false
+update schema_migrations set dirty=false;
+
+1. varijanta ---  Da se pokrene ./krstenica i da se onda iz postmen-a gadja adresa (primer: GET http://localhost:8001/api/v1/adminv2/tamples/1)
+2. varijatna ---  Da se pokrene debug ali naravno prethodno mora da imamo ciste portove(lsof -i :8001, i kill -9 PID). i onda da se gadja url (primer: GET http://localhost:8001/api/v1/adminv2/tamples/1). I u tom slucaju se krece kroz debug tacke.
