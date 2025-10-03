@@ -12,6 +12,8 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/xuri/excelize/v2"
@@ -20,8 +22,8 @@ import (
 // var invoiceXlsxTemplateFile = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template-empty.xlsx"
 // var invoiceXlsxTemplateFilePreview = "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/doc/template_files/krstenica-template.xlsx"
 
-var templateFileRelative = "krstenica/doc/template_files/krstenica-template-empty.xlsx"
-var templateEmptyFileRelative = "krstenica/doc/template_files/krstenica-template.xlsx"
+var templateFileRelative = "doc/template_files/krstenica-template-empty.xlsx"
+var templateEmptyFileRelative = "doc/template_files/krstenica-template.xlsx"
 
 // *************************************************************Krstenica Print*************************************
 func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
@@ -46,17 +48,10 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		exePath, err := os.Getwd()
-		if err != nil {
-			fmt.Println("Error to get working dir:", err)
-			return
-		}
-
-		projectRoot := filepath.Join(filepath.Dir(exePath), "../..")
-
 		var file string
-		invoiceXlsxTemplateFilePreview := filepath.Join(projectRoot, templateFileRelative)
-		invoiceXlsxTemplateFile := filepath.Join(projectRoot, templateEmptyFileRelative)
+		templateDir := resolveDir("doc/template_files")
+		invoiceXlsxTemplateFilePreview := filepath.Join(templateDir, filepath.Base(templateFileRelative))
+		invoiceXlsxTemplateFile := filepath.Join(templateDir, filepath.Base(templateEmptyFileRelative))
 
 		fmt.Println("Template file preview:", invoiceXlsxTemplateFilePreview)
 		fmt.Println("Empty template file:", invoiceXlsxTemplateFile)
@@ -101,7 +96,8 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		}
 
 		// Generate Excel file
-		err = fillKrstenicaExcelFile(krstenica, targetFile)
+		backgroundImage := resolveFile("krstenica_obrada.jpg")
+		err = fillKrstenicaExcelFile(krstenica, targetFile, backgroundImage)
 		if err != nil {
 			log.Println("Error generating Excel file:", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate Excel file"})
@@ -160,7 +156,7 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 	}
 }
 
-func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string) error {
+func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string, backgroundImage string) error {
 
 	// Proveriti da li fajl postoji
 	if _, err := os.Stat(targetFile); os.IsNotExist(err) {
@@ -182,79 +178,69 @@ func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string) error {
 	}
 	defer xlsxEx.Close()
 
-	dateFormat := "yyyy, mmmm, dd, hh:mm"
-	dataStyle, err := xlsxEx.NewStyle(&excelize.Style{
-		CustomNumFmt: &dateFormat,
-		Alignment: &excelize.Alignment{
-			Horizontal: "right",
-		},
-		Font: &excelize.Font{
-			Bold: true,
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
+	sheetName := "krstenica"
+	if idx, err := xlsxEx.GetSheetIndex(sheetName); err != nil || idx == -1 {
+		sheetName = xlsxEx.GetSheetName(xlsxEx.GetActiveSheetIndex())
 	}
 
-	// Dodavanje Sheet-a
-	sheetName := "Krstenica"
-	index, err := xlsxEx.NewSheet(sheetName)
-	if err != nil {
-		log.Println("Ne može da kreira sheetName:", err)
-		return err
+	if backgroundImage != "" {
+		if _, err := os.Stat(backgroundImage); err == nil {
+			if err := addBackgroundPicture(xlsxEx, sheetName, backgroundImage); err != nil {
+				log.Println("Ne može da doda pozadinsku sliku:", err)
+			}
+		} else {
+			log.Println("Pozadinska slika nije pronađena:", backgroundImage)
+		}
 	}
-	xlsxEx.SetActiveSheet(index)
 
-	// Naslovi kolona
-	// headers := []string{"ID", "Ime", "Prezime", "Datum Rođenja", "Mesto Rođenja"}
-	// for i, header := range headers {
-	// 	cell := fmt.Sprintf("%s1", string(rune('A'+i))) // Generiše A1, B1, C1...
-	// 	xlsxEx.SetCellValue(sheetName, cell, header)
-	// }
-	// xlsxEx.SetCellValue(sheetName, "A3", "Knjiga")
-	xlsxEx.SetCellValue(sheetName, "C2", krstenica.Book)
-	// xlsxEx.SetCellValue(sheetName, "A4", "Strana knjige")
-	xlsxEx.SetCellValue(sheetName, "C3", krstenica.Page)
-	// xlsxEx.SetCellValue(sheetName, "A5", "Tekuci broj")
-	xlsxEx.SetCellValue(sheetName, "C4", krstenica.CurrentNumber)
-	xlsxEx.SetCellValue(sheetName, "C9", krstenica.EparhijaName)
-	xlsxEx.SetCellValue(sheetName, "C11", krstenica.TampleName)
-	xlsxEx.SetCellValue(sheetName, "H11", krstenica.TampleCity)
-	xlsxEx.SetCellValue(sheetName, "K11", krstenica.Baptism.Year())
-	// xlsxEx.SetCellValue(sheetName, "F14", krstenica.BirthDate.Format("2006-01-02"))
-	// xlsxEx.SetCellStyle(sheetName, "F14", "F14", dataStyle)
-	// column 1
-	xlsxEx.SetCellValue(sheetName, "F14", krstenica.BirthDate)
-	xlsxEx.SetCellStyle(sheetName, "F14", "F14", dataStyle)
-	// column 2
-	xlsxEx.SetCellValue(sheetName, "E17", krstenica.PlaceOfBirthday)
-	xlsxEx.SetCellValue(sheetName, "G17", krstenica.MunicipalityOfBirthday)
-	// column 3
-	xlsxEx.SetCellValue(sheetName, "E20", krstenica.Baptism)
-	xlsxEx.SetCellStyle(sheetName, "E20", "E20", dataStyle)
+	set := func(cell, value string) {
+		if err := xlsxEx.SetCellValue(sheetName, cell, value); err != nil {
+			log.Printf("set cell %s failed: %v", cell, err)
+		}
+	}
 
-	xlsxEx.SetCellValue(sheetName, "F24", krstenica.TampleCity)
-	xlsxEx.SetCellValue(sheetName, "H24", krstenica.TampleName)
-	xlsxEx.SetCellValue(sheetName, "D27", krstenica.FirstName)
-	xlsxEx.SetCellValue(sheetName, "F27", krstenica.LastName)
-	xlsxEx.SetCellValue(sheetName, "H27", krstenica.Gender)
-	xlsxEx.SetCellValue(sheetName, "E30", krstenica.ParentFirstName)
-	xlsxEx.SetCellValue(sheetName, "G30", krstenica.ParentLastName)
-	xlsxEx.SetCellValue(sheetName, "I30", krstenica.ParentOccupation)
-	xlsxEx.SetCellValue(sheetName, "E31", krstenica.ParentCity)
-	xlsxEx.SetCellValue(sheetName, "G31", krstenica.ParentReligion)
-	//G32 narodnost da se doda
-	xlsxEx.SetCellValue(sheetName, "G35", krstenica.NumberOfCertificate)
-	xlsxEx.SetCellValue(sheetName, "E38", krstenica.IsChurchMarried)
-	xlsxEx.SetCellValue(sheetName, "E41", krstenica.IsTwin)
-	xlsxEx.SetCellValue(sheetName, "G44", krstenica.HasPhysicalDisability)
-	xlsxEx.SetCellValue(sheetName, "F47", krstenica.PriestFirstName)
-	xlsxEx.SetCellValue(sheetName, "H47", krstenica.PriestLastName)
-	xlsxEx.SetCellValue(sheetName, "E51", krstenica.ParohFirstName)
-	xlsxEx.SetCellValue(sheetName, "G51", krstenica.ParohLastName)
-	xlsxEx.SetCellValue(sheetName, "E52", krstenica.ParentOccupation)
-	xlsxEx.SetCellValue(sheetName, "E55", krstenica.Anagrafa)
-	xlsxEx.SetCellValue(sheetName, "D58", krstenica.Status)
+	set("C2", krstenica.Book)
+	set("C3", formatInt(krstenica.Page))
+	set("C4", formatInt(krstenica.CurrentNumber))
+	set("C9", krstenica.EparhijaName)
+	set("C11", krstenica.TampleName)
+	set("H11", krstenica.TampleCity)
+	if !krstenica.Baptism.IsZero() {
+		set("K11", fmt.Sprintf("%d", krstenica.Baptism.Year()))
+	}
+	set("F14", formatDateTime(krstenica.BirthDate))
+	set("E17", krstenica.PlaceOfBirthday)
+	set("G17", krstenica.MunicipalityOfBirthday)
+	set("I17", krstenica.Country)
+	set("E20", formatDateTime(krstenica.Baptism))
+	set("F24", krstenica.TampleCity)
+	set("H24", krstenica.TampleName)
+	set("D27", krstenica.FirstName)
+	set("F27", krstenica.LastName)
+	set("H27", krstenica.Gender)
+	set("E30", krstenica.ParentFirstName)
+	set("G30", krstenica.ParentLastName)
+	set("I30", krstenica.ParentOccupation)
+	set("E31", krstenica.ParentCity)
+	set("G31", krstenica.ParentReligion)
+	set("G35", formatInt(krstenica.BirthOrder))
+	set("K35", formatInt(krstenica.NumberOfCertificate))
+	set("E38", boolToYesNo(krstenica.IsChurchMarried))
+	set("E41", boolToYesNo(krstenica.IsTwin))
+	set("G44", boolToYesNo(krstenica.HasPhysicalDisability))
+	set("F47", krstenica.PriestFirstName)
+	set("H47", krstenica.PriestLastName)
+	set("E51", krstenica.GodfatherFirstName)
+	set("G51", krstenica.GodfatherLastName)
+	set("I51", krstenica.GodfatherOccupation)
+	set("E52", krstenica.GodfatherCity)
+	set("G52", krstenica.GodfatherReligion)
+	set("E55", krstenica.Anagrafa)
+	set("C58", krstenica.Comment)
+	set("I58", krstenica.TownOfCertificate)
+	set("K58", formatDate(krstenica.Certificate))
+	set("F60", strings.TrimSpace(fmt.Sprintf("%s %s", krstenica.ParohFirstName, krstenica.ParohLastName)))
+	set("C62", krstenica.Status)
 
 	// Snimanje fajla
 	if err := xlsxEx.SaveAs(targetFile); err != nil {
@@ -265,53 +251,45 @@ func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string) error {
 	return nil
 }
 
-func addBackgroundImageToExcel(targetFile, imagePath string) error {
-	xlsxEx, err := excelize.OpenFile(targetFile)
-	if err != nil {
-		log.Print("Greška pri otvaranju fajla:", err)
+func formatDateTime(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format("02.01.2006. 15:04")
+}
+
+func formatDate(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format("02.01.2006.")
+}
+
+func formatInt(v int64) string {
+	if v == 0 {
+		return ""
+	}
+	return fmt.Sprintf("%d", v)
+}
+
+func boolToYesNo(b bool) string {
+	if b {
+		return "DA"
+	}
+	return "NE"
+}
+
+func addBackgroundPicture(file *excelize.File, sheetName, imagePath string) error {
+	printObject := true
+	if err := file.AddPicture(sheetName, "A1", imagePath, &excelize.GraphicOptions{
+		OffsetX:     0,
+		OffsetY:     0,
+		ScaleX:      1.6,
+		ScaleY:      1.55,
+		Positioning: "moveAndSize",
+		PrintObject: &printObject,
+	}); err != nil {
 		return err
 	}
-	defer xlsxEx.Close()
-
-	sheetName := "Krstenica" // Postarajte se da ovaj sheet postoji
-	printObject := false
-
-	absPath, err := filepath.Abs(imagePath)
-	if err != nil {
-		log.Println("Greška pri dobijanju apsolutne putanje slike:", err)
-	} else {
-		log.Println("Apsolutna putanja slike:", absPath)
-	}
-
-	// imagePath1 := filepath.Join("/", "home", "krle", "develop", "horisen", "Krstenica-new", "Krstenica-Tane", "krstenica", "krstenica_obrada.jpg")
-	// log.Println("Slika ne postoji na putanji:", imagePath1)
-	// if _, err := os.Stat(imagePath1); os.IsNotExist(err) {
-	// 	log.Println("Slika ne postoji na putanji:", imagePath1)
-	// 	return fmt.Errorf("slika nije pronađena: %s", imagePath1)
-	// }
-
-	if _, err := os.Stat(imagePath); os.IsNotExist(err) {
-		log.Println("Slika ne postoji na putanji:", imagePath)
-		return fmt.Errorf("slika nije pronađena: %s", imagePath)
-	}
-
-	// Dodavanje slike
-	err = xlsxEx.AddPicture(sheetName, "A1", imagePath,
-		&excelize.GraphicOptions{
-			OffsetX: 0, OffsetY: 0, // Postavite preciznu lokaciju
-			ScaleX: 2.5, ScaleY: 2.5, // Povećajte sliku da pokrije više ćelija
-			PrintObject: &printObject, // Neće se videti u štampi
-		})
-	if err != nil {
-		log.Println("Greška pri dodavanju slike:", err)
-		return err
-	}
-
-	// Snimanje fajla sa dodatom slikom
-	if err := xlsxEx.SaveAs(targetFile); err != nil {
-		log.Println("Greška pri čuvanju fajla:", err)
-		return err
-	}
-
 	return nil
 }

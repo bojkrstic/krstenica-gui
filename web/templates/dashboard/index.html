@@ -1,0 +1,23 @@
+{{ define "dashboard/index.html" }}
+{{ template "layouts/base" . }}
+{{ end }}
+
+{{ define "content" }}
+<section>
+    <hgroup>
+        <h1>Kontrolna tabla</h1>
+        <p>Brzi pregled resursa aplikacije Krstenica.</p>
+    </hgroup>
+    <div class="grid">
+        <article>
+            <header>
+                <strong>Krstenice</strong>
+            </header>
+            <p>Pregledaj, pretrazi i exportuj zapisnik o krstenjima.</p>
+            <footer>
+                <a role="button" href="/ui/krstenice">Idi na listu</a>
+            </footer>
+        </article>
+    </div>
+</section>
+{{ end }}

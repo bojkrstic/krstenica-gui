@@ -1,0 +1,156 @@
+{{ define "krstenice/new.html" }}
+<dialog open class="modal">
+    <article>
+        <header>
+            <h2>Nova krstenica</h2>
+        </header>
+        <form
+            hx-post="/api/v1/adminv2/krstenice"
+            hx-target="#krstenice-table"
+            hx-swap="outerHTML"
+            hx-include="closest form"
+            hx-encoding="json"
+            hx-on::after-request="if(event.detail.successful){document.getElementById('dialog-root').innerHTML='';}"
+            data-json-form
+        >
+            <section>
+                <h4>Osnovni podaci</h4>
+                <div class="form-grid">
+                    <label>Knjiga
+                        <input name="book" required>
+                    </label>
+                    <label>Strana knjige
+                        <input type="number" name="page" min="1" required>
+                    </label>
+                    <label>Tekuci broj
+                        <input type="number" name="current_number" min="1" required>
+                    </label>
+                    <label>Ime deteta
+                        <input name="first_name" required>
+                    </label>
+                    <label>Prezime deteta
+                        <input name="last_name" required>
+                    </label>
+                    <label>Pol deteta
+                        <select name="gender" required>
+                            <option value="">Odaberi</option>
+                            <option value="musko">Musko</option>
+                            <option value="zensko">Zensko</option>
+                        </select>
+                    </label>
+                    <label>Grad
+                        <input name="city">
+                    </label>
+                    <label>Drzava
+                        <input name="country">
+                    </label>
+                </div>
+            </section>
+
+            <section>
+                <h4>Datumi</h4>
+                <div class="form-grid">
+                    <label>Datum i vreme rodjenja
+                        <input type="datetime-local" name="birth_date">
+                    </label>
+                    <label>Datum i vreme krstenja
+                        <input type="datetime-local" name="baptism">
+                    </label>
+                    <label>Rodjenje - redosled
+                        <input type="number" name="birth_order" min="1">
+                    </label>
+                    <label>Datum izdavanja sertifikata
+                        <input type="date" name="certificate">
+                    </label>
+                </div>
+            </section>
+
+            <section>
+                <h4>Mesto rodjenja</h4>
+                <div class="form-grid">
+                    <label>Mesto rodjenja
+                        <input name="place_of_birthday">
+                    </label>
+                    <label>Opcina rodjenja
+                        <input name="municipality_of_birthday">
+                    </label>
+                    <label>Mesto sertifikata
+                        <input name="town_of_certificate">
+                    </label>
+                </div>
+            </section>
+
+            <section>
+                <h4>Eparhija i hram</h4>
+                <div class="form-grid">
+                    <label>Eparhija ID
+                        <input type="number" name="eparhija_id" min="1">
+                    </label>
+                    <label>Hram ID
+                        <input type="number" name="tample_id" min="1">
+                    </label>
+                    <label>Broj sertifikata
+                        <input type="number" name="number_of_certificate" min="1">
+                    </label>
+                </div>
+            </section>
+
+            <section>
+                <h4>Roditelji & Kumstvo</h4>
+                <div class="form-grid">
+                    <label>Roditelj ID
+                        <input type="number" name="parent_id" min="1">
+                    </label>
+                    <label>Kum ID
+                        <input type="number" name="godfather_id" min="1">
+                    </label>
+                    <label>Paroh ID
+                        <input type="number" name="paroh_id" min="1">
+                    </label>
+                    <label>Svestenik ID
+                        <input type="number" name="priest_id" min="1">
+                    </label>
+                    <label>Roditelji nisu u braku?
+                        <select name="is_church_married">
+                            <option value="">Ne poznato</option>
+                            <option value="true">DA</option>
+                            <option value="false">NE</option>
+                        </select>
+                    </label>
+                    <label>Dete je blizanac?
+                        <select name="is_twin">
+                            <option value="">Ne poznato</option>
+                            <option value="true">DA</option>
+                            <option value="false">NE</option>
+                        </select>
+                    </label>
+                    <label>Fizicki nedostatak?
+                        <select name="has_physical_disability">
+                            <option value="">Ne poznato</option>
+                            <option value="true">DA</option>
+                            <option value="false">NE</option>
+                        </select>
+                    </label>
+                </div>
+            </section>
+
+            <section>
+                <h4>Ostalo</h4>
+                <div class="form-grid">
+                    <label>Strana domovnika / anagraf
+                        <input name="anagrafa">
+                    </label>
+                </div>
+                <label>Napomena
+                    <textarea name="comment" rows="3"></textarea>
+                </label>
+            </section>
+
+            <footer>
+                <button type="submit" class="primary">Sacuvaj</button>
+                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}

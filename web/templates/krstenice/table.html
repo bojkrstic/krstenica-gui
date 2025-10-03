@@ -1,0 +1,82 @@
+{{ define "krstenice/table.html" }}
+<div id="krstenice-table">
+    {{ if .Items }}
+    <p><strong>Ukupno:</strong> {{ .Total }}</p>
+    <table role="grid">
+        <thead>
+            <tr>
+                <th>Broj knjige</th>
+                <th>Strana</th>
+                <th>Beba</th>
+                <th>Roditelji</th>
+                <th>Hram</th>
+                <th>Svestenik</th>
+                <th>Krsteno</th>
+                <th>Status</th>
+                <th>Krstenica #</th>
+                <th>Eparhija</th>
+                <th>Godfather</th>
+                <th>Paroh</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .Items }}
+            <tr>
+                <td>{{ .Book }}</td>
+                <td>{{ .Page }}</td>
+                <td>
+                    <strong>{{ .FirstName }} {{ .LastName }}</strong><br>
+                    <small>{{ .City }}, {{ .Country }}</small>
+                </td>
+                <td>
+                    {{ if .ParentFirstName }}{{ .ParentFirstName }} {{ .ParentLastName }}{{ else }}-{{ end }}<br>
+                    <small>{{ .ParentCity }}</small>
+                </td>
+                <td>
+                    {{ .TampleName }}<br>
+                    <small>{{ .TampleCity }}</small>
+                </td>
+                <td>
+                    {{ .PriestFirstName }} {{ .PriestLastName }}<br>
+                    <small>Paroh: {{ .ParohFirstName }} {{ .ParohLastName }}</small>
+                </td>
+                <td>{{ formatDate .Baptism }}</td>
+                <td><span class="badge">{{ .Status }}</span></td>
+                <td>{{ .CurrentNumber }}</td>
+                <td>{{ .EparhijaName }}</td>
+                <td>{{ .GodfatherFirstName }} {{ .GodfatherLastName }}</td>
+                <td>{{ .ParohFirstName }} {{ .ParohLastName }}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="secondary outline" data-action="edit" data-id="{{ .ID }}">Izmeni</button>
+                        <button class="contrast outline" data-action="delete" data-id="{{ .ID }}">Obrisi</button>
+                        <a class="secondary" href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true" target="_blank">Stampaj</a>
+                    </div>
+                </td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+    {{ else }}
+    <article>
+        <header>Trenutno nema sacuvanih krstenica.</header>
+        <p>Dodaj novu krstenicu preko API-ja ili forme kada postane dostupna.</p>
+    </article>
+    {{ end }}
+
+    {{ if gt .Pagination.TotalPages 1 }}
+    <footer style="margin-top: 1rem; display:flex; justify-content: space-between; align-items: center;">
+        <span>Strana {{ .Pagination.Page }} od {{ .Pagination.TotalPages }}</span>
+        <div class="grid" style="grid-template-columns: repeat(2, auto); gap: 0.5rem;">
+            {{ if .Pagination.HasPrev }}
+            <button hx-get="{{ .Pagination.PrevLink }}" hx-target="#krstenice-table" hx-swap="outerHTML">Prethodna</button>
+            {{ end }}
+            {{ if .Pagination.HasNext }}
+            <button hx-get="{{ .Pagination.NextLink }}" hx-target="#krstenice-table" hx-swap="outerHTML">Sledeca</button>
+            {{ end }}
+        </div>
+    </footer>
+    {{ end }}
+</div>
+{{ end }}
