@@ -10,7 +10,7 @@ db:
   maxopenconn: 100
   maxidleconn: 10
 
-http_port: ":8001"
+http_port: ":8011"
 
 migration:
   direction: "up"

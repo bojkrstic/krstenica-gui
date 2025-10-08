@@ -1,5 +1,12 @@
 {{ define "krstenice/table.html" }}
 <div id="krstenice-table">
+    <form id="krstenice-state" hidden>
+        <input type="hidden" name="page_number" value="{{ .Pagination.Page }}">
+        <input type="hidden" name="page_size" value="{{ .Pagination.PageSize }}">
+        {{ range $key, $value := .Filters }}
+        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+        {{ end }}
+    </form>
     {{ if .Items }}
     <p><strong>Ukupno:</strong> {{ .Total }}</p>
     <table role="grid">

@@ -116,11 +116,22 @@
                 <ul>
                     <li><a href="/ui">Pocetna</a></li>
                     <li><a href="/ui/krstenice">Krstenice</a></li>
+                    <li><a href="/ui/eparhije">Eparhije</a></li>
                 </ul>
             </nav>
         </header>
         <main>
-            {{ block "content" . }}{{ end }}
+            {{ block "content" . }}
+                {{ if eq .ContentTemplate "dashboard/content" }}
+                    {{ template "dashboard/content" . }}
+                {{ else if eq .ContentTemplate "krstenice/content" }}
+                    {{ template "krstenice/content" . }}
+                {{ else if eq .ContentTemplate "eparhije/content" }}
+                    {{ template "eparhije/content" . }}
+                {{ else }}
+                    <p>Stranica nije dostupna.</p>
+                {{ end }}
+            {{ end }}
         </main>
     </div>
     <script>
@@ -186,6 +197,80 @@
             });
             event.detail.parameters = params;
         });
+
+        window.refreshEparhijeTable = function () {
+            if (typeof htmx === 'undefined') {
+                return;
+            }
+
+            var targetSelector = '#eparhije-table';
+            var target = document.querySelector(targetSelector);
+            if (!target) {
+                return;
+            }
+
+            var params = new URLSearchParams();
+
+            var defaultsForm = document.getElementById('eparhije-default-state');
+            if (defaultsForm) {
+                var defaultsData = new FormData(defaultsForm);
+                defaultsData.forEach(function (value, key) {
+                    if (!params.has(key)) {
+                        params.append(key, value);
+                    }
+                });
+            }
+
+            var stateForm = document.getElementById('eparhije-state');
+            if (stateForm) {
+                var stateData = new FormData(stateForm);
+                stateData.forEach(function (value, key) {
+                    params.set(key, value);
+                });
+            }
+
+            var query = params.toString();
+            var url = '/ui/eparhije/table' + (query ? '?' + query : '');
+
+            htmx.ajax('GET', url, targetSelector);
+        };
+
+        window.refreshKrsteniceTable = function () {
+            if (typeof htmx === 'undefined') {
+                return;
+            }
+
+            var targetSelector = '#krstenice-table';
+            var target = document.querySelector(targetSelector);
+            if (!target) {
+                return;
+            }
+
+            var params = new URLSearchParams();
+
+            var defaultsForm = document.getElementById('krstenice-default-state');
+            if (defaultsForm) {
+                var defaultsData = new FormData(defaultsForm);
+                defaultsData.forEach(function (value, key) {
+                    if (!params.has(key)) {
+                        params.append(key, value);
+                    }
+                });
+            }
+
+            var stateForm = document.getElementById('krstenice-state');
+            if (stateForm) {
+                var stateData = new FormData(stateForm);
+                stateData.forEach(function (value, key) {
+                    params.set(key, value);
+                });
+            }
+
+            var query = params.toString();
+            var url = '/ui/krstenice/table' + (query ? '?' + query : '');
+
+            htmx.ajax('GET', url, targetSelector);
+        };
     </script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 {{ template "layouts/base" . }}
 {{ end }}
 
-{{ define "content" }}
+{{ define "dashboard/content" }}
 <section>
     <hgroup>
         <h1>Kontrolna tabla</h1>
@@ -16,6 +16,15 @@
             <p>Pregledaj, pretrazi i exportuj zapisnik o krstenjima.</p>
             <footer>
                 <a role="button" href="/ui/krstenice">Idi na listu</a>
+            </footer>
+        </article>
+        <article>
+            <header>
+                <strong>Eparhije</strong>
+            </header>
+            <p>Upravljaj spiskom eparhija, dodaj nove i izmeni postojeće.</p>
+            <footer>
+                <a role="button" href="/ui/eparhije">Idi na eparhije</a>
             </footer>
         </article>
     </div>

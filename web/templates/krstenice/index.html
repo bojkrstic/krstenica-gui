@@ -2,7 +2,7 @@
 {{ template "layouts/base" . }}
 {{ end }}
 
-{{ define "content" }}
+{{ define "krstenice/content" }}
 <section class="page-title">
     <div>
         <h1>Krstenice</h1>
@@ -27,8 +27,18 @@
     </div>
 </section>
 
+<form id="krstenice-default-state" hidden>
+    <input type="hidden" name="page_number" value="1">
+    <input type="hidden" name="page_size" value="10">
+</form>
+
 <section>
-    <div id="krstenice-table" hx-get="/ui/krstenice/table?page_number=1&page_size=10" hx-trigger="load" hx-target="this" hx-swap="outerHTML">
+    <div id="krstenice-table"
+         hx-get="/ui/krstenice/table"
+         hx-trigger="load, refresh-krstenice-table from:body"
+         hx-target="this"
+         hx-include="#krstenice-state, #krstenice-default-state"
+         hx-swap="outerHTML">
         <div class="htmx-indicator">Ucitavanje...</div>
     </div>
 </section>

@@ -7,10 +7,10 @@
         <form
             hx-post="/api/v1/adminv2/krstenice"
             hx-target="#krstenice-table"
-            hx-swap="outerHTML"
+            hx-swap="none"
             hx-include="closest form"
             hx-encoding="json"
-            hx-on::after-request="if(event.detail.successful){document.getElementById('dialog-root').innerHTML='';}"
+            hx-on::after-request="if(event.detail.successful){if(window.refreshKrsteniceTable){window.refreshKrsteniceTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
             data-json-form
         >
             <section>

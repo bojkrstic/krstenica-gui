@@ -5,7 +5,7 @@ U nastavku su objedinjena uputstva za podizanje okruzenja, debug, pristup bazi i
 
 ## Pokretanje preko Docker Compose
 - Podigni celokupan stack: `docker compose up -d`
-- Primer API poziva za proveru: `GET http://localhost:8001/api/v1/adminv2/tamples/1`
+- Primer API poziva za proveru: `GET http://localhost:8011/api/v1/adminv2/tamples/1`
 
 ## Lokalno pokretanje Go servisa
 - Napravi binarni fajl: `go build -o krstenica-api`
@@ -13,7 +13,7 @@ U nastavku su objedinjena uputstva za podizanje okruzenja, debug, pristup bazi i
 - Alternativa za debug: `go run main.go`
 
 ## Web GUI (HTMX)
-- Poseti `http://localhost:8001/ui` za dashboard i listu krstenica.
+- Poseti `http://localhost:8011/ui` za dashboard i listu krstenica.
 - Stranica koristi HTMX pa se podaci dinamicki ucitavaju iz `api/v1/adminv2/krstenice` endpoint-a.
 - Pretragu po imenu pokrecemo direktno sa stranice; paginacija radi kroz HTMX bez reload-a.
 - U koloni "Akcije" dostupno je dugme `Stampaj` koje generise Excel krstenicu sa pozadinskim obrascem ( `krstenica_obrada.jpg` ).
@@ -27,9 +27,9 @@ psql -U admin krstenica
 select * from public.eparhije;
 ```
 
-## Gasenje procesa na portu 8001
+## Gasenje procesa na portu 8011
 ```
-lsof -i :8001
+lsof -i :8011
 kill -9 <PID>
 ```
 
@@ -37,9 +37,9 @@ kill -9 <PID>
 - Kreiraj Linux binarno izdanje: `make build-linux`
 
 ## Debug workflow
-1. Uveri se da port 8001 nije zauzet (`lsof -i :8001`, pa `kill -9 <PID>` ako je potrebno).
+1. Uveri se da port 8011 nije zauzet (`lsof -i :8011`, pa `kill -9 <PID>` ako je potrebno).
 2. Pokreni servis (`./krstenica-api` ili `go run main.go`).
-3. Pogadjaj API iz Postmana / curl-a, npr. `GET http://localhost:8001/api/v1/adminv2/tamples/1`.
+3. Pogadjaj API iz Postmana / curl-a, npr. `GET http://localhost:8011/api/v1/adminv2/tamples/1`.
 4. Kroz IDE kontrolisi breakpointe i tok izvrsavanja.
 
 ## Resavanje problema sa migracijama
