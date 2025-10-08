@@ -1,0 +1,86 @@
+{{ define "eparhije/table.html" }}
+<div id="eparhije-table">
+    <form id="eparhije-state" hidden>
+        <input type="hidden" name="page_number" value="{{ .Pagination.Page }}">
+        <input type="hidden" name="page_size" value="{{ .Pagination.PageSize }}">
+        {{ range $key, $value := .Filters }}
+        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+        {{ end }}
+    </form>
+
+    {{ if .Items }}
+    <p><strong>Ukupno:</strong> {{ .Total }}</p>
+    <table role="grid">
+        <thead>
+            <tr>
+                <th>Naziv</th>
+                <th>Grad</th>
+                <th>Status</th>
+                <th>Kreirano</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .Items }}
+            <tr>
+                <td>{{ .Name }}</td>
+                <td>{{ .City }}</td>
+                <td><span class="badge">{{ .Status }}</span></td>
+                <td>{{ formatDate .CreatedAt }}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="secondary outline"
+                            type="button"
+                            hx-get="/ui/eparhije/{{ .ID }}/edit"
+                            hx-target="#dialog-root"
+                            hx-trigger="click"
+                            hx-swap="innerHTML"
+                            hx-include="#eparhije-state, #eparhije-default-state">
+                            Izmeni
+                        </button>
+                        <button class="contrast outline"
+                            type="button"
+                            hx-delete="/ui/eparhije/{{ .ID }}"
+                            hx-confirm="Da li ste sigurni da zelite da obrisete eparhiju?"
+                            hx-target="#eparhije-table"
+                            hx-include="#eparhije-state, #eparhije-default-state"
+                            hx-swap="none"
+                            hx-on::after-request="if(event.detail.successful && window.refreshEparhijeTable){window.refreshEparhijeTable();}">
+                            Obrisi
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+    {{ else }}
+    <article>
+        <header>Trenutno nema sacuvanih eparhija.</header>
+        <p>Dodajte novu eparhiju kako biste zapoceli evidenciju.</p>
+    </article>
+    {{ end }}
+
+    {{ if gt .Pagination.TotalPages 1 }}
+    <footer style="margin-top: 1rem; display:flex; justify-content: space-between; align-items: center;">
+        <span>Strana {{ .Pagination.Page }} od {{ .Pagination.TotalPages }}</span>
+        <div class="grid" style="grid-template-columns: repeat(2, auto); gap: 0.5rem;">
+            {{ if .Pagination.HasPrev }}
+            <button hx-get="{{ .Pagination.PrevLink }}"
+                    hx-target="#eparhije-table"
+                    hx-swap="outerHTML">
+                Prethodna
+            </button>
+            {{ end }}
+            {{ if .Pagination.HasNext }}
+            <button hx-get="{{ .Pagination.NextLink }}"
+                    hx-target="#eparhije-table"
+                    hx-swap="outerHTML">
+                Sledeca
+            </button>
+            {{ end }}
+        </div>
+    </footer>
+    {{ end }}
+</div>
+{{ end }}

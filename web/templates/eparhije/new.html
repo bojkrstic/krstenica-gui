@@ -1,0 +1,36 @@
+{{ define "eparhije/new.html" }}
+<dialog open class="modal">
+    <article>
+        <header>
+            <h2>Nova eparhija</h2>
+        </header>
+        <form
+            hx-post="/ui/eparhije"
+            hx-target="#dialog-root"
+            hx-swap="innerHTML"
+            hx-include="#eparhije-state, #eparhije-default-state"
+            hx-on::after-request="if(event.detail.successful){if(window.refreshEparhijeTable){window.refreshEparhijeTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
+        >
+            {{ if .Error }}
+            <article class="secondary" style="padding: 0.75rem;">
+                <strong>{{ .Error }}</strong>
+            </article>
+            {{ end }}
+            <section>
+                <div class="form-grid">
+                    <label>Naziv eparhije
+                        <input name="name" value="{{ if .Form }}{{ .Form.Name }}{{ end }}" required>
+                    </label>
+                    <label>Grad
+                        <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
+                    </label>
+                </div>
+            </section>
+            <footer>
+                <button type="submit" class="primary">Sacuvaj</button>
+                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}

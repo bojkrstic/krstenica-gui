@@ -1,0 +1,43 @@
+{{ define "eparhije/edit.html" }}
+<dialog open class="modal">
+    <article>
+        <header>
+            <h2>Izmeni eparhiju</h2>
+        </header>
+        <form
+            hx-put="/ui/eparhije/{{ .Eparhija.ID }}"
+            hx-target="#dialog-root"
+            hx-swap="innerHTML"
+            hx-include="#eparhije-state, #eparhije-default-state"
+            hx-on::after-request="if(event.detail.successful){if(window.refreshEparhijeTable){window.refreshEparhijeTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
+        >
+            {{ if .Error }}
+            <article class="secondary" style="padding: 0.75rem;">
+                <strong>{{ .Error }}</strong>
+            </article>
+            {{ end }}
+            <section>
+                <div class="form-grid">
+                    <label>Naziv eparhije
+                        <input name="name" value="{{ .Eparhija.Name }}" required>
+                    </label>
+                    <label>Grad
+                        <input name="city" value="{{ .Eparhija.City }}">
+                    </label>
+                    <label>Status
+                        <select name="status">
+                            <option value="">Odaberi status</option>
+                            <option value="active" {{ if eq .Eparhija.Status "active" }}selected{{ end }}>Aktivna</option>
+                            <option value="inactive" {{ if eq .Eparhija.Status "inactive" }}selected{{ end }}>Neaktivna</option>
+                        </select>
+                    </label>
+                </div>
+            </section>
+            <footer>
+                <button type="submit" class="primary">Sacuvaj</button>
+                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}
