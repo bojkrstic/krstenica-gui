@@ -132,12 +132,28 @@ func validatePriestUpdateRequest(priestReq *dto.PriestUpdateReq) (map[string]int
 		updates["first_name"] = *priestReq.FirstName
 	}
 
+	if priestReq.LastName != nil {
+		if len(*priestReq.LastName) > 255 {
+			return nil, errorx.GetValidationError("Priest", "validation", "last name of priest can not be longer than 255 characters")
+		}
+
+		updates["last_name"] = *priestReq.LastName
+	}
+
 	if priestReq.City != nil {
 		if len(*priestReq.City) > 255 {
 			return nil, errorx.GetValidationError("Priest", "validation", "city of priest can not be longer than 255 characters")
 		}
 
 		updates["city"] = *priestReq.City
+	}
+
+	if priestReq.Title != nil {
+		if len(*priestReq.Title) > 255 {
+			return nil, errorx.GetValidationError("Priest", "validation", "title of priest can not be longer than 255 characters")
+		}
+
+		updates["title"] = *priestReq.Title
 	}
 
 	if priestReq.Status != nil {

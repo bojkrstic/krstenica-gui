@@ -83,11 +83,21 @@
             <section>
                 <h4>Eparhija i hram</h4>
                 <div class="form-grid">
-                    <label>Eparhija ID
-                        <input type="number" name="eparhija_id" min="1">
+                    <label>Eparhija
+                        <select name="eparhija_id">
+                            <option value="">Odaberi eparhiju</option>
+                            {{ range .Eparhije }}
+                            <option value="{{ .ID }}">{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
+                            {{ end }}
+                        </select>
                     </label>
-                    <label>Hram ID
-                        <input type="number" name="tample_id" min="1">
+                    <label>Hram
+                        <select name="tample_id">
+                            <option value="">Odaberi hram</option>
+                            {{ range .Hramovi }}
+                            <option value="{{ .ID }}">{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
+                            {{ end }}
+                        </select>
                     </label>
                     <label>Broj sertifikata
                         <input type="number" name="number_of_certificate" min="1">

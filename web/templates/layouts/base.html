@@ -117,6 +117,9 @@
                     <li><a href="/ui">Pocetna</a></li>
                     <li><a href="/ui/krstenice">Krstenice</a></li>
                     <li><a href="/ui/eparhije">Eparhije</a></li>
+                    <li><a href="/ui/hramovi">Hramovi</a></li>
+                    <li><a href="/ui/svestenici">Svestenici</a></li>
+                    <li><a href="/ui/osobe">Osobe</a></li>
                 </ul>
             </nav>
         </header>
@@ -128,6 +131,12 @@
                     {{ template "krstenice/content" . }}
                 {{ else if eq .ContentTemplate "eparhije/content" }}
                     {{ template "eparhije/content" . }}
+                {{ else if eq .ContentTemplate "hramovi/content" }}
+                    {{ template "hramovi/content" . }}
+                {{ else if eq .ContentTemplate "svestenici/content" }}
+                    {{ template "svestenici/content" . }}
+                {{ else if eq .ContentTemplate "osobe/content" }}
+                    {{ template "osobe/content" . }}
                 {{ else }}
                     <p>Stranica nije dostupna.</p>
                 {{ end }}
@@ -231,6 +240,117 @@
 
             var query = params.toString();
             var url = '/ui/eparhije/table' + (query ? '?' + query : '');
+
+            htmx.ajax('GET', url, targetSelector);
+        };
+
+        window.refreshHramoviTable = function () {
+            if (typeof htmx === 'undefined') {
+                return;
+            }
+
+            var targetSelector = '#hramovi-table';
+            var target = document.querySelector(targetSelector);
+            if (!target) {
+                return;
+            }
+
+            var params = new URLSearchParams();
+
+            var defaultsForm = document.getElementById('hramovi-default-state');
+            if (defaultsForm) {
+                var defaultsData = new FormData(defaultsForm);
+                defaultsData.forEach(function (value, key) {
+                    if (!params.has(key)) {
+                        params.append(key, value);
+                    }
+                });
+            }
+
+            var stateForm = document.getElementById('hramovi-state');
+            if (stateForm) {
+                var stateData = new FormData(stateForm);
+                stateData.forEach(function (value, key) {
+                    params.set(key, value);
+                });
+            }
+
+            var query = params.toString();
+            var url = '/ui/hramovi/table' + (query ? '?' + query : '');
+
+            htmx.ajax('GET', url, targetSelector);
+        };
+
+        window.refreshSvesteniciTable = function () {
+            if (typeof htmx === 'undefined') {
+                return;
+            }
+
+            var targetSelector = '#svestenici-table';
+            var target = document.querySelector(targetSelector);
+            if (!target) {
+                return;
+            }
+
+            var params = new URLSearchParams();
+
+            var defaultsForm = document.getElementById('svestenici-default-state');
+            if (defaultsForm) {
+                var defaultsData = new FormData(defaultsForm);
+                defaultsData.forEach(function (value, key) {
+                    if (!params.has(key)) {
+                        params.append(key, value);
+                    }
+                });
+            }
+
+            var stateForm = document.getElementById('svestenici-state');
+            if (stateForm) {
+                var stateData = new FormData(stateForm);
+                stateData.forEach(function (value, key) {
+                    params.set(key, value);
+                });
+            }
+
+            var query = params.toString();
+            var url = '/ui/svestenici/table' + (query ? '?' + query : '');
+
+            htmx.ajax('GET', url, targetSelector);
+        };
+
+        window.refreshOsobeTable = function () {
+            if (typeof htmx === 'undefined') {
+                return;
+            }
+
+            var targetSelector = '#osobe-table';
+            var target = document.querySelector(targetSelector);
+            if (!target) {
+                return;
+            }
+
+            var params = new URLSearchParams();
+
+            var defaultsForm = document.getElementById('osobe-default-state');
+            if (defaultsForm) {
+                var defaultsData = new FormData(defaultsForm);
+                defaultsData.forEach(function (value, key) {
+                    if (!params.has(key)) {
+                        params.append(key, value);
+                    }
+                });
+            }
+
+            var stateForm = document.getElementById('osobe-state');
+            if (stateForm) {
+                var stateData = new FormData(stateForm);
+                stateData.forEach(function (value, key) {
+                    params.set(key, value);
+                });
+            }
+
+            var query = params.toString();
+            var url = '/ui/osobe/table' + (query ? '?' + query : '');
 
             htmx.ajax('GET', url, targetSelector);
         };
