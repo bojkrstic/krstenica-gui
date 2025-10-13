@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -59,6 +60,10 @@ func (h *httpHandler) addGuiRoutes() {
 	h.router.POST("/ui/osobe", h.handleOsobeCreate())
 	h.router.PUT("/ui/osobe/:id", h.handleOsobeUpdate())
 	h.router.DELETE("/ui/osobe/:id", h.handleOsobeDelete())
+
+	h.router.GET("/ui/osobe/picker", h.renderOsobePicker())
+	h.router.GET("/ui/osobe/picker/table", h.renderOsobePickerTable())
+	h.router.GET("/ui/osobe/picker/select/:id", h.handleOsobePickerSelect())
 }
 
 func (h *httpHandler) renderDashboard() gin.HandlerFunc {
@@ -980,6 +985,100 @@ func (h *httpHandler) renderOsobeEdit() gin.HandlerFunc {
 		ctx.HTML(http.StatusOK, "osobe/edit.html", gin.H{
 			"Osoba": osoba,
 		})
+	}
+}
+
+func (h *httpHandler) renderOsobePicker() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		field := strings.TrimSpace(ctx.Query("field"))
+		if field == "" {
+			field = "parent_id"
+		}
+
+		ctx.HTML(http.StatusOK, "osobe/picker.html", gin.H{
+			"Field": field,
+		})
+	}
+}
+
+func (h *httpHandler) renderOsobePickerTable() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		field := strings.TrimSpace(ctx.Query("field"))
+		if field == "" {
+			field = "parent_id"
+		}
+
+		values := cloneValues(ctx.Request.URL.Query())
+		if values.Get("status") == "" {
+			values.Set("status", "active")
+		}
+
+		data, err := h.buildOsobeTable(values, ctx.Request.URL.Path)
+		if err != nil {
+			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+				"Message": err.Error(),
+			})
+			return
+		}
+
+		ctx.HTML(http.StatusOK, "osobe/picker-table.html", gin.H{
+			"Field": field,
+			"Data":  data,
+		})
+	}
+}
+
+func (h *httpHandler) handleOsobePickerSelect() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+				"Message": "Nepostojeci identifikator osobe",
+			})
+			return
+		}
+
+		field := strings.TrimSpace(ctx.Query("field"))
+		if field == "" {
+			field = "parent_id"
+		}
+
+		person, err := h.service.GetPersonByID(context.Background(), int64(id))
+		if err != nil {
+			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+				"Message": err.Error(),
+			})
+			return
+		}
+
+		name := strings.TrimSpace(strings.Join([]string{
+			strings.TrimSpace(person.FirstName),
+			strings.TrimSpace(person.LastName),
+		}, " "))
+		label := name
+		if person.Role != "" {
+			label = label + " (" + person.Role + ")"
+		}
+
+		payload := map[string]interface{}{
+			"person-selected": map[string]interface{}{
+				"field": field,
+				"id":    person.ID,
+				"label": label,
+			},
+			"close-picker": true,
+		}
+
+		bytes, err := json.Marshal(payload)
+		if err != nil {
+			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+				"Message": err.Error(),
+			})
+			return
+		}
+
+		ctx.Header("HX-Trigger", string(bytes))
+		ctx.Status(http.StatusNoContent)
 	}
 }
 

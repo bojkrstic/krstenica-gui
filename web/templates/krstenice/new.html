@@ -108,8 +108,19 @@
             <section>
                 <h4>Roditelji & Kumstvo</h4>
                 <div class="form-grid">
-                    <label>Roditelj ID
-                        <input type="number" name="parent_id" min="1">
+                    <label>Roditelj
+                        <input type="hidden" name="parent_id">
+                        <div class="input-with-action">
+                            <input type="text" readonly data-display-field="parent_id" placeholder="Nije odabrano">
+                            <button class="secondary"
+                                type="button"
+                                hx-get="/ui/osobe/picker?field=parent_id"
+                                hx-target="#dialog-root"
+                                hx-trigger="click"
+                                hx-swap="innerHTML">
+                                Odaberi
+                            </button>
+                        </div>
                     </label>
                     <label>Kum ID
                         <input type="number" name="godfather_id" min="1">

@@ -1,6 +1,7 @@
 {{ define "osobe/picker-table.html" }}
 <div id="osobe-picker-table">
     {{ if .Data.Items }}
+    {{ $field := .Field }}
     <table role="grid">
         <thead>
             <tr>
@@ -8,6 +9,7 @@
                 <th>Prezime</th>
                 <th>Uloga</th>
                 <th>Grad</th>
+                <th>Akcija</th>
             </tr>
         </thead>
         <tbody>
@@ -16,7 +18,16 @@
                 <td>{{ .FirstName }}</td>
                 <td>{{ .LastName }}</td>
                 <td>{{ .Role }}</td>
-                <td>{{ .City }}</td>
+                <td>{{ if .City }}{{ .City }}{{ else }}-{{ end }}</td>
+                <td>
+                    <button class="secondary"
+                            type="button"
+                            hx-get="/ui/osobe/picker/select/{{ .ID }}?field={{ $field }}"
+                            hx-target="body"
+                            hx-swap="none">
+                        Izaberi
+                    </button>
+                </td>
             </tr>
             {{ end }}
         </tbody>

@@ -58,6 +58,14 @@
             padding: 0.35rem 0.6rem;
             font-size: 0.8rem;
         }
+        .input-with-action {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .input-with-action input[readonly] {
+            flex: 1;
+        }
         .htmx-indicator {
             display: none;
         }
@@ -205,6 +213,31 @@
                 }
             });
             event.detail.parameters = params;
+        });
+
+        document.body.addEventListener("person-selected", function (event) {
+            const detail = event.detail || {};
+            if (!detail.field) {
+                return;
+            }
+
+            const hiddenInput = document.querySelector("input[name='" + detail.field + "']");
+            if (hiddenInput) {
+                hiddenInput.value = detail.id || "";
+            }
+
+            const displayInput = document.querySelector("[data-display-field='" + detail.field + "']");
+            if (displayInput) {
+                displayInput.value = detail.label || "";
+            }
+        });
+
+        document.body.addEventListener("close-picker", function () {
+            const pickerDialog = document.querySelector("dialog[data-modal-type='picker']");
+            if (pickerDialog) {
+                pickerDialog.close();
+                pickerDialog.remove();
+            }
         });
 
         window.refreshEparhijeTable = function () {
