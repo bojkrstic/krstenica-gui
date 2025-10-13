@@ -1,0 +1,28 @@
+{{ define "osobe/picker-table.html" }}
+<div id="osobe-picker-table">
+    {{ if .Data.Items }}
+    <table role="grid">
+        <thead>
+            <tr>
+                <th>Ime</th>
+                <th>Prezime</th>
+                <th>Uloga</th>
+                <th>Grad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .Data.Items }}
+            <tr>
+                <td>{{ .FirstName }}</td>
+                <td>{{ .LastName }}</td>
+                <td>{{ .Role }}</td>
+                <td>{{ .City }}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+    {{ else }}
+    <p>Nema rezultata.</p>
+    {{ end }}
+</div>
+{{ end }}

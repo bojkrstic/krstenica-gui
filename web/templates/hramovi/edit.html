@@ -1,0 +1,43 @@
+{{ define "hramovi/edit.html" }}
+<dialog open class="modal">
+    <article>
+        <header>
+            <h2>Izmeni hram</h2>
+        </header>
+        <form
+            hx-put="/ui/hramovi/{{ .Hram.ID }}"
+            hx-target="#dialog-root"
+            hx-swap="innerHTML"
+            hx-include="#hramovi-state, #hramovi-default-state"
+            hx-on::after-request="if(event.detail.successful){if(window.refreshHramoviTable){window.refreshHramoviTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
+        >
+            {{ if .Error }}
+            <article class="secondary" style="padding: 0.75rem;">
+                <strong>{{ .Error }}</strong>
+            </article>
+            {{ end }}
+            <section>
+                <div class="form-grid">
+                    <label>Naziv hrama
+                        <input name="name" value="{{ .Hram.Name }}" required>
+                    </label>
+                    <label>Grad
+                        <input name="city" value="{{ .Hram.City }}">
+                    </label>
+                    <label>Status
+                        <select name="status">
+                            <option value="">Odaberi status</option>
+                            <option value="active" {{ if eq .Hram.Status "active" }}selected{{ end }}>Aktivan</option>
+                            <option value="inactive" {{ if eq .Hram.Status "inactive" }}selected{{ end }}>Neaktivan</option>
+                        </select>
+                    </label>
+                </div>
+            </section>
+            <footer>
+                <button type="submit" class="primary">Sacuvaj</button>
+                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}

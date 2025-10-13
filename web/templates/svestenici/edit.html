@@ -1,0 +1,49 @@
+{{ define "svestenici/edit.html" }}
+<dialog open class="modal">
+    <article>
+        <header>
+            <h2>Izmeni svestenika</h2>
+        </header>
+        <form
+            hx-put="/ui/svestenici/{{ .Svestenik.ID }}"
+            hx-target="#dialog-root"
+            hx-swap="innerHTML"
+            hx-include="#svestenici-state, #svestenici-default-state"
+            hx-on::after-request="if(event.detail.successful){if(window.refreshSvesteniciTable){window.refreshSvesteniciTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
+        >
+            {{ if .Error }}
+            <article class="secondary" style="padding: 0.75rem;">
+                <strong>{{ .Error }}</strong>
+            </article>
+            {{ end }}
+            <section>
+                <div class="form-grid">
+                    <label>Ime
+                        <input name="first_name" value="{{ .Svestenik.FirstName }}" required>
+                    </label>
+                    <label>Prezime
+                        <input name="last_name" value="{{ .Svestenik.LastName }}" required>
+                    </label>
+                    <label>Grad
+                        <input name="city" value="{{ .Svestenik.City }}">
+                    </label>
+                    <label>Titula
+                        <input name="title" value="{{ .Svestenik.Title }}">
+                    </label>
+                    <label>Status
+                        <select name="status">
+                            <option value="">Odaberi status</option>
+                            <option value="active" {{ if eq .Svestenik.Status "active" }}selected{{ end }}>Aktivan</option>
+                            <option value="inactive" {{ if eq .Svestenik.Status "inactive" }}selected{{ end }}>Neaktivan</option>
+                        </select>
+                    </label>
+                </div>
+            </section>
+            <footer>
+                <button type="submit" class="primary">Sacuvaj</button>
+                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}

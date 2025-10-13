@@ -1,0 +1,73 @@
+{{ define "osobe/edit.html" }}
+<dialog open class="modal">
+    <article>
+        <header>
+            <h2>Izmeni osobu</h2>
+        </header>
+        <form
+            hx-put="/ui/osobe/{{ .Osoba.ID }}"
+            hx-target="#dialog-root"
+            hx-swap="innerHTML"
+            hx-include="#osobe-state, #osobe-default-state"
+            hx-on::after-request="if(event.detail.successful){if(window.refreshOsobeTable){window.refreshOsobeTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
+        >
+            {{ if .Error }}
+            <article class="secondary" style="padding: 0.75rem;">
+                <strong>{{ .Error }}</strong>
+            </article>
+            {{ end }}
+            <section>
+                <div class="form-grid">
+                    <label>Ime
+                        <input name="first_name" value="{{ .Osoba.FirstName }}" required>
+                    </label>
+                    <label>Prezime
+                        <input name="last_name" value="{{ .Osoba.LastName }}" required>
+                    </label>
+                    <label>Skraceno ime
+                        <input name="brief_name" value="{{ .Osoba.BriefName }}">
+                    </label>
+                    <label>Uloga
+                        <select name="role" required>
+                            <option value="">Odaberi ulogu</option>
+                            <option value="mother" {{ if eq .Osoba.Role "mother" }}selected{{ end }}>Majka</option>
+                            <option value="father" {{ if eq .Osoba.Role "father" }}selected{{ end }}>Otac</option>
+                            <option value="godfather" {{ if eq .Osoba.Role "godfather" }}selected{{ end }}>Kum</option>
+                            <option value="paroh" {{ if eq .Osoba.Role "paroh" }}selected{{ end }}>Paroh</option>
+                        </select>
+                    </label>
+                    <label>Zanimanje
+                        <input name="occupation" value="{{ .Osoba.Occupation }}">
+                    </label>
+                    <label>Vera
+                        <input name="religion" value="{{ .Osoba.Religion }}">
+                    </label>
+                    <label>Adresa
+                        <input name="address" value="{{ .Osoba.Address }}">
+                    </label>
+                    <label>Drzava
+                        <input name="country" value="{{ .Osoba.Country }}">
+                    </label>
+                    <label>Grad
+                        <input name="city" value="{{ .Osoba.City }}">
+                    </label>
+                    <label>Datum rodjenja
+                        <input type="date" name="birth_date" value="{{ if not (.Osoba.BirthDate.IsZero) }}{{ .Osoba.BirthDate.Format "2006-01-02" }}{{ end }}">
+                    </label>
+                    <label>Status
+                        <select name="status">
+                            <option value="">Odaberi status</option>
+                            <option value="active" {{ if eq .Osoba.Status "active" }}selected{{ end }}>Aktivna</option>
+                            <option value="inactive" {{ if eq .Osoba.Status "inactive" }}selected{{ end }}>Neaktivna</option>
+                        </select>
+                    </label>
+                </div>
+            </section>
+            <footer>
+                <button type="submit" class="primary">Sacuvaj</button>
+                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}

@@ -1,0 +1,36 @@
+{{ define "hramovi/new.html" }}
+<dialog open class="modal">
+    <article>
+        <header>
+            <h2>Novi hram</h2>
+        </header>
+        <form
+            hx-post="/ui/hramovi"
+            hx-target="#dialog-root"
+            hx-swap="innerHTML"
+            hx-include="#hramovi-state, #hramovi-default-state"
+            hx-on::after-request="if(event.detail.successful){if(window.refreshHramoviTable){window.refreshHramoviTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
+        >
+            {{ if .Error }}
+            <article class="secondary" style="padding: 0.75rem;">
+                <strong>{{ .Error }}</strong>
+            </article>
+            {{ end }}
+            <section>
+                <div class="form-grid">
+                    <label>Naziv hrama
+                        <input name="name" value="{{ if .Form }}{{ .Form.Name }}{{ end }}" required>
+                    </label>
+                    <label>Grad
+                        <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
+                    </label>
+                </div>
+            </section>
+            <footer>
+                <button type="submit" class="primary">Sacuvaj</button>
+                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}

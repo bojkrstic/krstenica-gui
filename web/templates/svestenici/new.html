@@ -1,0 +1,42 @@
+{{ define "svestenici/new.html" }}
+<dialog open class="modal">
+    <article>
+        <header>
+            <h2>Novi svestenik</h2>
+        </header>
+        <form
+            hx-post="/ui/svestenici"
+            hx-target="#dialog-root"
+            hx-swap="innerHTML"
+            hx-include="#svestenici-state, #svestenici-default-state"
+            hx-on::after-request="if(event.detail.successful){if(window.refreshSvesteniciTable){window.refreshSvesteniciTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
+        >
+            {{ if .Error }}
+            <article class="secondary" style="padding: 0.75rem;">
+                <strong>{{ .Error }}</strong>
+            </article>
+            {{ end }}
+            <section>
+                <div class="form-grid">
+                    <label>Ime
+                        <input name="first_name" value="{{ if .Form }}{{ .Form.FirstName }}{{ end }}" required>
+                    </label>
+                    <label>Prezime
+                        <input name="last_name" value="{{ if .Form }}{{ .Form.LastName }}{{ end }}" required>
+                    </label>
+                    <label>Grad
+                        <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
+                    </label>
+                    <label>Titula
+                        <input name="title" value="{{ if .Form }}{{ .Form.Title }}{{ end }}">
+                    </label>
+                </div>
+            </section>
+            <footer>
+                <button type="submit" class="primary">Sacuvaj</button>
+                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}

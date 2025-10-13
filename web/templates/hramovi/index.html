@@ -1,0 +1,50 @@
+{{ define "hramovi/index.html" }}
+{{ template "layouts/base" . }}
+{{ end }}
+
+{{ define "hramovi/content" }}
+<section class="page-title">
+    <div>
+        <h1>Hramovi</h1>
+        <p>Pregled, dodavanje i izmena hramova.</p>
+    </div>
+    <div class="actions">
+        <form class="inline-filter"
+              hx-get="/ui/hramovi/table"
+              hx-target="#hramovi-table"
+              hx-trigger="submit"
+              hx-swap="outerHTML">
+            <input type="hidden" name="page_number" value="1">
+            <input type="hidden" name="page_size" value="10">
+            <input type="search" name="name" placeholder="Trazi po nazivu" aria-label="Trazi po nazivu">
+            <button type="submit" class="secondary">Pretrazi</button>
+        </form>
+        <button class="primary"
+            type="button"
+            hx-get="/ui/hramovi/new"
+            hx-target="#dialog-root"
+            hx-trigger="click"
+            hx-swap="innerHTML"
+            hx-include="#hramovi-state, #hramovi-default-state">
+            Novi hram
+        </button>
+    </div>
+</section>
+
+<form id="hramovi-default-state" hidden>
+    <input type="hidden" name="page_number" value="1">
+    <input type="hidden" name="page_size" value="10">
+</form>
+
+<section>
+    <div id="hramovi-table"
+         hx-get="/ui/hramovi/table"
+         hx-trigger="load, refresh-hramovi-table from:body"
+         hx-target="this"
+         hx-include="#hramovi-state, #hramovi-default-state"
+         hx-swap="outerHTML">
+        <div class="htmx-indicator">Ucitavanje...</div>
+    </div>
+</section>
+<div id="dialog-root"></div>
+{{ end }}

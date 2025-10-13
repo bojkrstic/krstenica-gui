@@ -1,0 +1,66 @@
+{{ define "osobe/new.html" }}
+<dialog open class="modal">
+    <article>
+        <header>
+            <h2>Nova osoba</h2>
+        </header>
+        <form
+            hx-post="/ui/osobe"
+            hx-target="#dialog-root"
+            hx-swap="innerHTML"
+            hx-include="#osobe-state, #osobe-default-state"
+            hx-on::after-request="if(event.detail.successful){if(window.refreshOsobeTable){window.refreshOsobeTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
+        >
+            {{ if .Error }}
+            <article class="secondary" style="padding: 0.75rem;">
+                <strong>{{ .Error }}</strong>
+            </article>
+            {{ end }}
+            <section>
+                <div class="form-grid">
+                    <label>Ime
+                        <input name="first_name" value="{{ if .Form }}{{ .Form.FirstName }}{{ end }}" required>
+                    </label>
+                    <label>Prezime
+                        <input name="last_name" value="{{ if .Form }}{{ .Form.LastName }}{{ end }}" required>
+                    </label>
+                    <label>Skraceno ime
+                        <input name="brief_name" value="{{ if .Form }}{{ .Form.BriefName }}{{ end }}">
+                    </label>
+                    <label>Uloga
+                        <select name="role" required>
+                            <option value="">Odaberi ulogu</option>
+                            <option value="mother" {{ if and .Form (eq .Form.Role "mother") }}selected{{ end }}>Majka</option>
+                            <option value="father" {{ if and .Form (eq .Form.Role "father") }}selected{{ end }}>Otac</option>
+                            <option value="godfather" {{ if and .Form (eq .Form.Role "godfather") }}selected{{ end }}>Kum</option>
+                            <option value="paroh" {{ if and .Form (eq .Form.Role "paroh") }}selected{{ end }}>Paroh</option>
+                        </select>
+                    </label>
+                    <label>Zanimanje
+                        <input name="occupation" value="{{ if .Form }}{{ .Form.Occupation }}{{ end }}">
+                    </label>
+                    <label>Vera
+                        <input name="religion" value="{{ if .Form }}{{ .Form.Religion }}{{ end }}">
+                    </label>
+                    <label>Adresa
+                        <input name="address" value="{{ if .Form }}{{ .Form.Address }}{{ end }}">
+                    </label>
+                    <label>Drzava
+                        <input name="country" value="{{ if .Form }}{{ .Form.Country }}{{ end }}">
+                    </label>
+                    <label>Grad
+                        <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
+                    </label>
+                    <label>Datum rodjenja
+                        <input type="date" name="birth_date" value="{{ if .Form }}{{ .Form.BirthDate }}{{ end }}">
+                    </label>
+                </div>
+            </section>
+            <footer>
+                <button type="submit" class="primary">Sacuvaj</button>
+                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}
