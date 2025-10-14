@@ -153,11 +153,20 @@
     </div>
     <script>
         document.body.addEventListener('htmx:afterSwap', function (event) {
-            if (event.target && event.target.id === 'dialog-root') {
-                var dialog = event.target.querySelector('dialog');
-                if (dialog && dialog.showModal) {
-                    dialog.showModal();
+            if (!event.target) {
+                return;
+            }
+
+            var maybeDialog = event.target.matches('dialog') ? event.target : null;
+            if (!maybeDialog && event.target.id === 'dialog-root') {
+                var dialogs = event.target.querySelectorAll('dialog');
+                if (dialogs.length) {
+                    maybeDialog = dialogs[dialogs.length - 1];
                 }
+            }
+
+            if (maybeDialog && !maybeDialog.open && typeof maybeDialog.showModal === 'function') {
+                maybeDialog.showModal();
             }
         });
         document.body.addEventListener('click', function (event) {
@@ -237,6 +246,21 @@
             if (pickerDialog) {
                 pickerDialog.close();
                 pickerDialog.remove();
+            }
+
+            const root = document.getElementById('dialog-root');
+            if (!root) {
+                return;
+            }
+
+            const dialogs = root.querySelectorAll('dialog');
+            if (!dialogs.length) {
+                return;
+            }
+
+            const lastDialog = dialogs[dialogs.length - 1];
+            if (!lastDialog.open && typeof lastDialog.showModal === 'function') {
+                lastDialog.showModal();
             }
         });
 

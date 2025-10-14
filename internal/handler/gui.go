@@ -1009,9 +1009,7 @@ func (h *httpHandler) renderOsobePickerTable() gin.HandlerFunc {
 		}
 
 		values := cloneValues(ctx.Request.URL.Query())
-		if values.Get("status") == "" {
-			values.Set("status", "active")
-		}
+		values.Del("field")
 
 		data, err := h.buildOsobeTable(values, ctx.Request.URL.Path)
 		if err != nil {
@@ -1051,14 +1049,10 @@ func (h *httpHandler) handleOsobePickerSelect() gin.HandlerFunc {
 			return
 		}
 
-		name := strings.TrimSpace(strings.Join([]string{
+		label := strings.TrimSpace(strings.Join([]string{
 			strings.TrimSpace(person.FirstName),
 			strings.TrimSpace(person.LastName),
 		}, " "))
-		label := name
-		if person.Role != "" {
-			label = label + " (" + person.Role + ")"
-		}
 
 		payload := map[string]interface{}{
 			"person-selected": map[string]interface{}{

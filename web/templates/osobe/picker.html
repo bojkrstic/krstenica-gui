@@ -1,5 +1,5 @@
 {{ define "osobe/picker.html" }}
-<dialog class="modal" data-remove-on-close data-modal-type="picker">
+<dialog open class="modal" data-remove-on-close data-modal-type="picker">
     <article>
         <header>
             <h2>Odaberi osobu</h2>
@@ -13,14 +13,13 @@
                 <input type="hidden" name="field" value="{{ .Field }}">
                 <input type="hidden" name="page_number" value="1">
                 <input type="hidden" name="page_size" value="10">
-                <input type="hidden" name="status" value="active">
                 <input type="search" name="last_name" placeholder="Trazi po prezimenu" aria-label="Trazi po prezimenu">
                 <button type="submit" class="secondary">Pretrazi</button>
             </form>
         </section>
         <section>
             <div id="osobe-picker-table"
-                 hx-get="/ui/osobe/picker/table?field={{ .Field }}&status=active"
+                 hx-get="/ui/osobe/picker/table?field={{ .Field }}"
                  hx-trigger="load"
                  hx-target="this"
                  hx-swap="outerHTML">
