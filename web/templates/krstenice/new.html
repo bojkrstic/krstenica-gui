@@ -10,7 +10,7 @@
             hx-swap="none"
             hx-include="closest form"
             hx-encoding="json"
-            hx-on::after-request="if(event.detail.successful){if(window.refreshKrsteniceTable){window.refreshKrsteniceTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
+            hx-on::after-request="if(event.target!==this){return;}if(event.detail.successful){if(window.refreshKrsteniceTable){window.refreshKrsteniceTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
             data-json-form
         >
             <section>
@@ -121,6 +121,7 @@
                                 Odaberi
                             </button>
                         </div>
+                        <p class="field-comment" data-comment-field="parent_id"></p>
                     </label>
                     <label>Kum ID
                         <input type="number" name="godfather_id" min="1">

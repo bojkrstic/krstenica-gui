@@ -111,6 +111,12 @@
             justify-content: flex-end;
             gap: 0.5rem;
         }
+        .field-comment {
+            font-size: 0.8rem;
+            color: #64748b;
+            min-height: 1rem;
+            margin-top: 0.25rem;
+        }
     </style>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 </head>
@@ -237,7 +243,22 @@
 
             const displayInput = document.querySelector("[data-display-field='" + detail.field + "']");
             if (displayInput) {
-                displayInput.value = detail.label || "";
+                const displayValue = detail.label || "";
+                if (!displayInput.dataset.originalPlaceholder) {
+                    displayInput.dataset.originalPlaceholder = displayInput.getAttribute('placeholder') || '';
+                }
+                displayInput.value = displayValue;
+                displayInput.setAttribute('value', displayValue);
+                if (displayValue) {
+                    displayInput.setAttribute('placeholder', '');
+                } else {
+                    displayInput.setAttribute('placeholder', displayInput.dataset.originalPlaceholder);
+                }
+            }
+
+            const commentElement = document.querySelector("[data-comment-field='" + detail.field + "']");
+            if (commentElement) {
+                commentElement.textContent = detail.label || "";
             }
         });
 
