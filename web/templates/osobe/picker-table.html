@@ -24,10 +24,28 @@
                             type="button"
                             hx-get="/ui/osobe/picker/select/{{ .ID }}?field={{ $field }}"
                             hx-target="body"
-                            hx-swap="none">
+                            hx-swap="none" data-close-dialog>
                         Izaberi
                     </button>
                 </td>
+                <script>
+                    document.body.addEventListener("htmx:beforeRequest", function(evt) {
+                    const btn = evt.detail.elt;
+
+                    // proveri da li je kliknuto baš na "Izaberi" dugme iz pickera
+                    if (btn.matches("button[hx-get*='/ui/osobe/picker/select/']")) {
+
+                        // nađi red (tr) u kome se nalazi dugme
+                        const row = btn.closest("tr");
+
+                        // iz ćelija (td) reda čitamo ime i prezime
+                        const ime = row.children[0].innerText.trim();
+                        const prezime = row.children[1].innerText.trim();
+
+                        console.log("✅ Odabrano:", ime, prezime);
+                    }
+                    });
+                </script>
             </tr>
             {{ end }}
         </tbody>
