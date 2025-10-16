@@ -1,0 +1,57 @@
+{{ define "svestenici/picker-table.html" }}
+<div id="svestenici-picker-table">
+    {{ if .Data.Items }}
+    {{ $field := .Field }}
+    <table role="grid">
+        <thead>
+            <tr>
+                <th>Ime</th>
+                <th>Prezime</th>
+                <th>Grad</th>
+                <th>Titula</th>
+                <th>Akcija</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .Data.Items }}
+            <tr>
+                <td>{{ .FirstName }}</td>
+                <td>{{ .LastName }}</td>
+                <td>{{ if .City }}{{ .City }}{{ else }}-{{ end }}</td>
+                <td>{{ if .Title }}{{ .Title }}{{ else }}-{{ end }}</td>
+                <td>
+                    <button class="secondary"
+                            type="button"
+                            hx-get="/ui/svestenici/picker/select/{{ .ID }}?field={{ $field }}"
+                            hx-target="body"
+                            hx-swap="none"
+                            data-close-dialog>
+                        Izaberi
+                    </button>
+                </td>
+                <script>
+                    document.body.addEventListener("htmx:beforeRequest", function(evt) {
+                        const btn = evt.detail.elt;
+                        if (!btn || !btn.matches("button[hx-get*='/ui/svestenici/picker/select/']")) {
+                            return;
+                        }
+
+                        const row = btn.closest("tr");
+                        if (!row) {
+                            return;
+                        }
+
+                        const ime = row.children[0].innerText.trim();
+                        const prezime = row.children[1].innerText.trim();
+                        console.log("✅ Odabran svestenik:", ime, prezime);
+                    });
+                </script>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+    {{ else }}
+    <p>Nema rezultata.</p>
+    {{ end }}
+</div>
+{{ end }}

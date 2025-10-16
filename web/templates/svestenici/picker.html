@@ -1,0 +1,34 @@
+{{ define "svestenici/picker.html" }}
+<dialog open class="modal" data-remove-on-close data-modal-type="picker">
+    <article>
+        <header>
+            <h2>Odaberi svestenika</h2>
+        </header>
+        <section>
+            <form class="inline-filter"
+                  hx-get="/ui/svestenici/picker/table"
+                  hx-target="#svestenici-picker-table"
+                  hx-trigger="submit"
+                  hx-swap="outerHTML">
+                <input type="hidden" name="field" value="{{ .Field }}">
+                <input type="hidden" name="page_number" value="1">
+                <input type="hidden" name="page_size" value="10">
+                <input type="search" name="last_name" placeholder="Trazi po delu prezimena" aria-label="Trazi po delu prezimena">
+                <button type="submit" class="secondary">Pretrazi</button>
+            </form>
+        </section>
+        <section>
+            <div id="svestenici-picker-table"
+                 hx-get="/ui/svestenici/picker/table?field={{ .Field }}"
+                 hx-trigger="load"
+                 hx-target="this"
+                 hx-swap="outerHTML">
+                <div class="htmx-indicator">Ucitavanje...</div>
+            </div>
+        </section>
+        <footer>
+            <button type="button" class="secondary" data-close-dialog>Zatvori</button>
+        </footer>
+    </article>
+</dialog>
+{{ end }}
