@@ -71,6 +71,9 @@ func filterToSQL(attr, op string, value []string, fn FilterPropertyValidator) (s
 		return fmt.Sprintf("%s LIKE ?", attribute), stringValueToInterface(val[0] + "%"), nil
 	case "contains":
 		return fmt.Sprintf("%s LIKE ?", attribute), stringValueToInterface("%" + val[0] + "%"), nil
+	case "icontains":
+		lowered := strings.ToLower(val[0])
+		return fmt.Sprintf("LOWER(%s) LIKE ?", attribute), stringValueToInterface("%" + lowered + "%"), nil
 	case "endswith":
 		return fmt.Sprintf("%s LIKE ?", attribute), stringValueToInterface("%" + val[0]), nil
 	case "doesnotcontain":
@@ -113,7 +116,7 @@ func filterValueParser(op string, value []string) ([]string, error) {
 	switch op {
 	case "isnull", "isnotnull", "isempty", "isnotempty":
 		return nil, nil
-	case "eq", "neq", "lt", "lte", "gt", "gte", "startswith", "endswith", "contains", "doesnotcontain":
+	case "eq", "neq", "lt", "lte", "gt", "gte", "startswith", "endswith", "contains", "icontains", "doesnotcontain":
 		if len(value) != 1 {
 			return nil, fmt.Errorf("BAD_PARAM")
 		}

@@ -139,11 +139,20 @@
                         </div>
                         <p class="field-comment" data-comment-field="godfather_id"></p>
                     </label>
-                    <label>Paroh ID
-                        <input type="number" name="paroh_id" min="1">
-                    </label>
-                    <label>Svestenik ID
-                        <input type="number" name="priest_id" min="1">
+                    <label>Svestenik
+                        <input type="hidden" name="priest_id">
+                        <div class="input-with-action">
+                            <input type="text" data-display-field="priest_id" placeholder="Nije odabrano">
+                            <button class="secondary"
+                                type="button"
+                                hx-get="/ui/svestenici/picker?field=priest_id"
+                                hx-target="body"
+                                hx-trigger="click"
+                                hx-swap="beforeend">
+                                Odaberi
+                            </button>
+                        </div>
+                        <p class="field-comment" data-comment-field="priest_id"></p>
                     </label>
                     <label>Roditelji nisu u braku?
                         <select name="is_church_married">
@@ -220,4 +229,37 @@
     }
   });
 </script>
+<script>
+  document.body.addEventListener("click", function(evt) {
+    const btn = evt.target.closest("button[hx-get*='/ui/svestenici/picker/select/']");
+    if (!btn) {
+      return;
+    }
+
+    const url = new URL(btn.getAttribute("hx-get"), window.location.origin);
+    const id = url.pathname.split("/").pop();
+    const field = url.searchParams.get("field");
+
+    const row = btn.closest("tr");
+    const ime = row.children[0].innerText.trim();
+    const prezime = row.children[1].innerText.trim();
+    const fullName = `${ime} ${prezime}`;
+
+    const displayInput = document.querySelector(`[data-display-field="${field}"]`);
+    const hiddenInput = document.querySelector(`[name="${field}"]`);
+
+    if (displayInput) {
+      displayInput.value = fullName;
+    }
+    if (hiddenInput) {
+      hiddenInput.value = id;
+    }
+
+    const picker = document.querySelector("#svestenici-picker-table");
+    if (picker) {
+      picker.remove();
+    }
+  });
+</script>
+
 {{ end }}

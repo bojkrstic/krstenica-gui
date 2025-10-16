@@ -52,6 +52,9 @@ func (h *httpHandler) addGuiRoutes() {
 	h.router.POST("/ui/svestenici", h.handleSvesteniciCreate())
 	h.router.PUT("/ui/svestenici/:id", h.handleSvesteniciUpdate())
 	h.router.DELETE("/ui/svestenici/:id", h.handleSvesteniciDelete())
+	h.router.GET("/ui/svestenici/picker", h.renderSvesteniciPicker())
+	h.router.GET("/ui/svestenici/picker/table", h.renderSvesteniciPickerTable())
+	h.router.GET("/ui/svestenici/picker/select/:id", h.handleSvesteniciPickerSelect())
 
 	h.router.GET("/ui/osobe", h.renderOsobePage())
 	h.router.GET("/ui/osobe/table", h.renderOsobeTable())
@@ -432,6 +435,94 @@ func (h *httpHandler) buildEparhijeTable(values url.Values, basePath string) (*e
 	data.Pagination.NextLink = buildPageLink(basePath, queryCopy, data.Pagination.NextPage, pageSize)
 
 	return data, nil
+}
+
+func (h *httpHandler) renderSvesteniciPicker() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		field := strings.TrimSpace(ctx.Query("field"))
+		if field == "" {
+			field = "priest_id"
+		}
+
+		ctx.HTML(http.StatusOK, "svestenici/picker.html", gin.H{
+			"Field": field,
+		})
+	}
+}
+
+func (h *httpHandler) renderSvesteniciPickerTable() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		field := strings.TrimSpace(ctx.Query("field"))
+		if field == "" {
+			field = "priest_id"
+		}
+
+		values := cloneValues(ctx.Request.URL.Query())
+		values.Del("field")
+
+		data, err := h.buildSvesteniciTable(values, ctx.Request.URL.Path)
+		if err != nil {
+			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+				"Message": err.Error(),
+			})
+			return
+		}
+
+		ctx.HTML(http.StatusOK, "svestenici/picker-table.html", gin.H{
+			"Field": field,
+			"Data":  data,
+		})
+	}
+}
+
+func (h *httpHandler) handleSvesteniciPickerSelect() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+				"Message": "Nepostojeci identifikator svestenika",
+			})
+			return
+		}
+
+		field := strings.TrimSpace(ctx.Query("field"))
+		if field == "" {
+			field = "priest_id"
+		}
+
+		priest, err := h.service.GetPriestByID(context.Background(), int64(id))
+		if err != nil {
+			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+				"Message": err.Error(),
+			})
+			return
+		}
+
+		label := strings.TrimSpace(strings.Join([]string{
+			strings.TrimSpace(priest.FirstName),
+			strings.TrimSpace(priest.LastName),
+		}, " "))
+
+		payload := map[string]interface{}{
+			"person-selected": map[string]interface{}{
+				"field": field,
+				"id":    priest.ID,
+				"label": label,
+			},
+			"close-picker": true,
+		}
+
+		bytes, err := json.Marshal(payload)
+		if err != nil {
+			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+				"Message": err.Error(),
+			})
+			return
+		}
+
+		ctx.Header("HX-Trigger", string(bytes))
+		ctx.Status(http.StatusNoContent)
+	}
 }
 
 func (h *httpHandler) renderHramoviPage() gin.HandlerFunc {
@@ -901,7 +992,13 @@ func (h *httpHandler) buildSvesteniciTable(values url.Values, basePath string) (
 			continue
 		}
 
-		filters.Filters[pkg.FilterKey{Property: key, Operator: "eq"}] = trimmed
+		operator := "eq"
+		switch key {
+		case "last_name", "first_name", "title":
+			operator = "icontains"
+		}
+
+		filters.Filters[pkg.FilterKey{Property: key, Operator: operator}] = trimmed
 	}
 
 	items, total, err := h.service.ListPriests(context.Background(), filters)
@@ -1340,7 +1437,7 @@ func (h *httpHandler) buildOsobeTable(values url.Values, basePath string) (*osob
 		operator := "eq"
 		switch key {
 		case "last_name", "first_name", "brief_name":
-			operator = "contains"
+			operator = "icontains"
 		}
 
 		filters.Filters[pkg.FilterKey{Property: key, Operator: operator}] = trimmed
