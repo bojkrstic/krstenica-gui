@@ -123,41 +123,23 @@
                         </div>
                         <p class="field-comment" data-comment-field="parent_id"></p>
                     </label>
-                   
-                    <label>Kum ID
-                        <input type="number" name="godfather_id" min="1">
+
+                    <label>Kum
+                        <input type="hidden" name="godfather_id">
+                        <div class="input-with-action">
+                            <input type="text" data-display-field="godfather_id" placeholder="Nije odabrano">
+                            <button class="secondary"
+                                type="button"
+                                hx-get="/ui/osobe/picker?field=godfather_id"
+                                hx-target="body"
+                                hx-trigger="click"
+                                hx-swap="beforeend">
+                                Odaberi
+                            </button>
+                        </div>
+                        <p class="field-comment" data-comment-field="godfather_id"></p>
                     </label>
-                    <label>Paroh ID<script>
-  document.body.addEventListener("click", function(evt) {
-    const btn = evt.target.closest("button[hx-get*='/ui/osobe/picker/select/']");
-    if (!btn) return; // ako nije "Izaberi" dugme, preskoči
-
-    // ✅ Izvuci ID i field iz hx-get
-    const url = new URL(btn.getAttribute("hx-get"), window.location.origin);
-    const id = url.pathname.split("/").pop(); // /select/42 → "42"
-    const field = url.searchParams.get("field"); // npr. parent_id
-
-    // ✅ Nađi red (tr) u kome je kliknuto dugme
-    const row = btn.closest("tr");
-    const ime = row.children[0].innerText.trim();
-    const prezime = row.children[1].innerText.trim();
-    const fullName = `${ime} ${prezime}`;
-
-    console.log("✅ Odabrano:", fullName, "(ID:", id + ")", "Field:", field);
-
-    // ✅ Popuni polja u glavnoj formi
-    const displayInput = document.querySelector(`[data-display-field="${field}"]`);
-    const hiddenInput = document.querySelector(`[name="${field}"]`);
-
-    if (displayInput) displayInput.value = fullName;
-    if (hiddenInput) hiddenInput.value = id;
-
-    // ✅ Zatvori picker (izbriši ga sa stranice)
-    const picker = document.querySelector("#osobe-picker-table");
-    if (picker) picker.remove();
-  });
-</script>
-
+                    <label>Paroh ID
                         <input type="number" name="paroh_id" min="1">
                     </label>
                     <label>Svestenik ID
@@ -206,4 +188,36 @@
         </form>
     </article>
 </dialog>
+<script>
+  document.body.addEventListener("click", function(evt) {
+    const btn = evt.target.closest("button[hx-get*='/ui/osobe/picker/select/']");
+    if (!btn) {
+      return;
+    }
+
+    const url = new URL(btn.getAttribute("hx-get"), window.location.origin);
+    const id = url.pathname.split("/").pop();
+    const field = url.searchParams.get("field");
+
+    const row = btn.closest("tr");
+    const ime = row.children[0].innerText.trim();
+    const prezime = row.children[1].innerText.trim();
+    const fullName = `${ime} ${prezime}`;
+
+    const displayInput = document.querySelector(`[data-display-field="${field}"]`);
+    const hiddenInput = document.querySelector(`[name="${field}"]`);
+
+    if (displayInput) {
+      displayInput.value = fullName;
+    }
+    if (hiddenInput) {
+      hiddenInput.value = id;
+    }
+
+    const picker = document.querySelector("#osobe-picker-table");
+    if (picker) {
+      picker.remove();
+    }
+  });
+</script>
 {{ end }}

@@ -1337,7 +1337,13 @@ func (h *httpHandler) buildOsobeTable(values url.Values, basePath string) (*osob
 			continue
 		}
 
-		filters.Filters[pkg.FilterKey{Property: key, Operator: "eq"}] = trimmed
+		operator := "eq"
+		switch key {
+		case "last_name", "first_name", "brief_name":
+			operator = "contains"
+		}
+
+		filters.Filters[pkg.FilterKey{Property: key, Operator: operator}] = trimmed
 	}
 
 	items, total, err := h.service.ListPersons(context.Background(), filters)
