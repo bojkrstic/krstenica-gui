@@ -5,6 +5,7 @@
             <h2>Nova krstenica</h2>
         </header>
         <form
+            id="krstenica-form"
             hx-post="/api/v1/adminv2/krstenice"
             hx-target="#krstenice-table"
             hx-swap="none"
@@ -191,75 +192,77 @@
             </section>
 
             <footer>
-                <button type="submit" class="primary">Sacuvaj</button>
+                <button type="submit" class="primary">Sacuvaj Sve</button>
                 <button type="button" class="secondary" data-close-dialog>Odustani</button>
             </footer>
         </form>
     </article>
 </dialog>
 <script>
-  document.body.addEventListener("click", function(evt) {
-    const btn = evt.target.closest("button[hx-get*='/ui/osobe/picker/select/']");
-    if (!btn) {
+  (function () {
+    const pickerButtonSelector = "button[hx-get*='/picker/select/']";
+
+    document.body.addEventListener("click", function (evt) {
+      const btn = evt.target.closest(pickerButtonSelector);
+      if (!btn) {
+        return;
+      }
+
+      const hxGet = btn.getAttribute("hx-get");
+      if (!hxGet) {
+        return;
+      }
+
+      const url = new URL(hxGet, window.location.origin);
+      const id = url.pathname.split("/").pop();
+      const field = url.searchParams.get("field");
+      if (!field) {
+        return;
+      }
+
+      const row = btn.closest("tr");
+      const cells = row ? row.children : [];
+      const ime = cells[0] ? cells[0].innerText.trim() : "";
+      const prezime = cells[1] ? cells[1].innerText.trim() : "";
+      const fullName = `${ime} ${prezime}`.trim();
+
+      const displayInput = document.querySelector(`[data-display-field="${field}"]`);
+      const hiddenInput = document.querySelector(`[name="${field}"]`);
+
+      if (displayInput) {
+        displayInput.value = fullName;
+      }
+      if (hiddenInput) {
+        hiddenInput.value = id;
+      }
+
+      const pickerDialog = btn.closest("dialog[data-modal-type='picker']");
+      if (pickerDialog) {
+        if (typeof pickerDialog.close === "function") {
+          pickerDialog.close();
+        }
+        pickerDialog.remove();
+      }
+    });
+
+    const form = document.getElementById("krstenica-form");
+    if (!form) {
       return;
     }
 
-    const url = new URL(btn.getAttribute("hx-get"), window.location.origin);
-    const id = url.pathname.split("/").pop();
-    const field = url.searchParams.get("field");
+    form.addEventListener("htmx:configRequest", function (event) {
+      if (event.target !== form) {
+        return;
+      }
 
-    const row = btn.closest("tr");
-    const ime = row.children[0].innerText.trim();
-    const prezime = row.children[1].innerText.trim();
-    const fullName = `${ime} ${prezime}`;
-
-    const displayInput = document.querySelector(`[data-display-field="${field}"]`);
-    const hiddenInput = document.querySelector(`[name="${field}"]`);
-
-    if (displayInput) {
-      displayInput.value = fullName;
-    }
-    if (hiddenInput) {
-      hiddenInput.value = id;
-    }
-
-    const picker = document.querySelector("#osobe-picker-table");
-    if (picker) {
-      picker.remove();
-    }
-  });
-</script>
-<script>
-  document.body.addEventListener("click", function(evt) {
-    const btn = evt.target.closest("button[hx-get*='/ui/svestenici/picker/select/']");
-    if (!btn) {
-      return;
-    }
-
-    const url = new URL(btn.getAttribute("hx-get"), window.location.origin);
-    const id = url.pathname.split("/").pop();
-    const field = url.searchParams.get("field");
-
-    const row = btn.closest("tr");
-    const ime = row.children[0].innerText.trim();
-    const prezime = row.children[1].innerText.trim();
-    const fullName = `${ime} ${prezime}`;
-
-    const displayInput = document.querySelector(`[data-display-field="${field}"]`);
-    const hiddenInput = document.querySelector(`[name="${field}"]`);
-
-    if (displayInput) {
-      displayInput.value = fullName;
-    }
-    if (hiddenInput) {
-      hiddenInput.value = id;
-    }
-
-    const picker = document.querySelector("#svestenici-picker-table");
-    if (picker) {
-      picker.remove();
-    }
-  });
+      try {
+        const payloadCopy = JSON.parse(JSON.stringify(event.detail.parameters || {}));
+        console.log("[Nova krstenica] payload:", payloadCopy);
+      } catch (err) {
+        console.warn("[Nova krstenica] Failed to log payload", err, event.detail.parameters);
+      }
+    });
+  })();
 </script>
 
 {{ end }}
