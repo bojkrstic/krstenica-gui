@@ -55,62 +55,62 @@ type Krstenica struct {
 }
 
 type KrstenicaCreateReq struct {
-	Book                   string    `json:"book"`
-	Page                   int64     `json:"page"`
-	CurrentNumber          int64     `json:"current_number"`
-	EparhijaId             int64     `json:"eparhija_id"`
-	TampleId               int64     `json:"tample_id"`
-	ParentId               int64     `json:"parent_id"`
-	GodfatherId            int64     `json:"godfather_id"`
-	ParohId                int64     `json:"paroh_id"`
-	PriestId               int64     `json:"priest_id"`
-	FirstName              string    `json:"first_name"`
-	LastName               string    `json:"last_name"`
-	Gender                 string    `json:"gender"`
-	City                   string    `json:"city"`
-	Country                string    `json:"country"`
-	BirthDate              time.Time `json:"birth_date"`
-	BirthOrder             int64     `json:"birth_order"`
-	PlaceOfBirthday        string    `json:"place_of_birthday"`
-	MunicipalityOfBirthday string    `json:"municipality_of_birthday"`
-	Baptism                time.Time `json:"baptism"`
-	IsChurchMarried        bool      `json:"is_church_married"`
-	IsTwin                 bool      `json:"is_twin"`
-	HasPhysicalDisability  bool      `json:"has_physical_disability"`
-	Anagrafa               string    `json:"anagrafa"`
-	NumberOfCertificate    int64     `json:"number_of_certificate"`
-	TownOfCertificate      string    `json:"town_of_certificate"`
-	Certificate            time.Time `json:"certificate"`
-	Comment                string    `json:"comment"`
+	Book                   string    `json:"book" form:"book"`
+	Page                   int64     `json:"page" form:"page"`
+	CurrentNumber          int64     `json:"current_number" form:"current_number"`
+	EparhijaId             int64     `json:"eparhija_id" form:"eparhija_id"`
+	TampleId               int64     `json:"tample_id" form:"tample_id"`
+	ParentId               int64     `json:"parent_id" form:"parent_id"`
+	GodfatherId            int64     `json:"godfather_id" form:"godfather_id"`
+	ParohId                *int64    `json:"paroh_id" form:"paroh_id"`
+	PriestId               int64     `json:"priest_id" form:"priest_id"`
+	FirstName              string    `json:"first_name" form:"first_name"`
+	LastName               string    `json:"last_name" form:"last_name"`
+	Gender                 string    `json:"gender" form:"gender"`
+	City                   string    `json:"city" form:"city"`
+	Country                string    `json:"country" form:"country"`
+	BirthDate              time.Time `json:"birth_date" form:"birth_date" time_format:"2006-01-02T15:04:05Z07:00"`
+	BirthOrder             int64     `json:"birth_order" form:"birth_order"`
+	PlaceOfBirthday        string    `json:"place_of_birthday" form:"place_of_birthday"`
+	MunicipalityOfBirthday string    `json:"municipality_of_birthday" form:"municipality_of_birthday"`
+	Baptism                time.Time `json:"baptism" form:"baptism" time_format:"2006-01-02T15:04:05Z07:00"`
+	IsChurchMarried        bool      `json:"is_church_married" form:"is_church_married"`
+	IsTwin                 bool      `json:"is_twin" form:"is_twin"`
+	HasPhysicalDisability  bool      `json:"has_physical_disability" form:"has_physical_disability"`
+	Anagrafa               string    `json:"anagrafa" form:"anagrafa"`
+	NumberOfCertificate    int64     `json:"number_of_certificate" form:"number_of_certificate"`
+	TownOfCertificate      string    `json:"town_of_certificate" form:"town_of_certificate"`
+	Certificate            time.Time `json:"certificate" form:"certificate" time_format:"2006-01-02T15:04:05Z07:00"`
+	Comment                string    `json:"comment" form:"comment"`
 }
 
 type KrstenicaUpdateReq struct {
-	Book                   *string    `json:"book"`
-	Page                   *int64     `json:"page"`
-	CurrentNumber          *int64     `json:"current_number"`
-	EparhijaId             *int64     `json:"eparhija_id"`
-	TampleId               *int64     `json:"tample_id"`
-	ParentId               *int64     `json:"parent_id"`
-	GodfatherId            *int64     `json:"godfather_id"`
-	ParohId                *int64     `json:"paroh_id"`
-	PriestId               *int64     `json:"priest_id"`
-	FirstName              *string    `json:"first_name"`
-	LastName               *string    `json:"last_name"`
-	Gender                 *string    `json:"gender"`
-	City                   *string    `json:"city"`
-	Country                *string    `json:"country"`
-	BirthDate              *time.Time `json:"birth_date"`
-	BirthOrder             *int64     `json:"birth_order"`
-	PlaceOfBirthday        *string    `json:"place_of_birthday"`
-	MunicipalityOfBirthday *string    `json:"municipality_of_birthday"`
-	Baptism                *time.Time `json:"baptism"`
-	IsChurchMarried        *bool      `json:"is_church_married"`
-	IsTwin                 *bool      `json:"is_twin"`
-	HasPhysicalDisability  *bool      `json:"has_physical_disability"`
-	Anagrafa               *string    `json:"anagrafa"`
-	NumberOfCertificate    *int64     `json:"number_of_certificate"`
-	TownOfCertificate      *string    `json:"town_of_certificate"`
-	Certificate            *time.Time `json:"certificate"`
-	Comment                *string    `json:"comment"`
-	Status                 *string    `json:"status"`
+	Book                   *string    `json:"book" form:"book"`
+	Page                   *int64     `json:"page" form:"page"`
+	CurrentNumber          *int64     `json:"current_number" form:"current_number"`
+	EparhijaId             *int64     `json:"eparhija_id" form:"eparhija_id"`
+	TampleId               *int64     `json:"tample_id" form:"tample_id"`
+	ParentId               *int64     `json:"parent_id" form:"parent_id"`
+	GodfatherId            *int64     `json:"godfather_id" form:"godfather_id"`
+	ParohId                *int64     `json:"paroh_id" form:"paroh_id"`
+	PriestId               *int64     `json:"priest_id" form:"priest_id"`
+	FirstName              *string    `json:"first_name" form:"first_name"`
+	LastName               *string    `json:"last_name" form:"last_name"`
+	Gender                 *string    `json:"gender" form:"gender"`
+	City                   *string    `json:"city" form:"city"`
+	Country                *string    `json:"country" form:"country"`
+	BirthDate              *time.Time `json:"birth_date" form:"birth_date" time_format:"2006-01-02T15:04:05Z07:00"`
+	BirthOrder             *int64     `json:"birth_order" form:"birth_order"`
+	PlaceOfBirthday        *string    `json:"place_of_birthday" form:"place_of_birthday"`
+	MunicipalityOfBirthday *string    `json:"municipality_of_birthday" form:"municipality_of_birthday"`
+	Baptism                *time.Time `json:"baptism" form:"baptism" time_format:"2006-01-02T15:04:05Z07:00"`
+	IsChurchMarried        *bool      `json:"is_church_married" form:"is_church_married"`
+	IsTwin                 *bool      `json:"is_twin" form:"is_twin"`
+	HasPhysicalDisability  *bool      `json:"has_physical_disability" form:"has_physical_disability"`
+	Anagrafa               *string    `json:"anagrafa" form:"anagrafa"`
+	NumberOfCertificate    *int64     `json:"number_of_certificate" form:"number_of_certificate"`
+	TownOfCertificate      *string    `json:"town_of_certificate" form:"town_of_certificate"`
+	Certificate            *time.Time `json:"certificate" form:"certificate" time_format:"2006-01-02T15:04:05Z07:00"`
+	Comment                *string    `json:"comment" form:"comment"`
+	Status                 *string    `json:"status" form:"status"`
 }

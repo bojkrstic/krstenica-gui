@@ -89,7 +89,7 @@ type KrstenicaPost struct {
 	//GodfatherOccupation    string       `gorm:"column:godfather_occupation"`
 	//GodfatherCity          string       `gorm:"column:godfather_city"`
 	//GodfatherReligion      string       `gorm:"column:godfather_religion"`
-	ParohId int64 `gorm:"column:paroh_id"`
+	ParohId *int64 `gorm:"column:paroh_id"`
 	//ParohFirstName         string       `gorm:"column:paroh_first_name"`
 	//ParohLastName          string       `gorm:"column:paroh_last_name"`
 	PriestId int64 `gorm:"column:priest_id"`

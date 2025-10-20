@@ -29,15 +29,15 @@ select * from public.eparhije;
 
 ## Gasenje procesa na portu 8011
 ```
-lsof -i :8011
-kill -9 <PID>
+sudo lsof -i :8011
+sudo kill -9 <PID>
 ```
 
 ## Build za produkciono okruzenje
 - Kreiraj Linux binarno izdanje: `make build-linux`
 
 ## Debug workflow
-1. Uveri se da port 8011 nije zauzet (`lsof -i :8011`, pa `kill -9 <PID>` ako je potrebno).
+1. Uveri se da port 8011 nije zauzet (`sudo lsof -i :8011`, pa `kill -9 <PID>` ako je potrebno).
 2. Pokreni servis (`./krstenica-api` ili `go run main.go`).
 3. Pogadjaj API iz Postmana / curl-a, npr. `GET http://localhost:8011/api/v1/adminv2/tamples/1`.
 4. Kroz IDE kontrolisi breakpointe i tok izvrsavanja.
