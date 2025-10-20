@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE krstenice
+    ALTER COLUMN paroh_id DROP NOT NULL;
+
+COMMIT;
