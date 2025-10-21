@@ -1,0 +1,1268 @@
+openapi: 3.0.3
+info:
+  title: Krstenica Admin API
+  version: 1.0.0
+  description: >-
+    Administrative REST API used by the Krstenica GUI for maintaining
+    reference data (temples, priests, parishes, people) and baptism records.
+servers:
+  - url: http://localhost:8011/
+    description: Local development server
+  - url: https://{host}/
+    description: Configurable host from deployment
+    variables:
+      host:
+        default: api.example.com
+        description: Replace with the deployed host name
+tags:
+  - name: Tamples
+    description: Manage church temples
+  - name: Priests
+    description: Manage priests
+  - name: Eparhije
+    description: Manage dioceses
+  - name: Persons
+    description: Manage people acting as parents, godfathers, etc.
+  - name: Krstenice
+    description: Manage baptism records
+  - name: Printing
+    description: Export Krstenica records as Excel files
+paths:
+  /api/v1/adminv2/tamples:
+    get:
+      tags: [Tamples]
+      summary: List temples
+      description: >-
+        Returns paginated temples. In addition to the documented parameters the
+        endpoint accepts arbitrary query parameters that act as filters in the
+        form `field=value` or `operator(field)=value` (e.g. `status=ACTIVE`,
+        `like(name)=Nik`).
+      parameters:
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Paging'
+        - $ref: '#/components/parameters/All'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          description: Paginated list of temples
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TampleListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [Tamples]
+      summary: Create a temple
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TampleCreateRequest'
+      responses:
+        '200':
+          description: Temple created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tample'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/adminv2/tamples/{id}:
+    get:
+      tags: [Tamples]
+      summary: Get a temple
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Temple details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tample'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [Tamples]
+      summary: Update a temple
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TampleUpdateRequest'
+      responses:
+        '200':
+          description: Updated temple
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tample'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags: [Tamples]
+      summary: Delete a temple
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Temple deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/adminv2/priests:
+    get:
+      tags: [Priests]
+      summary: List priests
+      description: Identical filtering behaviour as temple listing.
+      parameters:
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Paging'
+        - $ref: '#/components/parameters/All'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          description: Paginated list of priests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriestListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [Priests]
+      summary: Create a priest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PriestCreateRequest'
+      responses:
+        '200':
+          description: Priest created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/adminv2/priests/{id}:
+    get:
+      tags: [Priests]
+      summary: Get a priest
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Priest details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [Priests]
+      summary: Update a priest
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PriestUpdateRequest'
+      responses:
+        '200':
+          description: Updated priest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags: [Priests]
+      summary: Delete a priest
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Priest deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/adminv2/eparhije:
+    get:
+      tags: [Eparhije]
+      summary: List dioceses
+      description: Identical filtering behaviour as temple listing.
+      parameters:
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Paging'
+        - $ref: '#/components/parameters/All'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          description: Paginated list of dioceses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EparhijeListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [Eparhije]
+      summary: Create a diocese
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EparhijeCreateRequest'
+      responses:
+        '200':
+          description: Diocese created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eparhije'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/adminv2/eparhije/{id}:
+    get:
+      tags: [Eparhije]
+      summary: Get a diocese
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Diocese details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eparhije'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [Eparhije]
+      summary: Update a diocese
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EparhijeUpdateRequest'
+      responses:
+        '200':
+          description: Updated diocese
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Eparhije'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags: [Eparhije]
+      summary: Delete a diocese
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Diocese deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/adminv2/persons:
+    get:
+      tags: [Persons]
+      summary: List persons
+      description: Identical filtering behaviour as temple listing.
+      parameters:
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Paging'
+        - $ref: '#/components/parameters/All'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          description: Paginated list of persons
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [Persons]
+      summary: Create a person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonCreateRequest'
+      responses:
+        '200':
+          description: Person created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/adminv2/persons/{id}:
+    get:
+      tags: [Persons]
+      summary: Get a person
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Person details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [Persons]
+      summary: Update a person
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonUpdateRequest'
+      responses:
+        '200':
+          description: Updated person
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags: [Persons]
+      summary: Delete a person
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Person deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/adminv2/krstenice:
+    get:
+      tags: [Krstenice]
+      summary: List baptism records
+      description: Identical filtering behaviour as temple listing.
+      parameters:
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Paging'
+        - $ref: '#/components/parameters/All'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          description: Paginated list of baptism records
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KrstenicaListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      tags: [Krstenice]
+      summary: Create a baptism record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KrstenicaCreateRequest'
+      responses:
+        '200':
+          description: Baptism record created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Krstenica'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/adminv2/krstenice/{id}:
+    get:
+      tags: [Krstenice]
+      summary: Get a baptism record
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Baptism record details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Krstenica'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags: [Krstenice]
+      summary: Update a baptism record
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KrstenicaUpdateRequest'
+      responses:
+        '200':
+          description: Updated baptism record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Krstenica'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags: [Krstenice]
+      summary: Delete a baptism record
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+      responses:
+        '200':
+          description: Baptism record deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/adminv2/krstenice-print/{id}:
+    get:
+      tags: [Printing]
+      summary: Download a baptism record as Excel
+      description: >-
+        Generates an XLSX file for the requested record. Use the `preview=true`
+        query parameter to render the preview template.
+      parameters:
+        - $ref: '#/components/parameters/IdPathParameter'
+        - $ref: '#/components/parameters/PreviewQuery'
+      responses:
+        '200':
+          description: XLSX file generated
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: Attachment filename (`krstenica.xlsx`)
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  parameters:
+    IdPathParameter:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: Numeric identifier of the resource
+    PageNumber:
+      name: page_number
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: 1-based page index
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 10
+      description: Number of items per page
+    Paging:
+      name: paging
+      in: query
+      schema:
+        type: string
+        enum: [yes, no]
+      description: Turn pagination on/off (defaults to paging yes)
+    All:
+      name: all
+      in: query
+      schema:
+        type: string
+      description: Presence of this flag returns all records ignoring pagination
+    Sort:
+      name: sort
+      in: query
+      schema:
+        type: string
+      description: >-
+        Comma separated sort instructions. Prefix the field with '-' for
+        descending order, e.g. `-created_at,name`.
+    PreviewQuery:
+      name: preview
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [true, false]
+      description: When `true`, uses the preview Excel template
+  responses:
+    BadRequest:
+      description: Invalid request payload or path
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+    Tample:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        status:
+          type: string
+        city:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required: [id, name, status, city, created_at]
+    TampleCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        city:
+          type: string
+      required: [name, city]
+    TampleUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    TampleListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tample'
+        total:
+          type: integer
+      required: [data, total]
+    Priest:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        first_name:
+          type: string
+        last_name:
+          type: string
+        city:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required: [id, first_name, last_name, city, title, status, created_at]
+    PriestCreateRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        city:
+          type: string
+        title:
+          type: string
+      required: [first_name, last_name, city, title]
+    PriestUpdateRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    PriestListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Priest'
+        total:
+          type: integer
+      required: [data, total]
+    Eparhije:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        status:
+          type: string
+        city:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required: [id, name, status, city, created_at]
+    EparhijeCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        city:
+          type: string
+      required: [name, city]
+    EparhijeUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    EparhijeListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Eparhije'
+        total:
+          type: integer
+      required: [data, total]
+    Person:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        first_name:
+          type: string
+        last_name:
+          type: string
+        brief_name:
+          type: string
+        occupation:
+          type: string
+        religion:
+          type: string
+        address:
+          type: string
+        country:
+          type: string
+        role:
+          type: string
+        birth_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+        city:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - first_name
+        - last_name
+        - brief_name
+        - occupation
+        - religion
+        - address
+        - country
+        - role
+        - birth_date
+        - status
+        - city
+        - created_at
+    PersonCreateRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        brief_name:
+          type: string
+        occupation:
+          type: string
+        religion:
+          type: string
+        address:
+          type: string
+        country:
+          type: string
+        role:
+          type: string
+        birth_date:
+          type: string
+          format: date-time
+        city:
+          type: string
+      required:
+        - first_name
+        - last_name
+        - brief_name
+        - occupation
+        - religion
+        - address
+        - country
+        - role
+        - birth_date
+        - city
+    PersonUpdateRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        brief_name:
+          type: string
+          nullable: true
+        occupation:
+          type: string
+          nullable: true
+        religion:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        birth_date:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    PersonListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Person'
+        total:
+          type: integer
+      required: [data, total]
+    Krstenica:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        book:
+          type: string
+        page:
+          type: integer
+          format: int64
+        current_number:
+          type: integer
+          format: int64
+        eparhija_name:
+          type: string
+        tample_name:
+          type: string
+        tample_city:
+          type: string
+        parent_first_name:
+          type: string
+        parent_last_name:
+          type: string
+        parent_occupation:
+          type: string
+        parent_city:
+          type: string
+        parent_religion:
+          type: string
+        godfather_first_name:
+          type: string
+        godfather_last_name:
+          type: string
+        godfather_occupation:
+          type: string
+        godfather_city:
+          type: string
+        godfather_religion:
+          type: string
+        paroh_first_name:
+          type: string
+        paroh_last_name:
+          type: string
+        priest_first_name:
+          type: string
+        priest_last_name:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        gender:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        birth_date:
+          type: string
+          format: date-time
+        birth_order:
+          type: integer
+          format: int64
+        place_of_birthday:
+          type: string
+        municipality_of_birthday:
+          type: string
+        baptism:
+          type: string
+          format: date-time
+        is_church_married:
+          type: boolean
+        is_twin:
+          type: boolean
+        has_physical_disability:
+          type: boolean
+        anagrafa:
+          type: string
+        number_of_certificate:
+          type: integer
+          format: int64
+        town_of_certificate:
+          type: string
+        certificate:
+          type: string
+          format: date-time
+        comment:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - book
+        - page
+        - current_number
+        - eparhija_name
+        - tample_name
+        - tample_city
+        - parent_first_name
+        - parent_last_name
+        - parent_occupation
+        - parent_city
+        - parent_religion
+        - godfather_first_name
+        - godfather_last_name
+        - godfather_occupation
+        - godfather_city
+        - godfather_religion
+        - paroh_first_name
+        - paroh_last_name
+        - priest_first_name
+        - priest_last_name
+        - first_name
+        - last_name
+        - gender
+        - city
+        - country
+        - birth_date
+        - birth_order
+        - place_of_birthday
+        - municipality_of_birthday
+        - baptism
+        - is_church_married
+        - is_twin
+        - has_physical_disability
+        - anagrafa
+        - number_of_certificate
+        - town_of_certificate
+        - certificate
+        - comment
+        - status
+        - created_at
+    KrstenicaCreateRequest:
+      type: object
+      properties:
+        book:
+          type: string
+        page:
+          type: integer
+          format: int64
+        current_number:
+          type: integer
+          format: int64
+        eparhija_id:
+          type: integer
+          format: int64
+        tample_id:
+          type: integer
+          format: int64
+        parent_id:
+          type: integer
+          format: int64
+        godfather_id:
+          type: integer
+          format: int64
+        paroh_id:
+          type: integer
+          format: int64
+          nullable: true
+        priest_id:
+          type: integer
+          format: int64
+        first_name:
+          type: string
+        last_name:
+          type: string
+        gender:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        birth_date:
+          type: string
+          format: date-time
+        birth_order:
+          type: integer
+          format: int64
+        place_of_birthday:
+          type: string
+        municipality_of_birthday:
+          type: string
+        baptism:
+          type: string
+          format: date-time
+        is_church_married:
+          type: boolean
+        is_twin:
+          type: boolean
+        has_physical_disability:
+          type: boolean
+        anagrafa:
+          type: string
+        number_of_certificate:
+          type: integer
+          format: int64
+        town_of_certificate:
+          type: string
+        certificate:
+          type: string
+          format: date-time
+        comment:
+          type: string
+      required:
+        - book
+        - page
+        - current_number
+        - eparhija_id
+        - tample_id
+        - parent_id
+        - godfather_id
+        - priest_id
+        - first_name
+        - last_name
+        - gender
+        - city
+        - country
+        - birth_date
+        - birth_order
+        - place_of_birthday
+        - municipality_of_birthday
+        - baptism
+        - is_church_married
+        - is_twin
+        - has_physical_disability
+        - anagrafa
+        - number_of_certificate
+        - town_of_certificate
+        - certificate
+        - comment
+    KrstenicaUpdateRequest:
+      type: object
+      properties:
+        book:
+          type: string
+          nullable: true
+        page:
+          type: integer
+          format: int64
+          nullable: true
+        current_number:
+          type: integer
+          format: int64
+          nullable: true
+        eparhija_id:
+          type: integer
+          format: int64
+          nullable: true
+        tample_id:
+          type: integer
+          format: int64
+          nullable: true
+        parent_id:
+          type: integer
+          format: int64
+          nullable: true
+        godfather_id:
+          type: integer
+          format: int64
+          nullable: true
+        paroh_id:
+          type: integer
+          format: int64
+          nullable: true
+        priest_id:
+          type: integer
+          format: int64
+          nullable: true
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        gender:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        birth_date:
+          type: string
+          format: date-time
+          nullable: true
+        birth_order:
+          type: integer
+          format: int64
+          nullable: true
+        place_of_birthday:
+          type: string
+          nullable: true
+        municipality_of_birthday:
+          type: string
+          nullable: true
+        baptism:
+          type: string
+          format: date-time
+          nullable: true
+        is_church_married:
+          type: boolean
+          nullable: true
+        is_twin:
+          type: boolean
+          nullable: true
+        has_physical_disability:
+          type: boolean
+          nullable: true
+        anagrafa:
+          type: string
+          nullable: true
+        number_of_certificate:
+          type: integer
+          format: int64
+          nullable: true
+        town_of_certificate:
+          type: string
+          nullable: true
+        certificate:
+          type: string
+          format: date-time
+          nullable: true
+        comment:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    KrstenicaListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Krstenica'
+        total:
+          type: integer
+      required: [data, total]
