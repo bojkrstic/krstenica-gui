@@ -5,6 +5,7 @@ go 1.22.2
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-migrate/migrate/v4 v4.18.1
+	github.com/phpdave11/gofpdf v1.4.3
 	github.com/spf13/viper v1.19.0
 	github.com/xuri/excelize/v2 v2.9.0
 	gorm.io/driver/postgres v1.5.11

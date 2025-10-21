@@ -56,90 +56,96 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		fmt.Println("Template file preview:", invoiceXlsxTemplateFilePreview)
 		fmt.Println("Empty template file:", invoiceXlsxTemplateFile)
 
-		v, ok := filters.Filters[pkg.FilterKey{Property: "preview", Operator: "eq"}]
-		if ok && len(v) > 0 && v[0] == "true" {
+		if v, ok := filters.Filters[pkg.FilterKey{Property: "preview", Operator: "eq"}]; ok && len(v) > 0 && v[0] == "true" {
 			file = invoiceXlsxTemplateFilePreview
 		} else {
 			file = invoiceXlsxTemplateFile
-
 		}
 
-		//copying template
-		from, err := os.Open(file)
-		if err != nil {
-			log.Println("Can't open Excel template file:", err)
-			return
+		outputFormat := "xlsx"
+		if v, ok := filters.Filters[pkg.FilterKey{Property: "format", Operator: "eq"}]; ok && len(v) > 0 {
+			outputFormat = strings.ToLower(strings.TrimSpace(v[0]))
 		}
-		defer from.Close()
+		if outputFormat == "" {
+			outputFormat = "xlsx"
+		}
 
-		// Using a temporary directory
 		targetDir, err := os.MkdirTemp("", "krstenica")
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create temp directory"})
 			return
 		}
-		defer os.RemoveAll(targetDir) // Cleanup after function execution
-		targetFile := filepath.Join(targetDir, "krstenica.xlsx")
+		defer os.RemoveAll(targetDir)
 
-		to, err := os.OpenFile(targetFile, os.O_RDWR|os.O_CREATE, 0666)
-		log.Printf("to %v", to)
-		if err != nil {
-			log.Print(err)
-			return
-		}
-		defer to.Close()
-
-		_, err = io.Copy(to, from)
-		if err != nil {
-			log.Print(err)
-			return
-		}
-
-		// Generate Excel file
 		backgroundImage := resolveFile("krstenica_obrada.jpg")
-		err = fillKrstenicaExcelFile(krstenica, targetFile, backgroundImage)
-		if err != nil {
-			log.Println("Error generating Excel file:", err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate Excel file"})
-			return
+
+		var (
+			targetFile   string
+			contentType  string
+			downloadName string
+		)
+
+		switch outputFormat {
+		case "pdf":
+			targetFile = filepath.Join(targetDir, "krstenica.pdf")
+			if err := fillKrstenicaPDFFile(krstenica, file, targetFile, backgroundImage); err != nil {
+				log.Println("Error generating PDF file:", err)
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to generate PDF file: %v", err)})
+				return
+			}
+			contentType = "application/pdf"
+			downloadName = "krstenica.pdf"
+		default:
+			from, err := os.Open(file)
+			if err != nil {
+				log.Println("Can't open Excel template file:", err)
+				return
+			}
+			defer from.Close()
+
+			targetFile = filepath.Join(targetDir, "krstenica.xlsx")
+			to, err := os.OpenFile(targetFile, os.O_RDWR|os.O_CREATE, 0666)
+			if err != nil {
+				log.Print(err)
+				return
+			}
+			defer to.Close()
+
+			if _, err = io.Copy(to, from); err != nil {
+				log.Print(err)
+				return
+			}
+
+			if err := fillKrstenicaExcelFile(krstenica, targetFile, backgroundImage); err != nil {
+				log.Println("Error generating Excel file:", err)
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to generate Excel file: %v", err)})
+				return
+			}
+
+			contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+			downloadName = "krstenica.xlsx"
 		}
 
-		// // Dodavanje slike
-		// imagePath := "/home/krle/develop/horisen/Krstenica-new/Krstenica-Tane/krstenica/krstenica_obrada.jpg" // Podesite putanju do slike
-		// if _, err := os.Stat(imagePath); os.IsNotExist(err) {
-		// 	log.Println("Slika ne postoji:", imagePath)
-		// 	return
-		// }
-
-		// err = addBackgroundImageToExcel(targetFile, imagePath)
-		// if err != nil {
-		// 	log.Println("Error adding background image:", err)
-		// }
-
-		// Get file information
 		fi, err := os.Stat(targetFile)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "file not found"})
 			return
 		}
 
-		// get the size
 		size := fi.Size()
 
-		ctx.Writer.Header().Add("Content-type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-		ctx.Writer.Header().Add("Content-length", fmt.Sprintf("%d", size))
-		ctx.Writer.Header().Add("Content-Disposition", "attachment; filename=krstenica.xlsx")
-		ctx.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+		ctx.Writer.Header().Set("Content-Type", contentType)
+		ctx.Writer.Header().Set("Content-Length", fmt.Sprintf("%d", size))
+		ctx.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", downloadName))
+		ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		ctx.Writer.Header().Add("Access-Control-Expose-Headers", "Content-Disposition")
 
-		// Read file content
 		b, err := os.ReadFile(targetFile)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read file"})
 			return
 		}
 
-		// Write file content to response
 		n, err := ctx.Writer.Write(b)
 		if err != nil {
 			log.Println("Error while writing file to response:", err)
@@ -154,6 +160,58 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		}
 
 	}
+}
+
+func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
+	values := map[string]string{
+		"C2":  krstenica.Book,
+		"C3":  formatInt(krstenica.Page),
+		"C4":  formatInt(krstenica.CurrentNumber),
+		"C9":  krstenica.EparhijaName,
+		"C11": krstenica.TampleName,
+		"H11": krstenica.TampleCity,
+		"F14": formatDateTime(krstenica.BirthDate),
+		"E17": krstenica.PlaceOfBirthday,
+		"G17": krstenica.MunicipalityOfBirthday,
+		"I17": krstenica.Country,
+		"E20": formatDateTime(krstenica.Baptism),
+		"F24": krstenica.TampleCity,
+		"H24": krstenica.TampleName,
+		"D27": krstenica.FirstName,
+		"F27": krstenica.LastName,
+		"H27": krstenica.Gender,
+		"E30": krstenica.ParentFirstName,
+		"G30": krstenica.ParentLastName,
+		"I30": krstenica.ParentOccupation,
+		"E31": krstenica.ParentCity,
+		"G31": krstenica.ParentReligion,
+		"G35": formatInt(krstenica.BirthOrder),
+		"K35": formatInt(krstenica.NumberOfCertificate),
+		"E38": boolToYesNo(krstenica.IsChurchMarried),
+		"E41": boolToYesNo(krstenica.IsTwin),
+		"G44": boolToYesNo(krstenica.HasPhysicalDisability),
+		"F47": krstenica.PriestFirstName,
+		"H47": krstenica.PriestLastName,
+		"E51": krstenica.GodfatherFirstName,
+		"G51": krstenica.GodfatherLastName,
+		"I51": krstenica.GodfatherOccupation,
+		"E52": krstenica.GodfatherCity,
+		"G52": krstenica.GodfatherReligion,
+		"E55": krstenica.Anagrafa,
+		"C58": krstenica.Comment,
+		"I58": krstenica.TownOfCertificate,
+		"K58": formatDate(krstenica.Certificate),
+		"F60": strings.TrimSpace(fmt.Sprintf("%s %s", krstenica.ParohFirstName, krstenica.ParohLastName)),
+		"C62": krstenica.Status,
+	}
+
+	if !krstenica.Baptism.IsZero() {
+		values["K11"] = fmt.Sprintf("%d", krstenica.Baptism.Year())
+	} else {
+		values["K11"] = ""
+	}
+
+	return values
 }
 
 func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string, backgroundImage string) error {
@@ -199,48 +257,9 @@ func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string, backgro
 		}
 	}
 
-	set("C2", krstenica.Book)
-	set("C3", formatInt(krstenica.Page))
-	set("C4", formatInt(krstenica.CurrentNumber))
-	set("C9", krstenica.EparhijaName)
-	set("C11", krstenica.TampleName)
-	set("H11", krstenica.TampleCity)
-	if !krstenica.Baptism.IsZero() {
-		set("K11", fmt.Sprintf("%d", krstenica.Baptism.Year()))
+	for cell, value := range getKrstenicaCellValues(krstenica) {
+		set(cell, value)
 	}
-	set("F14", formatDateTime(krstenica.BirthDate))
-	set("E17", krstenica.PlaceOfBirthday)
-	set("G17", krstenica.MunicipalityOfBirthday)
-	set("I17", krstenica.Country)
-	set("E20", formatDateTime(krstenica.Baptism))
-	set("F24", krstenica.TampleCity)
-	set("H24", krstenica.TampleName)
-	set("D27", krstenica.FirstName)
-	set("F27", krstenica.LastName)
-	set("H27", krstenica.Gender)
-	set("E30", krstenica.ParentFirstName)
-	set("G30", krstenica.ParentLastName)
-	set("I30", krstenica.ParentOccupation)
-	set("E31", krstenica.ParentCity)
-	set("G31", krstenica.ParentReligion)
-	set("G35", formatInt(krstenica.BirthOrder))
-	set("K35", formatInt(krstenica.NumberOfCertificate))
-	set("E38", boolToYesNo(krstenica.IsChurchMarried))
-	set("E41", boolToYesNo(krstenica.IsTwin))
-	set("G44", boolToYesNo(krstenica.HasPhysicalDisability))
-	set("F47", krstenica.PriestFirstName)
-	set("H47", krstenica.PriestLastName)
-	set("E51", krstenica.GodfatherFirstName)
-	set("G51", krstenica.GodfatherLastName)
-	set("I51", krstenica.GodfatherOccupation)
-	set("E52", krstenica.GodfatherCity)
-	set("G52", krstenica.GodfatherReligion)
-	set("E55", krstenica.Anagrafa)
-	set("C58", krstenica.Comment)
-	set("I58", krstenica.TownOfCertificate)
-	set("K58", formatDate(krstenica.Certificate))
-	set("F60", strings.TrimSpace(fmt.Sprintf("%s %s", krstenica.ParohFirstName, krstenica.ParohLastName)))
-	set("C62", krstenica.Status)
 
 	// Snimanje fajla
 	if err := xlsxEx.SaveAs(targetFile); err != nil {
