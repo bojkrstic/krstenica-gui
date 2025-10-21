@@ -178,27 +178,27 @@ func makeKrstenicaResponse(krstenica *model.Krstenica) *dto.Krstenica {
 		Book:          krstenica.Book,
 		Page:          krstenica.Page,
 		CurrentNumber: krstenica.CurrentNumber,
-		// EparhijaId:             krstenica.EparhijaId,
+		EparhijaId:   int64Ptr(krstenica.EparhijaId),
 		EparhijaName: krstenica.EparhijaName,
-		// TampleId:               krstenica.TampleId,
-		TampleName: krstenica.TampleName,
-		TampleCity: krstenica.TampleCity,
-		// ParentId:               krstenica.ParentId,
+		TampleId:     int64Ptr(krstenica.TampleId),
+		TampleName:   krstenica.TampleName,
+		TampleCity:   krstenica.TampleCity,
+		ParentId:     int64Ptr(krstenica.ParentId),
 		ParentFirstName:  krstenica.ParentFirstName,
 		ParentLastName:   krstenica.ParentLastName,
 		ParentOccupation: krstenica.ParentOccupation,
 		ParentCity:       krstenica.ParentCity,
 		ParentReligion:   krstenica.ParentReligion,
-		// GodfatherId:            krstenica.GodfatherId,
+		GodfatherId:         int64Ptr(krstenica.GodfatherId),
 		GodfatherFirstName:  krstenica.GodfatherFirstName,
 		GodfatherLastName:   krstenica.GodfatherLastName,
 		GodfatherOccupation: krstenica.GodfatherOccupation,
 		GodfatherCity:       krstenica.GodfatherCity,
 		GodfatherReligion:   krstenica.GodfatherReligion,
-		// ParohId:                krstenica.ParohId,
+		ParohId:        int64Ptr(krstenica.ParohId),
 		ParohFirstName: krstenica.ParohFirstName,
 		ParohLastName:  krstenica.ParohLastName,
-		// PriestId:               krstenica.PriestId,
+		PriestId:       int64Ptr(krstenica.PriestId),
 		PriestFirstName:        krstenica.PriestFirstName,
 		PriestLastName:         krstenica.PriestLastName,
 		FirstName:              krstenica.FirstName,
@@ -222,6 +222,14 @@ func makeKrstenicaResponse(krstenica *model.Krstenica) *dto.Krstenica {
 		Status:                 string(krstenica.Status),
 		CreatedAt:              krstenica.CreatedAt.Time,
 	}
+}
+
+func int64Ptr(value sql.NullInt64) *int64 {
+	if !value.Valid {
+		return nil
+	}
+	v := value.Int64
+	return &v
 }
 
 func validateKrstenicaCreaterequest(krstenicaReq *dto.KrstenicaCreateReq) error {

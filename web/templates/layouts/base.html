@@ -236,13 +236,11 @@
                 return;
             }
 
-            const hiddenInput = document.querySelector("input[name='" + detail.field + "']");
-            if (hiddenInput) {
-                hiddenInput.value = detail.id || "";
-            }
+            document.querySelectorAll("input[name='" + detail.field + "']").forEach(function (input) {
+                input.value = detail.id || "";
+            });
 
-            const displayInput = document.querySelector("[data-display-field='" + detail.field + "']");
-            if (displayInput) {
+            document.querySelectorAll("[data-display-field='" + detail.field + "']").forEach(function (displayInput) {
                 const displayValue = detail.label || "";
                 if (!displayInput.dataset.originalPlaceholder) {
                     displayInput.dataset.originalPlaceholder = displayInput.getAttribute('placeholder') || '';
@@ -254,12 +252,11 @@
                 } else {
                     displayInput.setAttribute('placeholder', displayInput.dataset.originalPlaceholder);
                 }
-            }
+            });
 
-            const commentElement = document.querySelector("[data-comment-field='" + detail.field + "']");
-            if (commentElement) {
+            document.querySelectorAll("[data-comment-field='" + detail.field + "']").forEach(function (commentElement) {
                 commentElement.textContent = detail.label || "";
-            }
+            });
         });
 
         document.body.addEventListener("close-picker", function () {

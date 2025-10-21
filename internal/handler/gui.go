@@ -28,6 +28,7 @@ func (h *httpHandler) addGuiRoutes() {
 	h.router.GET("/ui/krstenice", h.renderKrstenicePage())
 	h.router.GET("/ui/krstenice/table", h.renderKrsteniceTable())
 	h.router.GET("/ui/krstenice/new", h.renderKrsteniceNew())
+	h.router.GET("/ui/krstenice/:id/edit", h.renderKrsteniceEdit())
 
 	h.router.GET("/ui/eparhije", h.renderEparhijePage())
 	h.router.GET("/ui/eparhije/table", h.renderEparhijeTable())
@@ -201,6 +202,50 @@ func (h *httpHandler) renderKrsteniceNew() gin.HandlerFunc {
 		ctx.HTML(http.StatusOK, "krstenice/new.html", gin.H{
 			"Eparhije": eparhije,
 			"Hramovi":  hramovi,
+		})
+	}
+}
+
+func (h *httpHandler) renderKrsteniceEdit() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id, err := strconv.Atoi(ctx.Param("id"))
+		if err != nil {
+			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+				"Message": "Nepostojeci identifikator krstenice",
+			})
+			return
+		}
+
+		cx := context.Background()
+
+		krstenica, err := h.service.GetKrstenicaByID(cx, int64(id))
+		if err != nil {
+			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+				"Message": err.Error(),
+			})
+			return
+		}
+
+		eparhije, err := h.listActiveEparhijeForForm(cx)
+		if err != nil {
+			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+				"Message": err.Error(),
+			})
+			return
+		}
+
+		hramovi, err := h.listActiveHramoviForForm(cx)
+		if err != nil {
+			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+				"Message": err.Error(),
+			})
+			return
+		}
+
+		ctx.HTML(http.StatusOK, "krstenice/edit.html", gin.H{
+			"Krstenica": krstenica,
+			"Eparhije":  eparhije,
+			"Hramovi":   hramovi,
 		})
 	}
 }

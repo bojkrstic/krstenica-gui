@@ -9,27 +9,27 @@ type Krstenica struct {
 	Book          string `json:"book"`
 	Page          int64  `json:"page"`
 	CurrentNumber int64  `json:"current_number"`
-	// EparhijaId             int64     `json:"eparhija_id"`
+	EparhijaId   *int64 `json:"eparhija_id"`
 	EparhijaName string `json:"eparhija_name"`
-	// TampleId               int64     `json:"tample_id"`
-	TampleName string `json:"tample_name"`
-	TampleCity string `json:"tample_city"`
-	// ParentId               int64     `json:"parent_id"`
+	TampleId     *int64 `json:"tample_id"`
+	TampleName   string `json:"tample_name"`
+	TampleCity   string `json:"tample_city"`
+	ParentId     *int64 `json:"parent_id"`
 	ParentFirstName  string `json:"parent_first_name"`
 	ParentLastName   string `json:"parent_last_name"`
 	ParentOccupation string `json:"parent_occupation"`
 	ParentCity       string `json:"parent_city"`
 	ParentReligion   string `json:"parent_religion"`
-	// GodfatherId            int64     `json:"godfather_id"`
+	GodfatherId         *int64 `json:"godfather_id"`
 	GodfatherFirstName  string `json:"godfather_first_name"`
 	GodfatherLastName   string `json:"godfather_last_name"`
 	GodfatherOccupation string `json:"godfather_occupation"`
 	GodfatherCity       string `json:"godfather_city"`
 	GodfatherReligion   string `json:"godfather_religion"`
-	// ParohId                int64     `json:"paroh_id"`
+	ParohId        *int64 `json:"paroh_id"`
 	ParohFirstName string `json:"paroh_first_name"`
 	ParohLastName  string `json:"paroh_last_name"`
-	// PriestId               int64     `json:"priest_id"`
+	PriestId       *int64 `json:"priest_id"`
 	PriestFirstName        string    `json:"priest_first_name"`
 	PriestLastName         string    `json:"priest_last_name"`
 	FirstName              string    `json:"first_name"`

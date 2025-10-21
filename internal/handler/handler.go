@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"time"
 
 	"krstenica/internal/config"
@@ -42,6 +43,12 @@ func (h *httpHandler) Init() {
 				return "-"
 			}
 			return t.Format("02.01.2006")
+		},
+		"int64Value": func(v *int64) string {
+			if v == nil {
+				return ""
+			}
+			return strconv.FormatInt(*v, 10)
 		},
 	})
 	templateDir := resolveDir("web/templates")

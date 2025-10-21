@@ -56,8 +56,25 @@
                 <td>{{ .ParohFirstName }} {{ .ParohLastName }}</td>
                 <td>
                     <div class="table-actions">
-                        <button class="secondary outline" data-action="edit" data-id="{{ .ID }}">Izmeni</button>
-                        <button class="contrast outline" data-action="delete" data-id="{{ .ID }}">Obrisi</button>
+                        <button class="secondary outline"
+                            type="button"
+                            hx-get="/ui/krstenice/{{ .ID }}/edit"
+                            hx-target="#dialog-root"
+                            hx-trigger="click"
+                            hx-swap="innerHTML"
+                            hx-include="#krstenice-state, #krstenice-default-state">
+                            Izmeni
+                        </button>
+                        <button class="contrast outline"
+                            type="button"
+                            hx-delete="/api/v1/adminv2/krstenice/{{ .ID }}"
+                            hx-confirm="Da li ste sigurni da zelite da obrisete krstenicu?"
+                            hx-target="#krstenice-table"
+                            hx-include="#krstenice-state, #krstenice-default-state"
+                            hx-swap="none"
+                            hx-on::after-request="if(event.detail.successful && window.refreshKrsteniceTable){window.refreshKrsteniceTable();}">
+                            Obrisi
+                        </button>
                         <a class="secondary" href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true" target="_blank">Stampaj</a>
                     </div>
                 </td>
