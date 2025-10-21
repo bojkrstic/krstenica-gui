@@ -37,9 +37,10 @@ type textOffset struct {
 
 var cellOffsets = map[string]textOffset{
 	"H11": {dx: 1.6, dy: -0.9},
-	"K11": {dx: -3.8, dy: -0.9},
-	"F14": {dx: 0.0, dy: -1.4},
-	"E20": {dx: 0.0, dy: -1.3},
+	"K11": {dx: -8.0, dy: -0.9},
+	"F14": {dx: 0.0, dy: -1.8},
+	"E20": {dx: 0.0, dy: -1.7},
+	"F24": {dx: 2.2, dy: -0.9},
 }
 
 type worksheetLayout struct {
