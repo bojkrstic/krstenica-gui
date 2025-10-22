@@ -13,20 +13,20 @@ services:
     networks:
       - global
     
-  krstenica-svc:
-    image: krstenica-svc
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    ports:
-      - "8011:8011"
-    depends_on:
-      - krstenica_database
-    restart: on-failure
-    networks:
-      - global
-    volumes:
-      - ./config:/app/config
+  # krstenica-svc:
+  #   image: krstenica-svc
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   ports:
+  #     - "8011:8011"
+  #   depends_on:
+  #     - krstenica_database
+  #   restart: on-failure
+  #   networks:
+  #     - global
+  #   volumes:
+  #     - ./config:/app/config
   
 volumes:
   krstenica-db:
