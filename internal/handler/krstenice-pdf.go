@@ -86,6 +86,11 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 	pdf.AddPage()
 	pdf.SetTextColor(0, 0, 0)
 
+	pdf.AddUTF8FontFromBytes("DejaVuSans", "", dejavuSansFont)
+	if err := pdf.Error(); err != nil {
+		return fmt.Errorf("register utf-8 font: %w", err)
+	}
+
 	if backgroundImage != "" {
 		if _, err := os.Stat(backgroundImage); err == nil {
 			if err := drawBackgroundImage(pdf, layout, backgroundImage); err != nil {
@@ -126,7 +131,7 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 			fontSizeScaled = fontSize
 		}
 
-		pdf.SetFont("Helvetica", "", fontSizeScaled)
+		pdf.SetFont("DejaVuSans", "", fontSizeScaled)
 
 		wrapText := style.wrapText || forcedWrapCells[cell]
 		offset := textOffset{dx: defaultTextOffsetXMM, dy: defaultTextOffsetYMM}
