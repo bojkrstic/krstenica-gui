@@ -23,7 +23,6 @@
                 <th>Krstenica #</th>
                 <th>Eparhija</th>
                 <th>Godfather</th>
-                <th>Paroh</th>
                 <th>Akcije</th>
             </tr>
         </thead>
@@ -33,27 +32,22 @@
                 <td>{{ .Book }}</td>
                 <td>{{ .Page }}</td>
                 <td>
-                    <strong>{{ .FirstName }} {{ .LastName }}</strong><br>
-                    <small>{{ .City }}, {{ .Country }}</small>
+                    <strong>{{ .FirstName }} {{ .LastName }}</strong>
                 </td>
                 <td>
-                    {{ if .ParentFirstName }}{{ .ParentFirstName }} {{ .ParentLastName }}{{ else }}-{{ end }}<br>
-                    <small>{{ .ParentCity }}</small>
+                    {{ if .ParentFirstName }}{{ .ParentFirstName }} {{ .ParentLastName }}{{ else }}-{{ end }}
                 </td>
                 <td>
-                    {{ .TampleName }}<br>
-                    <small>{{ .TampleCity }}</small>
+                    {{ .TampleName }}
                 </td>
                 <td>
-                    {{ .PriestFirstName }} {{ .PriestLastName }}<br>
-                    <small>Paroh: {{ .ParohFirstName }} {{ .ParohLastName }}</small>
+                    {{ .PriestFirstName }} {{ .PriestLastName }}
                 </td>
                 <td>{{ formatDate .Baptism }}</td>
                 <td><span class="badge">{{ .Status }}</span></td>
                 <td>{{ .CurrentNumber }}</td>
                 <td>{{ .EparhijaName }}</td>
                 <td>{{ .GodfatherFirstName }} {{ .GodfatherLastName }}</td>
-                <td>{{ .ParohFirstName }} {{ .ParohLastName }}</td>
                 <td>
                     <div class="table-actions">
                         <button class="secondary outline"
