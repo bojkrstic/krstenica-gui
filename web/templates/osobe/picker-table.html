@@ -1,6 +1,14 @@
 {{ define "osobe/picker-table.html" }}
-<div id="osobe-picker-table">
-    {{ if .Data.Items }}
+{{ $data := .Data }}
+{{ $query := "" }}
+{{ if $data }}{{ $query = $data.Pagination.Query }}{{ end }}
+<div id="osobe-picker-table"
+     data-field="{{ .Field }}"
+     hx-get="/ui/osobe/picker/table?field={{ .Field }}{{ if $query }}&{{ $query }}{{ end }}"
+     hx-trigger="refresh-osobe-picker-table from:body"
+     hx-target="this"
+     hx-swap="outerHTML">
+    {{ if and $data $data.Items }}
     {{ $field := .Field }}
     <table role="grid">
         <thead>

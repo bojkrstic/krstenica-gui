@@ -403,6 +403,14 @@
             htmx.ajax('GET', url, targetSelector);
         };
 
+        window.refreshSvesteniciPickerTable = function () {
+            if (typeof htmx === 'undefined') {
+                return;
+            }
+
+            htmx.trigger(document.body, 'refresh-svestenici-picker-table');
+        };
+
         window.refreshOsobeTable = function () {
             if (typeof htmx === 'undefined') {
                 return;
@@ -438,6 +446,14 @@
             var url = '/ui/osobe/table' + (query ? '?' + query : '');
 
             htmx.ajax('GET', url, targetSelector);
+        };
+
+        window.refreshOsobePickerTable = function () {
+            if (typeof htmx === 'undefined') {
+                return;
+            }
+
+            htmx.trigger(document.body, 'refresh-osobe-picker-table');
         };
 
         window.refreshKrsteniceTable = function () {

@@ -836,7 +836,13 @@ func (h *httpHandler) renderSvesteniciTable() gin.HandlerFunc {
 
 func (h *httpHandler) renderSvesteniciNew() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "svestenici/new.html", gin.H{})
+		contextValue := strings.TrimSpace(ctx.Query("context"))
+		field := strings.TrimSpace(ctx.Query("field"))
+
+		ctx.HTML(http.StatusOK, "svestenici/new.html", gin.H{
+			"Context": contextValue,
+			"Field":   field,
+		})
 	}
 }
 
@@ -874,22 +880,28 @@ func (h *httpHandler) handleSvesteniciCreate() gin.HandlerFunc {
 			return
 		}
 
+		contextValue := strings.TrimSpace(ctx.PostForm("context"))
+		pickerField := strings.TrimSpace(ctx.PostForm("picker_field"))
 		firstName := strings.TrimSpace(ctx.PostForm("first_name"))
 		lastName := strings.TrimSpace(ctx.PostForm("last_name"))
 		city := strings.TrimSpace(ctx.PostForm("city"))
 		title := strings.TrimSpace(ctx.PostForm("title"))
 
 		formState := gin.H{
-			"FirstName": firstName,
-			"LastName":  lastName,
-			"City":      city,
-			"Title":     title,
+			"FirstName":   firstName,
+			"LastName":    lastName,
+			"City":        city,
+			"Title":       title,
+			"Context":     contextValue,
+			"PickerField": pickerField,
 		}
 
 		if firstName == "" || lastName == "" {
 			ctx.HTML(http.StatusBadRequest, "svestenici/new.html", gin.H{
-				"Error": "Ime i prezime su obavezni",
-				"Form":  formState,
+				"Error":   "Ime i prezime su obavezni",
+				"Form":    formState,
+				"Context": contextValue,
+				"Field":   pickerField,
 			})
 			return
 		}
@@ -903,8 +915,10 @@ func (h *httpHandler) handleSvesteniciCreate() gin.HandlerFunc {
 		})
 		if err != nil {
 			ctx.HTML(http.StatusBadRequest, "svestenici/new.html", gin.H{
-				"Error": err.Error(),
-				"Form":  formState,
+				"Error":   err.Error(),
+				"Form":    formState,
+				"Context": contextValue,
+				"Field":   pickerField,
 			})
 			return
 		}
@@ -1101,7 +1115,13 @@ func (h *httpHandler) renderOsobeTable() gin.HandlerFunc {
 
 func (h *httpHandler) renderOsobeNew() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "osobe/new.html", gin.H{})
+		contextValue := strings.TrimSpace(ctx.Query("context"))
+		field := strings.TrimSpace(ctx.Query("field"))
+
+		ctx.HTML(http.StatusOK, "osobe/new.html", gin.H{
+			"Context": contextValue,
+			"Field":   field,
+		})
 	}
 }
 
@@ -1227,6 +1247,8 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 			return
 		}
 
+		contextValue := strings.TrimSpace(ctx.PostForm("context"))
+		pickerField := strings.TrimSpace(ctx.PostForm("picker_field"))
 		firstName := strings.TrimSpace(ctx.PostForm("first_name"))
 		lastName := strings.TrimSpace(ctx.PostForm("last_name"))
 		briefName := strings.TrimSpace(ctx.PostForm("brief_name"))
@@ -1239,22 +1261,26 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 		birthDateRaw := strings.TrimSpace(ctx.PostForm("birth_date"))
 
 		formState := gin.H{
-			"FirstName":  firstName,
-			"LastName":   lastName,
-			"BriefName":  briefName,
-			"Role":       role,
-			"Occupation": occupation,
-			"Religion":   religion,
-			"Address":    address,
-			"Country":    country,
-			"City":       city,
-			"BirthDate":  birthDateRaw,
+			"FirstName":   firstName,
+			"LastName":    lastName,
+			"BriefName":   briefName,
+			"Role":        role,
+			"Occupation":  occupation,
+			"Religion":    religion,
+			"Address":     address,
+			"Country":     country,
+			"City":        city,
+			"BirthDate":   birthDateRaw,
+			"Context":     contextValue,
+			"PickerField": pickerField,
 		}
 
 		if firstName == "" || lastName == "" || role == "" {
 			ctx.HTML(http.StatusBadRequest, "osobe/new.html", gin.H{
-				"Error": "Ime, prezime i uloga su obavezni",
-				"Form":  formState,
+				"Error":   "Ime, prezime i uloga su obavezni",
+				"Form":    formState,
+				"Context": contextValue,
+				"Field":   pickerField,
 			})
 			return
 		}
@@ -1264,8 +1290,10 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 			parsed, err := time.Parse("2006-01-02", birthDateRaw)
 			if err != nil {
 				ctx.HTML(http.StatusBadRequest, "osobe/new.html", gin.H{
-					"Error": "Neispravan format datuma. Koristite YYYY-MM-DD.",
-					"Form":  formState,
+					"Error":   "Neispravan format datuma. Koristite YYYY-MM-DD.",
+					"Form":    formState,
+					"Context": contextValue,
+					"Field":   pickerField,
 				})
 				return
 			}
@@ -1287,8 +1315,10 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 		})
 		if err != nil {
 			ctx.HTML(http.StatusBadRequest, "osobe/new.html", gin.H{
-				"Error": err.Error(),
-				"Form":  formState,
+				"Error":   err.Error(),
+				"Form":    formState,
+				"Context": contextValue,
+				"Field":   pickerField,
 			})
 			return
 		}

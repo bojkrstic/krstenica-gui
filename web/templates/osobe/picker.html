@@ -16,6 +16,14 @@
                 <input type="search" name="last_name" placeholder="Trazi po delu prezimena" aria-label="Trazi po delu prezimena">
                 <button type="submit" class="secondary">Pretrazi</button>
             </form>
+            <button class="primary"
+                    type="button"
+                    hx-get="/ui/osobe/new?context=picker&field={{ .Field }}"
+                    hx-target="body"
+                    hx-trigger="click"
+                    hx-swap="beforeend">
+                Dodaj novu osobu
+            </button>
         </section>
         <section>
             <div id="osobe-picker-table"

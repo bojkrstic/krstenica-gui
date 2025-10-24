@@ -1,6 +1,14 @@
 {{ define "svestenici/picker-table.html" }}
-<div id="svestenici-picker-table">
-    {{ if .Data.Items }}
+{{ $data := .Data }}
+{{ $query := "" }}
+{{ if $data }}{{ $query = $data.Pagination.Query }}{{ end }}
+<div id="svestenici-picker-table"
+     data-field="{{ .Field }}"
+     hx-get="/ui/svestenici/picker/table?field={{ .Field }}{{ if $query }}&{{ $query }}{{ end }}"
+     hx-trigger="refresh-svestenici-picker-table from:body"
+     hx-target="this"
+     hx-swap="outerHTML">
+    {{ if and $data $data.Items }}
     {{ $field := .Field }}
     <table role="grid">
         <thead>

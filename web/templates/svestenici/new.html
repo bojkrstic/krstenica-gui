@@ -1,16 +1,20 @@
 {{ define "svestenici/new.html" }}
-<dialog open class="modal">
+{{ $context := or .Context (and .Form .Form.Context) }}
+{{ $pickerField := or .Field (and .Form .Form.PickerField) }}
+<dialog open class="modal" id="svestenici-new-dialog">
     <article>
         <header>
             <h2>Novi svestenik</h2>
         </header>
         <form
             hx-post="/ui/svestenici"
-            hx-target="#dialog-root"
-            hx-swap="innerHTML"
+            hx-target="#svestenici-new-dialog"
+            hx-swap="outerHTML"
             hx-include="#svestenici-state, #svestenici-default-state"
-            hx-on::after-request="if(event.detail.successful){if(window.refreshSvesteniciTable){window.refreshSvesteniciTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
+            hx-on::after-request="if(event.detail.successful){if(window.refreshSvesteniciTable){window.refreshSvesteniciTable();}if(window.refreshSvesteniciPickerTable){window.refreshSvesteniciPickerTable();}var dialog=document.getElementById('svestenici-new-dialog');if(dialog){if(typeof dialog.close==='function'){dialog.close();}dialog.remove();}}"
         >
+            <input type="hidden" name="context" value="{{ if $context }}{{ $context }}{{ end }}">
+            <input type="hidden" name="picker_field" value="{{ if $pickerField }}{{ $pickerField }}{{ end }}">
             {{ if .Error }}
             <article class="secondary" style="padding: 0.75rem;">
                 <strong>{{ .Error }}</strong>
