@@ -54,11 +54,14 @@ func (r *repo) ListEparhije(ctx context.Context, filterAndSort *pkg.FilterAndSor
 		orderBy = "t.id"
 	}
 
-	err = r.db.WithContext(ctx).
+	query := r.db.WithContext(ctx).
 		Table("eparhije AS t").
 		Where(where, whereParams...).
-		Order(orderBy).
-		Find(&eparhija).Error
+		Order(orderBy)
+
+	query = applyPagination(query, filterAndSort)
+
+	err = query.Find(&eparhija).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, 0, errorx.ErrEparhijeNotFound

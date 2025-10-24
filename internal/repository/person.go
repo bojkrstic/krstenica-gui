@@ -54,11 +54,14 @@ func (r *repo) ListPersons(ctx context.Context, filterAndSort *pkg.FilterAndSort
 	} else {
 		orderBy = "t.id"
 	}
-	err = r.db.WithContext(ctx).
+	query := r.db.WithContext(ctx).
 		Table("persons AS t").
 		Where(where, whereParams...).
-		Order(orderBy).
-		Find(&person).Error
+		Order(orderBy)
+
+	query = applyPagination(query, filterAndSort)
+
+	err = query.Find(&person).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, 0, errorx.ErrPersonNotFound

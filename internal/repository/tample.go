@@ -76,11 +76,14 @@ func (r *repo) ListTamples(ctx context.Context, filterAndSort *pkg.FilterAndSort
 		orderBy = "t.id"
 	}
 
-	err = r.db.WithContext(ctx).
+	query := r.db.WithContext(ctx).
 		Table("tamples AS t").
 		Where(where, whereParams...).
-		Order(orderBy).
-		Find(&tample).Error
+		Order(orderBy)
+
+	query = applyPagination(query, filterAndSort)
+
+	err = query.Find(&tample).Error
 	if err != nil {
 		return nil, 0, err
 	}

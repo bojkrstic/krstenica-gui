@@ -97,7 +97,7 @@ func (r *repo) ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSo
 	godFatherJoin := "LEFT JOIN persons as fat on fat.id = t.godfather_id AND fat.status != 'deleted'"
 	parohJoin := "LEFT JOIN persons as pa on pa.id = t.paroh_id AND pa.status != 'deleted'"
 	priestJoin := "LEFT JOIN priests as pr on pr.id = t.priest_id AND pr.status != 'deleted'"
-	err = r.db.WithContext(ctx).
+	query := r.db.WithContext(ctx).
 		Table("krstenice AS t").
 		Joins(eparhijaJoin).
 		Joins(tampleJoin).
@@ -123,8 +123,11 @@ func (r *repo) ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSo
 		pa.last_name as paroh_last_name,
 		pr.first_name as priest_first_name,
 		pr.last_name as priest_last_name`).
-		Order(orderBy).
-		Find(&krstenica).Error
+		Order(orderBy)
+
+	query = applyPagination(query, filterAndSort)
+
+	err = query.Find(&krstenica).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, 0, errorx.ErrKrstenicaNotFound

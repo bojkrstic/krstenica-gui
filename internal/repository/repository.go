@@ -2,6 +2,9 @@ package repository
 
 import (
 	"context"
+	"strconv"
+	"strings"
+
 	"krstenica/internal/model"
 	"krstenica/pkg"
 
@@ -45,4 +48,51 @@ func NewRepository(db *gorm.DB) Repo {
 
 func Paginate(db *gorm.DB, dest interface{}, limit int) *gorm.DB {
 	return db.Limit(limit).Offset(0).Find(dest)
+}
+
+const defaultPageSize = 10
+
+func applyPagination(db *gorm.DB, fas *pkg.FilterAndSort) *gorm.DB {
+	if fas == nil || fas.Paging == nil {
+		return db
+	}
+
+	paging := fas.Paging
+	if strings.EqualFold(strings.TrimSpace(paging.All), "yes") {
+		return db
+	}
+	if strings.EqualFold(strings.TrimSpace(paging.Paging), "no") {
+		return db
+	}
+
+	pageSize := parsePositiveInt(paging.PageSize, defaultPageSize)
+	if pageSize <= 0 {
+		return db
+	}
+
+	pageNumber := parsePositiveInt(paging.PageNumber, 1)
+	if pageNumber <= 0 {
+		pageNumber = 1
+	}
+
+	offset := (pageNumber - 1) * pageSize
+	if offset < 0 {
+		offset = 0
+	}
+
+	return db.Limit(pageSize).Offset(offset)
+}
+
+func parsePositiveInt(raw string, fallback int) int {
+	value := strings.TrimSpace(raw)
+	if value == "" {
+		return fallback
+	}
+
+	parsed, err := strconv.Atoi(value)
+	if err != nil || parsed <= 0 {
+		return fallback
+	}
+
+	return parsed
 }
