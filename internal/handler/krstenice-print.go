@@ -170,11 +170,11 @@ func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 		"C9":  krstenica.EparhijaName,
 		"C11": krstenica.TampleName,
 		"H11": krstenica.TampleCity,
-		"F14": formatDateTime(krstenica.BirthDate),
+		"F14": formatDateTimeComma(krstenica.BirthDate),
 		"E17": krstenica.PlaceOfBirthday,
 		"G17": krstenica.MunicipalityOfBirthday,
-		"I17": krstenica.Country,
-		"E20": formatDateTime(krstenica.Baptism),
+		// "I17": krstenica.Country,
+		"E20": formatDateTimeComma(krstenica.Baptism),
 		"F24": krstenica.TampleCity,
 		"H24": krstenica.TampleName,
 		"D27": krstenica.FirstName,
@@ -275,6 +275,13 @@ func formatDateTime(t time.Time) string {
 		return ""
 	}
 	return t.Format("02.01.2006. 15:04")
+}
+
+func formatDateTimeComma(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format("2006, 01, 02, 15:04")
 }
 
 func formatDate(t time.Time) string {

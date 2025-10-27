@@ -115,3 +115,19 @@ git push -u origin main
   Значи: Go template систем прво учита све шablone, затим за сваку страницу покреће layout као базу и убацује конкретан садржај преко block/template
   механизма.
   ``
+## Polja 
+Trenutno E17 nema poseban unos u mapi cellOffsets, pa koristi podrazumevani pomak (dx = 0.0, dy = -0.9). Ako želiš da ga gurneš udesno, dodaj prilagođeni
+  offset u mapu, npr.:
+
+  var cellOffsets = map[string]textOffset{
+      "H11": {dx: 1.6, dy: -0.9},
+      "K11": {dx: -8.0, dy: -0.9},
+      "F14": {dx: 2.0, dy: -0.3},
+      "E20": {dx: 4.0, dy: -0.3},
+      "F24": {dx: 2.2, dy: -0.9},
+      "E17": {dx: 2.0, dy: -0.9}, // ← nov offset
+  }
+
+  – dx је хоризонтални помак у милиметрима (већа вредност = више удесно)
+  – dy је вертикални (негативна вредност помера нагоре, позитивна надоле)
+  ``

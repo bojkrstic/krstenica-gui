@@ -24,6 +24,7 @@ const (
 	defaultFontSizePt    = 10.0
 	defaultTextOffsetXMM = 0.0
 	defaultTextOffsetYMM = -0.9
+	pdfFontScaleFactor   = 4.0 / 3.0
 )
 
 var forcedWrapCells = map[string]bool{
@@ -38,9 +39,11 @@ type textOffset struct {
 var cellOffsets = map[string]textOffset{
 	"H11": {dx: 1.6, dy: -0.9},
 	"K11": {dx: -8.0, dy: -0.9},
-	"F14": {dx: 0.0, dy: -1.8},
-	"E20": {dx: 0.0, dy: -1.7},
-	"F24": {dx: 2.2, dy: -0.9},
+	"F14": {dx: 1.0, dy: -2.0},
+	"E17": {dx: 2.0, dy: -0.9},
+	"E20": {dx: 5.0, dy: 4.0},
+	"F24": {dx: 15.0, dy: -3.9},
+	"H24": {dx: 10.0, dy: -3.9},
 }
 
 type worksheetLayout struct {
@@ -109,6 +112,11 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 	}
 
 	paddingScaled := pdfCellPaddingMM * layout.scale
+	uniformFontSizePt := defaultFontSizePt
+	if refStyle, ok := layout.cellStyles["C9"]; ok && refStyle.fontSize > 0 {
+		uniformFontSizePt = refStyle.fontSize
+	}
+	uniformFontSizePt *= pdfFontScaleFactor
 
 	for _, cell := range cellOrder {
 		value, ok := values[cell]
@@ -122,10 +130,7 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 		}
 
 		style := layout.cellStyles[cell]
-		fontSize := style.fontSize
-		if fontSize <= 0 {
-			fontSize = defaultFontSizePt
-		}
+		fontSize := uniformFontSizePt
 		fontSizeScaled := fontSize * layout.scale
 		if fontSizeScaled < 1 {
 			fontSizeScaled = fontSize
@@ -146,8 +151,9 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 				width = rect.width * layout.scale
 			}
 			lineHeight := rect.height * layout.scale
-			if lineHeight <= 0 {
-				lineHeight = fontSizeScaled * mmPerPoint * 1.2
+			minLineHeight := fontSizeScaled * mmPerPoint * 1.2
+			if lineHeight < minLineHeight {
+				lineHeight = minLineHeight
 			}
 			pdf.SetXY(x, y)
 			pdf.MultiCell(width, lineHeight, value, "", "L", false)
