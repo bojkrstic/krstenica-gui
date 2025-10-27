@@ -57,3 +57,61 @@ git remote add origin <novi_git_url>
 git branch -M main
 git push -u origin main
 ```
+
+## Glavni tok
+
+  - Aplikacija se startuje iz cmd/krstenica/main.go:1: učitava konfiguraciju, pokreće migracije, inicijalizuje bazu i sklapa repository → service → http
+  handler.
+  - HTTP sloj se priprema u internal/handler/handler.go:32: kreira se Gin router, registruje servis statičkih fajlova (/static), dodaju se zajedničke
+  template funkcije i učitavaju svi HTML šabloni iz web/templates.
+  - Rute za GUI su definisane u internal/handler/gui.go:24; ovde svaki URL (/ui/…) mapira na funkcije koje sklapaju podatke i renderuju konkretne šablone.
+  - Interakcija frontenda oslanja se na HTMX (učitan u web/templates/layouts/base.html:7): forme i dugmad šalju asinhro zahteve i dobijaju delimične HTML
+  odgovore koje router vraća.
+
+  Struktura direktorijuma
+
+  - web/templates/layouts/base.html:1 drži glavni “layout” (header, navigacija, <main> blok); sve ostale stranice ga uključuju.
+  - web/templates/<entitet>/*.html sadrži stranice za dashboard, krštenice, eparhije, hramove, svештенike и особе; svaka sekcija ima index, table, new,
+  edit, eventualno picker.
+  - web/templates/partials/error.html:1 je univerzalni isječak za prikaz greške.
+  - web/static/ je predviđen za dodatne CSS/JS fajlove ili slike koje se služe preko /static rute (trenutno prazan).
+  - internal/handler/*.go fajlovi grupisani po resursima (npr. krstenice.go, eparhije.go) obrađuju HTTP zahteve, komuniciraju sa servisnim slojem i
+  prosleđuju podatke šablonima.
+
+  Rad sa šablonima
+
+  - Svaki index.html definše stranicu i prosleđuje koji “content” blok da se ubaci u layout (web/templates/krstenice/index.html:1).
+  - table.html fajlovi renderuju tablice sa paginacijom; odgovori dolaze preko HTMX-a kako bi se osvežio samo deo stranice (web/templates/osobe/
+  table.html:8).
+  - new.html i edit.html su modali (HTML <dialog>) koji hvataju submit preko HTMX-a i posle uspeha šalju događaj za osvežavanje odgovarajuće tabele (web/
+  templates/hramovi/new.html:1, web/templates/hramovi/edit.html:1).
+  - Pickeri za izbor entiteta rade kao ugnježdeni modali: osnovni prikaz (web/templates/osobe/picker.html:1) otvara tabelu (web/templates/osobe/picker-
+  table.html:8) i šalje prilagođene događaje na izbor reda.
+  - Dodatne funkcije (format datuma, konverzija ID vrednosti) se dodaju preko router.SetFuncMap i dostupne su u svim šablonima (internal/handler/
+  handler.go:39).
+
+  Ako želiš da proširiš GUI:
+
+  1. Definiši novu rutu i handler u odgovarajućem internal/handler/*.go.
+  2. Dodaj nove HTML šablone u web/templates/<sekcija>/.
+  3. Po potrebi ubaci stilove ili skripte u web/static/ i referenciraj ih iz layout-a.
+  4. Testiraj interakcije tako što ćeš otvoriti /ui i pratiti HTMX zahteve u mrežnom panelu.
+``
+
+## Osnovni layout je Go HTML šablon definisan u web/templates/layouts/base.html:1. Evo kako se učitava i koristi:
+
+  - При иницијализацији HTTP sloja, у internal/handler/handler.go:35 Gin позива router.LoadHTMLFiles над свим .html фајловима под web/templates. То учитава
+  и региструје и layouts/base.html.
+  - Layout је дефинисан као именовани шаблон: {{ define "layouts/base" }} на врху фајла. Унутар њега су <html>, <head>, <body>, навигација, и блок где се
+  убацује специфичан садржај.
+  - Свака страница која треба овај layout прво га укључи: нpr. web/templates/dashboard/index.html:1-2 позива {{ template "layouts/base" . }}. То каже html/
+  template механизму да покрене базни шаблон и да му проследи текући gin.H контекст.
+  - Унутар layout-а, позиција за садржај је у <main> преко {{ block "content" . }} … {{ end }} (видљиво око web/templates/layouts/base.html:150). Страница
+  која се рендерује дефинише тај блок: нpr. web/templates/dashboard/index.html:5 има {{ define "dashboard/content" }} и тај блок се убацује када хендлер
+  попуни ContentTemplate поље у контексту.
+  - Када рутер одговори на захтев, нпр. renderDashboard у internal/handler/gui.go:54, он враћа ctx.HTML(http.StatusOK, "dashboard/index.html",
+  gin.H{ ... }). Gin/html/template тада изврши dashboard/index.html, што аутоматски позове layout и попуни блок.
+
+  Значи: Go template систем прво учита све шablone, затим за сваку страницу покреће layout као базу и убацује конкретан садржај преко block/template
+  механизма.
+  ``
