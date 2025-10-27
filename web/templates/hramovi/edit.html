@@ -2,7 +2,7 @@
 <dialog open class="modal">
     <article>
         <header>
-            <h2>Izmeni hram</h2>
+            <h2>Измени храм</h2>
         </header>
         <form
             hx-put="/ui/hramovi/{{ .Hram.ID }}"
@@ -18,24 +18,24 @@
             {{ end }}
             <section>
                 <div class="form-grid">
-                    <label>Naziv hrama
+                    <label>Назив храма
                         <input name="name" value="{{ .Hram.Name }}" required>
                     </label>
-                    <label>Grad
+                    <label>Град
                         <input name="city" value="{{ .Hram.City }}">
                     </label>
-                    <label>Status
+                    <label>Статус
                         <select name="status">
-                            <option value="">Odaberi status</option>
-                            <option value="active" {{ if eq .Hram.Status "active" }}selected{{ end }}>Aktivan</option>
-                            <option value="inactive" {{ if eq .Hram.Status "inactive" }}selected{{ end }}>Neaktivan</option>
+                            <option value="">Одабери статус</option>
+                            <option value="active" {{ if eq .Hram.Status "active" }}selected{{ end }}>Активан</option>
+                            <option value="inactive" {{ if eq .Hram.Status "inactive" }}selected{{ end }}>Неактиван</option>
                         </select>
                     </label>
                 </div>
             </section>
             <footer>
-                <button type="submit" class="primary">Sacuvaj</button>
-                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+                <button type="submit" class="primary">Сачувај</button>
+                <button type="button" class="secondary" data-close-dialog>Одустани</button>
             </footer>
         </form>
     </article>

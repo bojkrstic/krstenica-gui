@@ -2,7 +2,7 @@
 <dialog open class="modal">
     <article>
         <header>
-            <h2>Izmeni krstenicu</h2>
+            <h2>Измени крштеницу</h2>
         </header>
         <form
             id="krstenica-edit-form"
@@ -15,197 +15,197 @@
             data-json-form
         >
             <section>
-                <h4>Osnovni podaci</h4>
+                <h4>Основни подаци</h4>
                 <div class="form-grid">
-                    <label>Knjiga
+                    <label>Књига
                         <input name="book" value="{{ .Krstenica.Book }}" required>
                     </label>
-                    <label>Strana knjige
+                    <label>Страна књиге
                         <input type="number" name="page" min="1" value="{{ if gt .Krstenica.Page 0 }}{{ .Krstenica.Page }}{{ end }}" required>
                     </label>
-                    <label>Tekuci broj
+                    <label>Текући број
                         <input type="number" name="current_number" min="1" value="{{ if gt .Krstenica.CurrentNumber 0 }}{{ .Krstenica.CurrentNumber }}{{ end }}" required>
                     </label>
-                    <label>Ime deteta
+                    <label>Име детета
                         <input name="first_name" value="{{ .Krstenica.FirstName }}" required>
                     </label>
-                    <label>Prezime deteta
+                    <label>Презиме детета
                         <input name="last_name" value="{{ .Krstenica.LastName }}" required>
                     </label>
-                    <label>Pol deteta
+                    <label>Пол детета
                         <select name="gender" required>
-                            <option value="">Odaberi</option>
-                            <option value="musko" {{ if eq .Krstenica.Gender "musko" }}selected{{ end }}>Musko</option>
-                            <option value="zensko" {{ if eq .Krstenica.Gender "zensko" }}selected{{ end }}>Zensko</option>
+                            <option value="">Одабери</option>
+                            <option value="musko" {{ if eq .Krstenica.Gender "musko" }}selected{{ end }}>Мушко</option>
+                            <option value="zensko" {{ if eq .Krstenica.Gender "zensko" }}selected{{ end }}>Женско</option>
                         </select>
                     </label>
-                    <label>Grad
+                    <label>Град
                         <input name="city" value="{{ .Krstenica.City }}">
                     </label>
-                    <label>Drzava
+                    <label>Држава
                         <input name="country" value="{{ .Krstenica.Country }}">
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Datumi</h4>
+                <h4>Датуми</h4>
                 <div class="form-grid">
-                    <label>Datum i vreme rodjenja
+                    <label>Датум и време рођења
                         <input type="datetime-local" name="birth_date" value="{{ if not (.Krstenica.BirthDate.IsZero) }}{{ .Krstenica.BirthDate.Format "2006-01-02T15:04" }}{{ end }}">
                     </label>
-                    <label>Datum i vreme krstenja
+                    <label>Датум и време крштења
                         <input type="datetime-local" name="baptism" value="{{ if not (.Krstenica.Baptism.IsZero) }}{{ .Krstenica.Baptism.Format "2006-01-02T15:04" }}{{ end }}">
                     </label>
-                    <label>Rodjenje - redosled
+                    <label>Рођење - редослед
                         <input type="number" name="birth_order" min="1" value="{{ if gt .Krstenica.BirthOrder 0 }}{{ .Krstenica.BirthOrder }}{{ end }}">
                     </label>
-                    <label>Datum izdavanja sertifikata
+                    <label>Датум издавања сертификата
                         <input type="date" name="certificate" value="{{ if not (.Krstenica.Certificate.IsZero) }}{{ .Krstenica.Certificate.Format "2006-01-02" }}{{ end }}">
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Mesto rodjenja</h4>
+                <h4>Место рођења</h4>
                 <div class="form-grid">
-                    <label>Mesto rodjenja
+                    <label>Место рођења
                         <input name="place_of_birthday" value="{{ .Krstenica.PlaceOfBirthday }}">
                     </label>
-                    <label>Opcina rodjenja
+                    <label>Општина рођења
                         <input name="municipality_of_birthday" value="{{ .Krstenica.MunicipalityOfBirthday }}">
                     </label>
-                    <label>Mesto sertifikata
+                    <label>Место сертификата
                         <input name="town_of_certificate" value="{{ .Krstenica.TownOfCertificate }}">
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Eparhija i hram</h4>
+                <h4>Епархија и храм</h4>
                 <div class="form-grid">
-                    <label>Eparhija
+                    <label>Епархија
                         <select name="eparhija_id">
-                            <option value="">Odaberi eparhiju</option>
+                            <option value="">Одабери епархију</option>
                             {{ range .Eparhije }}
                             <option value="{{ .ID }}" {{ if eq (int64Value $.Krstenica.EparhijaId) (printf "%d" .ID) }}selected{{ end }}>{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
                             {{ end }}
                         </select>
                     </label>
-                    <label>Hram
+                    <label>Храм
                         <select name="tample_id">
-                            <option value="">Odaberi hram</option>
+                            <option value="">Одабери храм</option>
                             {{ range .Hramovi }}
                             <option value="{{ .ID }}" {{ if eq (int64Value $.Krstenica.TampleId) (printf "%d" .ID) }}selected{{ end }}>{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
                             {{ end }}
                         </select>
                     </label>
-                    <label>Broj sertifikata
+                    <label>Број сертификата
                         <input type="number" name="number_of_certificate" min="1" value="{{ if gt .Krstenica.NumberOfCertificate 0 }}{{ .Krstenica.NumberOfCertificate }}{{ end }}">
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Roditelji & Kumstvo</h4>
+                <h4>Родитељи и кумство</h4>
                 <div class="form-grid">
                     {{ $parentLabel := printf "%s %s" .Krstenica.ParentFirstName .Krstenica.ParentLastName }}
-                    <label>Roditelj
+                    <label>Родитељ
                         <input type="hidden" name="parent_id" value="{{ int64Value .Krstenica.ParentId }}">
                         <div class="input-with-action">
-                            <input type="text" data-display-field="parent_id" placeholder="Nije odabrano" value="{{ $parentLabel }}">
+                            <input type="text" data-display-field="parent_id" placeholder="Није одабрано" value="{{ $parentLabel }}">
                             <button class="secondary"
                                 type="button"
                                 hx-get="/ui/osobe/picker?field=parent_id"
                                 hx-target="body"
                                 hx-trigger="click"
                                 hx-swap="beforeend">
-                                Odaberi
+                                Одабери
                             </button>
                         </div>
                         <p class="field-comment" data-comment-field="parent_id">{{ $parentLabel }}</p>
                     </label>
 
                     {{ $godfatherLabel := printf "%s %s" .Krstenica.GodfatherFirstName .Krstenica.GodfatherLastName }}
-                    <label>Kum
+                    <label>Кум
                         <input type="hidden" name="godfather_id" value="{{ int64Value .Krstenica.GodfatherId }}">
                         <div class="input-with-action">
-                            <input type="text" data-display-field="godfather_id" placeholder="Nije odabrano" value="{{ $godfatherLabel }}">
+                            <input type="text" data-display-field="godfather_id" placeholder="Није одабрано" value="{{ $godfatherLabel }}">
                             <button class="secondary"
                                 type="button"
                                 hx-get="/ui/osobe/picker?field=godfather_id"
                                 hx-target="body"
                                 hx-trigger="click"
                                 hx-swap="beforeend">
-                                Odaberi
+                                Одабери
                             </button>
                         </div>
                         <p class="field-comment" data-comment-field="godfather_id">{{ $godfatherLabel }}</p>
                     </label>
 
                     {{ $priestLabel := printf "%s %s" .Krstenica.PriestFirstName .Krstenica.PriestLastName }}
-                    <label>Svestenik
+                    <label>Свештеник
                         <input type="hidden" name="priest_id" value="{{ int64Value .Krstenica.PriestId }}">
                         <div class="input-with-action">
-                            <input type="text" data-display-field="priest_id" placeholder="Nije odabrano" value="{{ $priestLabel }}">
+                            <input type="text" data-display-field="priest_id" placeholder="Није одабрано" value="{{ $priestLabel }}">
                             <button class="secondary"
                                 type="button"
                                 hx-get="/ui/svestenici/picker?field=priest_id"
                                 hx-target="body"
                                 hx-trigger="click"
                                 hx-swap="beforeend">
-                                Odaberi
+                                Одабери
                             </button>
                         </div>
                         <p class="field-comment" data-comment-field="priest_id">{{ $priestLabel }}</p>
                     </label>
-                    <label>Roditelji nisu u braku?
+                    <label>Родитељи нису у браку?
                         <select name="is_church_married">
-                            <option value="">Ne poznato</option>
-                            <option value="true" {{ if .Krstenica.IsChurchMarried }}selected{{ end }}>DA</option>
-                            <option value="false" {{ if not .Krstenica.IsChurchMarried }}selected{{ end }}>NE</option>
+                            <option value="">Непознато</option>
+                            <option value="true" {{ if .Krstenica.IsChurchMarried }}selected{{ end }}>ДА</option>
+                            <option value="false" {{ if not .Krstenica.IsChurchMarried }}selected{{ end }}>НЕ</option>
                         </select>
                     </label>
-                    <label>Dete je blizanac?
+                    <label>Дете је близанац?
                         <select name="is_twin">
-                            <option value="">Ne poznato</option>
-                            <option value="true" {{ if .Krstenica.IsTwin }}selected{{ end }}>DA</option>
-                            <option value="false" {{ if not .Krstenica.IsTwin }}selected{{ end }}>NE</option>
+                            <option value="">Непознато</option>
+                            <option value="true" {{ if .Krstenica.IsTwin }}selected{{ end }}>ДА</option>
+                            <option value="false" {{ if not .Krstenica.IsTwin }}selected{{ end }}>НЕ</option>
                         </select>
                     </label>
-                    <label>Fizicki nedostatak?
+                    <label>Физички недостатак?
                         <select name="has_physical_disability">
-                            <option value="">Ne poznato</option>
-                            <option value="true" {{ if .Krstenica.HasPhysicalDisability }}selected{{ end }}>DA</option>
-                            <option value="false" {{ if not .Krstenica.HasPhysicalDisability }}selected{{ end }}>NE</option>
+                            <option value="">Непознато</option>
+                            <option value="true" {{ if .Krstenica.HasPhysicalDisability }}selected{{ end }}>ДА</option>
+                            <option value="false" {{ if not .Krstenica.HasPhysicalDisability }}selected{{ end }}>НЕ</option>
                         </select>
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Ostalo</h4>
+                <h4>Остало</h4>
                 <div class="form-grid">
-                    <label>Strana domovnika / anagraf
+                    <label>Страна домовника / анаграф
                         <input name="anagrafa" value="{{ .Krstenica.Anagrafa }}">
                     </label>
-                    <label>Status
+                    <label>Статус
                         <select name="status">
-                            <option value="">Odaberi status</option>
-                            <option value="active" {{ if eq .Krstenica.Status "active" }}selected{{ end }}>Aktivna</option>
-                            <option value="inactive" {{ if eq .Krstenica.Status "inactive" }}selected{{ end }}>Neaktivna</option>
-                            <option value="deleted" {{ if eq .Krstenica.Status "deleted" }}selected{{ end }}>Obrisana</option>
+                            <option value="">Одабери статус</option>
+                            <option value="active" {{ if eq .Krstenica.Status "active" }}selected{{ end }}>Активна</option>
+                            <option value="inactive" {{ if eq .Krstenica.Status "inactive" }}selected{{ end }}>Неактивна</option>
+                            <option value="deleted" {{ if eq .Krstenica.Status "deleted" }}selected{{ end }}>Обрисана</option>
                         </select>
                     </label>
                 </div>
-                <label>Napomena
+                <label>Напомена
                     <textarea name="comment" rows="3">{{ .Krstenica.Comment }}</textarea>
                 </label>
             </section>
 
             <footer>
-                <button type="submit" class="primary">Sacuvaj promene</button>
-                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+                <button type="submit" class="primary">Сачувај промене</button>
+                <button type="button" class="secondary" data-close-dialog>Одустани</button>
             </footer>
         </form>
     </article>
@@ -269,9 +269,9 @@
 
       try {
         const payloadCopy = JSON.parse(JSON.stringify(event.detail.parameters || {}));
-        console.log("[Izmeni krstenicu] payload:", payloadCopy);
+        console.log("[Измени крштеницу] подаци:", payloadCopy);
       } catch (err) {
-        console.warn("[Izmeni krstenicu] Failed to log payload", err, event.detail.parameters);
+        console.warn("[Измени крштеницу] није успело бележење података", err, event.detail.parameters);
       }
     });
   })();

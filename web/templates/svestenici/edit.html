@@ -2,7 +2,7 @@
 <dialog open class="modal">
     <article>
         <header>
-            <h2>Izmeni svestenika</h2>
+            <h2>Измени свештеника</h2>
         </header>
         <form
             hx-put="/ui/svestenici/{{ .Svestenik.ID }}"
@@ -18,30 +18,30 @@
             {{ end }}
             <section>
                 <div class="form-grid">
-                    <label>Ime
+                    <label>Име
                         <input name="first_name" value="{{ .Svestenik.FirstName }}" required>
                     </label>
-                    <label>Prezime
+                    <label>Презиме
                         <input name="last_name" value="{{ .Svestenik.LastName }}" required>
                     </label>
-                    <label>Grad
+                    <label>Град
                         <input name="city" value="{{ .Svestenik.City }}">
                     </label>
-                    <label>Titula
+                    <label>Титула
                         <input name="title" value="{{ .Svestenik.Title }}">
                     </label>
-                    <label>Status
+                    <label>Статус
                         <select name="status">
-                            <option value="">Odaberi status</option>
-                            <option value="active" {{ if eq .Svestenik.Status "active" }}selected{{ end }}>Aktivan</option>
-                            <option value="inactive" {{ if eq .Svestenik.Status "inactive" }}selected{{ end }}>Neaktivan</option>
+                            <option value="">Одабери статус</option>
+                            <option value="active" {{ if eq .Svestenik.Status "active" }}selected{{ end }}>Активан</option>
+                            <option value="inactive" {{ if eq .Svestenik.Status "inactive" }}selected{{ end }}>Неактиван</option>
                         </select>
                     </label>
                 </div>
             </section>
             <footer>
-                <button type="submit" class="primary">Sacuvaj</button>
-                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+                <button type="submit" class="primary">Сачувај</button>
+                <button type="button" class="secondary" data-close-dialog>Одустани</button>
             </footer>
         </form>
     </article>

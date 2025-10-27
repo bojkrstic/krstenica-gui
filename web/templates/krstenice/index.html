@@ -5,15 +5,15 @@
 {{ define "krstenice/content" }}
 <section class="page-title">
     <div>
-        <h1>Krstenice</h1>
-        <p>Lista evidentiranih krstenja sa brzim pretragama.</p>
+        <h1>Крштенице</h1>
+        <p>Листа евидентираних крштења са брзим претрагама.</p>
     </div>
     <div class="actions">
         <form class="inline-filter" hx-get="/ui/krstenice/table" hx-target="#krstenice-table" hx-trigger="submit" hx-swap="outerHTML">
             <input type="hidden" name="page_number" value="1">
             <input type="hidden" name="page_size" value="10">
-            <input type="search" name="first_name" placeholder="Trazi po imenu" aria-label="Trazi po imenu">
-            <button type="submit" class="secondary">Pretrazi</button>
+            <input type="search" name="first_name" placeholder="Тражи по имену" aria-label="Тражи по имену">
+            <button type="submit" class="secondary">Претражи</button>
         </form>
         <button
             class="primary"
@@ -23,7 +23,7 @@
             hx-swap="innerHTML"
             data-action="create-krstenica"
             type="button"
-        >Nova krstenica</button>
+        >Нова крштеница</button>
     </div>
 </section>
 
@@ -39,7 +39,7 @@
          hx-target="this"
          hx-include="#krstenice-state, #krstenice-default-state"
          hx-swap="outerHTML">
-        <div class="htmx-indicator">Ucitavanje...</div>
+        <div class="htmx-indicator">Учитавање...</div>
     </div>
 </section>
 <div id="dialog-root"></div>

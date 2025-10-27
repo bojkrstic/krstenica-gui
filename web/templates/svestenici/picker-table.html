@@ -13,11 +13,11 @@
     <table role="grid">
         <thead>
             <tr>
-                <th>Ime</th>
-                <th>Prezime</th>
-                <th>Grad</th>
-                <th>Titula</th>
-                <th>Akcija</th>
+                <th>Име</th>
+                <th>Презиме</th>
+                <th>Град</th>
+                <th>Титула</th>
+                <th>Акција</th>
             </tr>
         </thead>
         <tbody>
@@ -34,7 +34,7 @@
                             hx-target="body"
                             hx-swap="none"
                             data-close-dialog>
-                        Izaberi
+                        Изабери
                     </button>
                 </td>
                 <script>
@@ -51,7 +51,7 @@
 
                         const ime = row.children[0].innerText.trim();
                         const prezime = row.children[1].innerText.trim();
-                        console.log("✅ Odabran svestenik:", ime, prezime);
+                        console.log("✅ Одабран свештеник:", ime, prezime);
                     });
                 </script>
             </tr>
@@ -59,7 +59,7 @@
         </tbody>
     </table>
     {{ else }}
-    <p>Nema rezultata.</p>
+    <p>Нема резултата.</p>
     {{ end }}
 </div>
 {{ end }}

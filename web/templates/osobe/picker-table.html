@@ -13,11 +13,11 @@
     <table role="grid">
         <thead>
             <tr>
-                <th>Ime</th>
-                <th>Prezime</th>
-                <th>Uloga</th>
-                <th>Grad</th>
-                <th>Akcija</th>
+                <th>Име</th>
+                <th>Презиме</th>
+                <th>Улога</th>
+                <th>Град</th>
+                <th>Акција</th>
             </tr>
         </thead>
         <tbody>
@@ -25,7 +25,7 @@
             <tr>
                 <td>{{ .FirstName }}</td>
                 <td>{{ .LastName }}</td>
-                <td>{{ .Role }}</td>
+                <td>{{- if eq .Role "mother" -}}Мајка{{- else if eq .Role "father" -}}Отац{{- else if eq .Role "godfather" -}}Кум{{- else if eq .Role "paroh" -}}Парох{{- else -}}-{{- end -}}</td>
                 <td>{{ if .City }}{{ .City }}{{ else }}-{{ end }}</td>
                 <td>
                     <button class="secondary"
@@ -33,7 +33,7 @@
                             hx-get="/ui/osobe/picker/select/{{ .ID }}?field={{ $field }}"
                             hx-target="body"
                             hx-swap="none" data-close-dialog>
-                        Izaberi
+                        Изабери
                     </button>
                 </td>
                 <script>
@@ -50,7 +50,7 @@
                         const ime = row.children[0].innerText.trim();
                         const prezime = row.children[1].innerText.trim();
 
-                        console.log("✅ Odabrano:", ime, prezime);
+                        console.log("✅ Одабрано:", ime, prezime);
                     }
                     });
                 </script>
@@ -59,7 +59,7 @@
         </tbody>
     </table>
     {{ else }}
-    <p>Nema rezultata.</p>
+    <p>Нема резултата.</p>
     {{ end }}
 </div>
 {{ end }}

@@ -4,7 +4,7 @@
 <dialog open class="modal" id="osobe-new-dialog">
     <article>
         <header>
-            <h2>Nova osoba</h2>
+            <h2>Нова особа</h2>
         </header>
         <form
             hx-post="/ui/osobe"
@@ -22,47 +22,47 @@
             {{ end }}
             <section>
                 <div class="form-grid">
-                    <label>Ime
+                    <label>Име
                         <input name="first_name" value="{{ if .Form }}{{ .Form.FirstName }}{{ end }}" required>
                     </label>
-                    <label>Prezime
+                    <label>Презиме
                         <input name="last_name" value="{{ if .Form }}{{ .Form.LastName }}{{ end }}" required>
                     </label>
-                    <label>Skraceno ime
+                    <label>Скраћено име
                         <input name="brief_name" value="{{ if .Form }}{{ .Form.BriefName }}{{ end }}">
                     </label>
-                    <label>Uloga
+                    <label>Улога
                         <select name="role" required>
-                            <option value="">Odaberi ulogu</option>
-                            <option value="mother" {{ if and .Form (eq .Form.Role "mother") }}selected{{ end }}>Majka</option>
-                            <option value="father" {{ if and .Form (eq .Form.Role "father") }}selected{{ end }}>Otac</option>
-                            <option value="godfather" {{ if and .Form (eq .Form.Role "godfather") }}selected{{ end }}>Kum</option>
-                            <option value="paroh" {{ if and .Form (eq .Form.Role "paroh") }}selected{{ end }}>Paroh</option>
+                            <option value="">Одабери улогу</option>
+                            <option value="mother" {{ if and .Form (eq .Form.Role "mother") }}selected{{ end }}>Мајка</option>
+                            <option value="father" {{ if and .Form (eq .Form.Role "father") }}selected{{ end }}>Отац</option>
+                            <option value="godfather" {{ if and .Form (eq .Form.Role "godfather") }}selected{{ end }}>Кум</option>
+                            <option value="paroh" {{ if and .Form (eq .Form.Role "paroh") }}selected{{ end }}>Парох</option>
                         </select>
                     </label>
-                    <label>Zanimanje
+                    <label>Занимање
                         <input name="occupation" value="{{ if .Form }}{{ .Form.Occupation }}{{ end }}">
                     </label>
-                    <label>Vera
+                    <label>Вера
                         <input name="religion" value="{{ if .Form }}{{ .Form.Religion }}{{ end }}">
                     </label>
-                    <label>Adresa
+                    <label>Адреса
                         <input name="address" value="{{ if .Form }}{{ .Form.Address }}{{ end }}">
                     </label>
-                    <label>Drzava
+                    <label>Држава
                         <input name="country" value="{{ if .Form }}{{ .Form.Country }}{{ end }}">
                     </label>
-                    <label>Grad
+                    <label>Град
                         <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
                     </label>
-                    <label>Datum rodjenja
+                    <label>Датум рођења
                         <input type="date" name="birth_date" value="{{ if .Form }}{{ .Form.BirthDate }}{{ end }}">
                     </label>
                 </div>
             </section>
             <footer>
-                <button type="submit" class="primary">Sacuvaj</button>
-                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+                <button type="submit" class="primary">Сачувај</button>
+                <button type="button" class="secondary" data-close-dialog>Одустани</button>
             </footer>
         </form>
     </article>

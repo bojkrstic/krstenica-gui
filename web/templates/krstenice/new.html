@@ -2,7 +2,7 @@
 <dialog open class="modal">
     <article>
         <header>
-            <h2>Nova krstenica</h2>
+            <h2>Нова крштеница</h2>
         </header>
         <form
             id="krstenica-form"
@@ -15,185 +15,185 @@
             data-json-form
         >
             <section>
-                <h4>Osnovni podaci</h4>
+                <h4>Основни подаци</h4>
                 <div class="form-grid">
-                    <label>Knjiga
+                    <label>Књига
                         <input name="book" required>
                     </label>
-                    <label>Strana knjige
+                    <label>Страна књиге
                         <input type="number" name="page" min="1" required>
                     </label>
-                    <label>Tekuci broj
+                    <label>Текући број
                         <input type="number" name="current_number" min="1" required>
                     </label>
-                    <label>Ime deteta
+                    <label>Име детета
                         <input name="first_name" required>
                     </label>
-                    <label>Prezime deteta
+                    <label>Презиме детета
                         <input name="last_name" required>
                     </label>
-                    <label>Pol deteta
+                    <label>Пол детета
                         <select name="gender" required>
-                            <option value="">Odaberi</option>
-                            <option value="musko">Musko</option>
-                            <option value="zensko">Zensko</option>
+                            <option value="">Одабери</option>
+                            <option value="musko">Мушко</option>
+                            <option value="zensko">Женско</option>
                         </select>
                     </label>
-                    <label>Grad
+                    <label>Град
                         <input name="city">
                     </label>
-                    <label>Drzava
+                    <label>Држава
                         <input name="country">
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Datumi</h4>
+                <h4>Датуми</h4>
                 <div class="form-grid">
-                    <label>Datum i vreme rodjenja
+                    <label>Датум и време рођења
                         <input type="datetime-local" name="birth_date">
                     </label>
-                    <label>Datum i vreme krstenja
+                    <label>Датум и време крштења
                         <input type="datetime-local" name="baptism">
                     </label>
-                    <label>Rodjenje - redosled
+                    <label>Рођење - редослед
                         <input type="number" name="birth_order" min="1">
                     </label>
-                    <label>Datum izdavanja sertifikata
+                    <label>Датум издавања сертификата
                         <input type="date" name="certificate">
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Mesto rodjenja</h4>
+                <h4>Место рођења</h4>
                 <div class="form-grid">
-                    <label>Mesto rodjenja
+                    <label>Место рођења
                         <input name="place_of_birthday">
                     </label>
-                    <label>Opcina rodjenja
+                    <label>Општина рођења
                         <input name="municipality_of_birthday">
                     </label>
-                    <label>Mesto sertifikata
+                    <label>Место сертификата
                         <input name="town_of_certificate">
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Eparhija i hram</h4>
+                <h4>Епархија и храм</h4>
                 <div class="form-grid">
-                    <label>Eparhija
+                    <label>Епархија
                         <select name="eparhija_id">
-                            <option value="">Odaberi eparhiju</option>
+                            <option value="">Одабери епархију</option>
                             {{ range .Eparhije }}
                             <option value="{{ .ID }}">{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
                             {{ end }}
                         </select>
                     </label>
-                    <label>Hram
+                    <label>Храм
                         <select name="tample_id">
-                            <option value="">Odaberi hram</option>
+                            <option value="">Одабери храм</option>
                             {{ range .Hramovi }}
                             <option value="{{ .ID }}">{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
                             {{ end }}
                         </select>
                     </label>
-                    <label>Broj sertifikata
+                    <label>Број сертификата
                         <input type="number" name="number_of_certificate" min="1">
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Roditelji & Kumstvo</h4>
+                <h4>Родитељи и кумство</h4>
                 <div class="form-grid">
-                    <label>Roditelj
+                    <label>Родитељ
                         <input type="hidden" name="parent_id">
                         <div class="input-with-action">
-                            <input type="text" data-display-field="parent_id" placeholder="Nije odabrano">
+                            <input type="text" data-display-field="parent_id" placeholder="Није одабрано">
                             <button class="secondary"
                                 type="button"
                                 hx-get="/ui/osobe/picker?field=parent_id"
                                 hx-target="body"
                                 hx-trigger="click"
                                 hx-swap="beforeend">
-                                Odaberi
+                                Одабери
                             </button>
                         </div>
                         <p class="field-comment" data-comment-field="parent_id"></p>
                     </label>
 
-                    <label>Kum
+                    <label>Кум
                         <input type="hidden" name="godfather_id">
                         <div class="input-with-action">
-                            <input type="text" data-display-field="godfather_id" placeholder="Nije odabrano">
+                            <input type="text" data-display-field="godfather_id" placeholder="Није одабрано">
                             <button class="secondary"
                                 type="button"
                                 hx-get="/ui/osobe/picker?field=godfather_id"
                                 hx-target="body"
                                 hx-trigger="click"
                                 hx-swap="beforeend">
-                                Odaberi
+                                Одабери
                             </button>
                         </div>
                         <p class="field-comment" data-comment-field="godfather_id"></p>
                     </label>
-                    <label>Svestenik
+                    <label>Свештеник
                         <input type="hidden" name="priest_id">
                         <div class="input-with-action">
-                            <input type="text" data-display-field="priest_id" placeholder="Nije odabrano">
+                            <input type="text" data-display-field="priest_id" placeholder="Није одабрано">
                             <button class="secondary"
                                 type="button"
                                 hx-get="/ui/svestenici/picker?field=priest_id"
                                 hx-target="body"
                                 hx-trigger="click"
                                 hx-swap="beforeend">
-                                Odaberi
+                                Одабери
                             </button>
                         </div>
                         <p class="field-comment" data-comment-field="priest_id"></p>
                     </label>
-                    <label>Roditelji nisu u braku?
+                    <label>Родитељи нису у браку?
                         <select name="is_church_married">
-                            <option value="">Ne poznato</option>
-                            <option value="true">DA</option>
-                            <option value="false">NE</option>
+                            <option value="">Непознато</option>
+                            <option value="true">ДА</option>
+                            <option value="false">НЕ</option>
                         </select>
                     </label>
-                    <label>Dete je blizanac?
+                    <label>Дете је близанац?
                         <select name="is_twin">
-                            <option value="">Ne poznato</option>
-                            <option value="true">DA</option>
-                            <option value="false">NE</option>
+                            <option value="">Непознато</option>
+                            <option value="true">ДА</option>
+                            <option value="false">НЕ</option>
                         </select>
                     </label>
-                    <label>Fizicki nedostatak?
+                    <label>Физички недостатак?
                         <select name="has_physical_disability">
-                            <option value="">Ne poznato</option>
-                            <option value="true">DA</option>
-                            <option value="false">NE</option>
+                            <option value="">Непознато</option>
+                            <option value="true">ДА</option>
+                            <option value="false">НЕ</option>
                         </select>
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Ostalo</h4>
+                <h4>Остало</h4>
                 <div class="form-grid">
-                    <label>Strana domovnika / anagraf
+                    <label>Страна домовника / анаграф
                         <input name="anagrafa">
                     </label>
                 </div>
-                <label>Napomena
+                <label>Напомена
                     <textarea name="comment" rows="3"></textarea>
                 </label>
             </section>
 
             <footer>
-                <button type="submit" class="primary">Sacuvaj Sve</button>
-                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+                <button type="submit" class="primary">Сачувај све</button>
+                <button type="button" class="secondary" data-close-dialog>Одустани</button>
             </footer>
         </form>
     </article>

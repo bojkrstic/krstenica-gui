@@ -9,17 +9,17 @@
     </form>
 
     {{ if .Items }}
-    <p><strong>Ukupno:</strong> {{ .Total }}</p>
+    <p><strong>Укупно:</strong> {{ .Total }}</p>
     <table role="grid">
         <thead>
             <tr>
-                <th>Ime</th>
-                <th>Prezime</th>
-                <th>Uloga</th>
-                <th>Grad</th>
-                <th>Status</th>
-                <th>Kreirano</th>
-                <th>Akcije</th>
+                <th>Име</th>
+                <th>Презиме</th>
+                <th>Улога</th>
+                <th>Град</th>
+                <th>Статус</th>
+                <th>Креирано</th>
+                <th>Акције</th>
             </tr>
         </thead>
         <tbody>
@@ -28,7 +28,7 @@
                 <td>{{ .FirstName }}</td>
                 <td>{{ .LastName }}</td>
                 <td>
-                    {{- if eq .Role "mother" -}}Majka{{- else if eq .Role "father" -}}Otac{{- else if eq .Role "godfather" -}}Kum{{- else if eq .Role "paroh" -}}Paroh{{- else -}}-{{- end -}}
+                    {{- if eq .Role "mother" -}}Мајка{{- else if eq .Role "father" -}}Отац{{- else if eq .Role "godfather" -}}Кум{{- else if eq .Role "paroh" -}}Парох{{- else -}}-{{- end -}}
                 </td>
                 <td>{{ if .City }}{{ .City }}{{ else }}-{{ end }}</td>
                 <td><span class="badge">{{ .Status }}</span></td>
@@ -42,17 +42,17 @@
                             hx-trigger="click"
                             hx-swap="innerHTML"
                             hx-include="#osobe-state, #osobe-default-state">
-                            Izmeni
+                            Измени
                         </button>
                         <button class="contrast outline"
                             type="button"
                             hx-delete="/ui/osobe/{{ .ID }}"
-                            hx-confirm="Da li ste sigurni da zelite da obrisete osobu?"
+                            hx-confirm="Да ли сте сигурни да желите да обришете особу?"
                             hx-target="#osobe-table"
                             hx-include="#osobe-state, #osobe-default-state"
                             hx-swap="none"
                             hx-on::after-request="if(event.detail.successful && window.refreshOsobeTable){window.refreshOsobeTable();}">
-                            Obrisi
+                            Обриши
                         </button>
                     </div>
                 </td>
@@ -62,27 +62,27 @@
     </table>
     {{ else }}
     <article>
-        <header>Trenutno nema sacuvanih osoba.</header>
-        <p>Dodajte novu osobu kako biste je kasnije povezali sa krstenicom.</p>
+        <header>Тренутно нема сачуваних особа.</header>
+        <p>Додајте нову особу како бисте је касније повезали са крштеницом.</p>
     </article>
     {{ end }}
 
     {{ if gt .Pagination.TotalPages 1 }}
     <footer style="margin-top: 1rem; display:flex; justify-content: space-between; align-items: center;">
-        <span>Strana {{ .Pagination.Page }} od {{ .Pagination.TotalPages }}</span>
+        <span>Страна {{ .Pagination.Page }} од {{ .Pagination.TotalPages }}</span>
         <div class="grid" style="grid-template-columns: repeat(2, auto); gap: 0.5rem;">
             {{ if .Pagination.HasPrev }}
             <button hx-get="{{ .Pagination.PrevLink }}"
                     hx-target="#osobe-table"
                     hx-swap="outerHTML">
-                Prethodna
+                Претходна
             </button>
             {{ end }}
             {{ if .Pagination.HasNext }}
             <button hx-get="{{ .Pagination.NextLink }}"
                     hx-target="#osobe-table"
                     hx-swap="outerHTML">
-                Sledeca
+                Следећа
             </button>
             {{ end }}
         </div>

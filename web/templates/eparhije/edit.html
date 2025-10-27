@@ -2,7 +2,7 @@
 <dialog open class="modal">
     <article>
         <header>
-            <h2>Izmeni eparhiju</h2>
+            <h2>Измени епархију</h2>
         </header>
         <form
             hx-put="/ui/eparhije/{{ .Eparhija.ID }}"
@@ -18,24 +18,24 @@
             {{ end }}
             <section>
                 <div class="form-grid">
-                    <label>Naziv eparhije
+                    <label>Назив епархије
                         <input name="name" value="{{ .Eparhija.Name }}" required>
                     </label>
-                    <label>Grad
+                    <label>Град
                         <input name="city" value="{{ .Eparhija.City }}">
                     </label>
-                    <label>Status
+                    <label>Статус
                         <select name="status">
-                            <option value="">Odaberi status</option>
-                            <option value="active" {{ if eq .Eparhija.Status "active" }}selected{{ end }}>Aktivna</option>
-                            <option value="inactive" {{ if eq .Eparhija.Status "inactive" }}selected{{ end }}>Neaktivna</option>
+                            <option value="">Одабери статус</option>
+                            <option value="active" {{ if eq .Eparhija.Status "active" }}selected{{ end }}>Активна</option>
+                            <option value="inactive" {{ if eq .Eparhija.Status "inactive" }}selected{{ end }}>Неактивна</option>
                         </select>
                     </label>
                 </div>
             </section>
             <footer>
-                <button type="submit" class="primary">Sacuvaj</button>
-                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+                <button type="submit" class="primary">Сачувај</button>
+                <button type="button" class="secondary" data-close-dialog>Одустани</button>
             </footer>
         </form>
     </article>

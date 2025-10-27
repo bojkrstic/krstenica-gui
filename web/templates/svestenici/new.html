@@ -4,7 +4,7 @@
 <dialog open class="modal" id="svestenici-new-dialog">
     <article>
         <header>
-            <h2>Novi svestenik</h2>
+            <h2>Нови свештеник</h2>
         </header>
         <form
             hx-post="/ui/svestenici"
@@ -22,23 +22,23 @@
             {{ end }}
             <section>
                 <div class="form-grid">
-                    <label>Ime
+                    <label>Име
                         <input name="first_name" value="{{ if .Form }}{{ .Form.FirstName }}{{ end }}" required>
                     </label>
-                    <label>Prezime
+                    <label>Презиме
                         <input name="last_name" value="{{ if .Form }}{{ .Form.LastName }}{{ end }}" required>
                     </label>
-                    <label>Grad
+                    <label>Град
                         <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
                     </label>
-                    <label>Titula
+                    <label>Титула
                         <input name="title" value="{{ if .Form }}{{ .Form.Title }}{{ end }}">
                     </label>
                 </div>
             </section>
             <footer>
-                <button type="submit" class="primary">Sacuvaj</button>
-                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+                <button type="submit" class="primary">Сачувај</button>
+                <button type="button" class="secondary" data-close-dialog>Одустани</button>
             </footer>
         </form>
     </article>

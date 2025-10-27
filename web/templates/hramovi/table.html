@@ -9,15 +9,15 @@
     </form>
 
     {{ if .Items }}
-    <p><strong>Ukupno:</strong> {{ .Total }}</p>
+    <p><strong>Укупно:</strong> {{ .Total }}</p>
     <table role="grid">
         <thead>
             <tr>
-                <th>Naziv</th>
-                <th>Grad</th>
-                <th>Status</th>
-                <th>Kreirano</th>
-                <th>Akcije</th>
+                <th>Назив</th>
+                <th>Град</th>
+                <th>Статус</th>
+                <th>Креирано</th>
+                <th>Акције</th>
             </tr>
         </thead>
         <tbody>
@@ -36,17 +36,17 @@
                             hx-trigger="click"
                             hx-swap="innerHTML"
                             hx-include="#hramovi-state, #hramovi-default-state">
-                            Izmeni
+                            Измени
                         </button>
                         <button class="contrast outline"
                             type="button"
                             hx-delete="/ui/hramovi/{{ .ID }}"
-                            hx-confirm="Da li ste sigurni da zelite da obrisete hram?"
+                            hx-confirm="Да ли сте сигурни да желите да обришете храм?"
                             hx-target="#hramovi-table"
                             hx-include="#hramovi-state, #hramovi-default-state"
                             hx-swap="none"
                             hx-on::after-request="if(event.detail.successful && window.refreshHramoviTable){window.refreshHramoviTable();}">
-                            Obrisi
+                            Обриши
                         </button>
                     </div>
                 </td>
@@ -56,27 +56,27 @@
     </table>
     {{ else }}
     <article>
-        <header>Trenutno nema sacuvanih hramova.</header>
-        <p>Dodajte novi hram kako biste zapoceli evidenciju.</p>
+        <header>Тренутно нема сачуваних храмова.</header>
+        <p>Додајте нови храм како бисте започели евиденцију.</p>
     </article>
     {{ end }}
 
     {{ if gt .Pagination.TotalPages 1 }}
     <footer style="margin-top: 1rem; display:flex; justify-content: space-between; align-items: center;">
-        <span>Strana {{ .Pagination.Page }} od {{ .Pagination.TotalPages }}</span>
+        <span>Страна {{ .Pagination.Page }} од {{ .Pagination.TotalPages }}</span>
         <div class="grid" style="grid-template-columns: repeat(2, auto); gap: 0.5rem;">
             {{ if .Pagination.HasPrev }}
             <button hx-get="{{ .Pagination.PrevLink }}"
                     hx-target="#hramovi-table"
                     hx-swap="outerHTML">
-                Prethodna
+                Претходна
             </button>
             {{ end }}
             {{ if .Pagination.HasNext }}
             <button hx-get="{{ .Pagination.NextLink }}"
                     hx-target="#hramovi-table"
                     hx-swap="outerHTML">
-                Sledeca
+                Следећа
             </button>
             {{ end }}
         </div>

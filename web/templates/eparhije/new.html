@@ -2,7 +2,7 @@
 <dialog open class="modal">
     <article>
         <header>
-            <h2>Nova eparhija</h2>
+            <h2>Нова епархија</h2>
         </header>
         <form
             hx-post="/ui/eparhije"
@@ -18,17 +18,17 @@
             {{ end }}
             <section>
                 <div class="form-grid">
-                    <label>Naziv eparhije
+                    <label>Назив епархије
                         <input name="name" value="{{ if .Form }}{{ .Form.Name }}{{ end }}" required>
                     </label>
-                    <label>Grad
+                    <label>Град
                         <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
                     </label>
                 </div>
             </section>
             <footer>
-                <button type="submit" class="primary">Sacuvaj</button>
-                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+                <button type="submit" class="primary">Сачувај</button>
+                <button type="button" class="secondary" data-close-dialog>Одустани</button>
             </footer>
         </form>
     </article>

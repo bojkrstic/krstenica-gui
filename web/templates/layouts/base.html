@@ -1,10 +1,10 @@
 {{ define "layouts/base" }}
 <!DOCTYPE html>
-<html lang="sr">
+<html lang="sr-Cyrl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ if .Title }}{{ .Title }} | Krstenica GUI{{ else }}Krstenica GUI{{ end }}</title>
+    <title>{{ if .Title }}{{ .Title }} | Крштеница GUI{{ else }}Крштеница GUI{{ end }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <style>
         :root {
@@ -135,15 +135,15 @@
         <header>
             <nav>
                 <ul>
-                    <li><strong>Krstenica</strong></li>
+                    <li><strong>Крштеница</strong></li>
                 </ul>
                 <ul>
-                    <li><a href="/ui">Pocetna</a></li>
-                    <li><a href="/ui/krstenice">Krstenice</a></li>
-                    <li><a href="/ui/eparhije">Eparhije</a></li>
-                    <li><a href="/ui/hramovi">Hramovi</a></li>
-                    <li><a href="/ui/svestenici">Svestenici</a></li>
-                    <li><a href="/ui/osobe">Osobe</a></li>
+                    <li><a href="/ui">Почетна</a></li>
+                    <li><a href="/ui/krstenice">Крштенице</a></li>
+                    <li><a href="/ui/eparhije">Епархије</a></li>
+                    <li><a href="/ui/hramovi">Храмови</a></li>
+                    <li><a href="/ui/svestenici">Свештеници</a></li>
+                    <li><a href="/ui/osobe">Особе</a></li>
                 </ul>
             </nav>
         </header>
@@ -162,7 +162,7 @@
                 {{ else if eq .ContentTemplate "osobe/content" }}
                     {{ template "osobe/content" . }}
                 {{ else }}
-                    <p>Stranica nije dostupna.</p>
+                    <p>Страница није доступна.</p>
                 {{ end }}
             {{ end }}
         </main>

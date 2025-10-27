@@ -9,17 +9,17 @@
     </form>
 
     {{ if .Items }}
-    <p><strong>Ukupno:</strong> {{ .Total }}</p>
+    <p><strong>Укупно:</strong> {{ .Total }}</p>
     <table role="grid">
         <thead>
             <tr>
-                <th>Ime</th>
-                <th>Prezime</th>
-                <th>Grad</th>
-                <th>Titula</th>
-                <th>Status</th>
-                <th>Kreirano</th>
-                <th>Akcije</th>
+                <th>Име</th>
+                <th>Презиме</th>
+                <th>Град</th>
+                <th>Титула</th>
+                <th>Статус</th>
+                <th>Креирано</th>
+                <th>Акције</th>
             </tr>
         </thead>
         <tbody>
@@ -40,17 +40,17 @@
                             hx-trigger="click"
                             hx-swap="innerHTML"
                             hx-include="#svestenici-state, #svestenici-default-state">
-                            Izmeni
+                            Измени
                         </button>
                         <button class="contrast outline"
                             type="button"
                             hx-delete="/ui/svestenici/{{ .ID }}"
-                            hx-confirm="Da li ste sigurni da zelite da obrisete svestenika?"
+                            hx-confirm="Да ли сте сигурни да желите да обришете свештеника?"
                             hx-target="#svestenici-table"
                             hx-include="#svestenici-state, #svestenici-default-state"
                             hx-swap="none"
                             hx-on::after-request="if(event.detail.successful && window.refreshSvesteniciTable){window.refreshSvesteniciTable();}">
-                            Obrisi
+                            Обриши
                         </button>
                     </div>
                 </td>
@@ -60,27 +60,27 @@
     </table>
     {{ else }}
     <article>
-        <header>Trenutno nema sacuvanih svestenika.</header>
-        <p>Dodajte novog svestenika kako biste ga mogli povezati sa krstenicama.</p>
+        <header>Тренутно нема сачуваних свештеника.</header>
+        <p>Додајте новог свештеника како бисте га могли повезати са крштеницама.</p>
     </article>
     {{ end }}
 
     {{ if gt .Pagination.TotalPages 1 }}
     <footer style="margin-top: 1rem; display:flex; justify-content: space-between; align-items: center;">
-        <span>Strana {{ .Pagination.Page }} od {{ .Pagination.TotalPages }}</span>
+        <span>Страна {{ .Pagination.Page }} од {{ .Pagination.TotalPages }}</span>
         <div class="grid" style="grid-template-columns: repeat(2, auto); gap: 0.5rem;">
             {{ if .Pagination.HasPrev }}
             <button hx-get="{{ .Pagination.PrevLink }}"
                     hx-target="#svestenici-table"
                     hx-swap="outerHTML">
-                Prethodna
+                Претходна
             </button>
             {{ end }}
             {{ if .Pagination.HasNext }}
             <button hx-get="{{ .Pagination.NextLink }}"
                     hx-target="#svestenici-table"
                     hx-swap="outerHTML">
-                Sledeca
+                Следећа
             </button>
             {{ end }}
         </div>

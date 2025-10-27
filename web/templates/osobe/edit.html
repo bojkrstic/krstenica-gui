@@ -2,7 +2,7 @@
 <dialog open class="modal">
     <article>
         <header>
-            <h2>Izmeni osobu</h2>
+            <h2>Измени особу</h2>
         </header>
         <form
             hx-put="/ui/osobe/{{ .Osoba.ID }}"
@@ -18,54 +18,54 @@
             {{ end }}
             <section>
                 <div class="form-grid">
-                    <label>Ime
+                    <label>Име
                         <input name="first_name" value="{{ .Osoba.FirstName }}" required>
                     </label>
-                    <label>Prezime
+                    <label>Презиме
                         <input name="last_name" value="{{ .Osoba.LastName }}" required>
                     </label>
-                    <label>Skraceno ime
+                    <label>Скраћено име
                         <input name="brief_name" value="{{ .Osoba.BriefName }}">
                     </label>
-                    <label>Uloga
+                    <label>Улога
                         <select name="role" required>
-                            <option value="">Odaberi ulogu</option>
-                            <option value="mother" {{ if eq .Osoba.Role "mother" }}selected{{ end }}>Majka</option>
-                            <option value="father" {{ if eq .Osoba.Role "father" }}selected{{ end }}>Otac</option>
-                            <option value="godfather" {{ if eq .Osoba.Role "godfather" }}selected{{ end }}>Kum</option>
-                            <option value="paroh" {{ if eq .Osoba.Role "paroh" }}selected{{ end }}>Paroh</option>
+                            <option value="">Одабери улогу</option>
+                            <option value="mother" {{ if eq .Osoba.Role "mother" }}selected{{ end }}>Мајка</option>
+                            <option value="father" {{ if eq .Osoba.Role "father" }}selected{{ end }}>Отац</option>
+                            <option value="godfather" {{ if eq .Osoba.Role "godfather" }}selected{{ end }}>Кум</option>
+                            <option value="paroh" {{ if eq .Osoba.Role "paroh" }}selected{{ end }}>Парох</option>
                         </select>
                     </label>
-                    <label>Zanimanje
+                    <label>Занимање
                         <input name="occupation" value="{{ .Osoba.Occupation }}">
                     </label>
-                    <label>Vera
+                    <label>Вера
                         <input name="religion" value="{{ .Osoba.Religion }}">
                     </label>
-                    <label>Adresa
+                    <label>Адреса
                         <input name="address" value="{{ .Osoba.Address }}">
                     </label>
-                    <label>Drzava
+                    <label>Држава
                         <input name="country" value="{{ .Osoba.Country }}">
                     </label>
-                    <label>Grad
+                    <label>Град
                         <input name="city" value="{{ .Osoba.City }}">
                     </label>
-                    <label>Datum rodjenja
+                    <label>Датум рођења
                         <input type="date" name="birth_date" value="{{ if not (.Osoba.BirthDate.IsZero) }}{{ .Osoba.BirthDate.Format "2006-01-02" }}{{ end }}">
                     </label>
-                    <label>Status
+                    <label>Статус
                         <select name="status">
-                            <option value="">Odaberi status</option>
-                            <option value="active" {{ if eq .Osoba.Status "active" }}selected{{ end }}>Aktivna</option>
-                            <option value="inactive" {{ if eq .Osoba.Status "inactive" }}selected{{ end }}>Neaktivna</option>
+                            <option value="">Одабери статус</option>
+                            <option value="active" {{ if eq .Osoba.Status "active" }}selected{{ end }}>Активна</option>
+                            <option value="inactive" {{ if eq .Osoba.Status "inactive" }}selected{{ end }}>Неактивна</option>
                         </select>
                     </label>
                 </div>
             </section>
             <footer>
-                <button type="submit" class="primary">Sacuvaj</button>
-                <button type="button" class="secondary" data-close-dialog>Odustani</button>
+                <button type="submit" class="primary">Сачувај</button>
+                <button type="button" class="secondary" data-close-dialog>Одустани</button>
             </footer>
         </form>
     </article>

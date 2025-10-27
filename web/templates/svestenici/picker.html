@@ -2,7 +2,7 @@
 <dialog open class="modal" data-remove-on-close data-modal-type="picker">
     <article>
         <header>
-            <h2>Odaberi svestenika</h2>
+            <h2>Одабери свештеника</h2>
         </header>
         <section>
             <form class="inline-filter"
@@ -13,8 +13,8 @@
                 <input type="hidden" name="field" value="{{ .Field }}">
                 <input type="hidden" name="page_number" value="1">
                 <input type="hidden" name="page_size" value="10">
-                <input type="search" name="last_name" placeholder="Trazi po delu prezimena" aria-label="Trazi po delu prezimena">
-                <button type="submit" class="secondary">Pretrazi</button>
+                <input type="search" name="last_name" placeholder="Тражи по делу презимена" aria-label="Тражи по делу презимена">
+                <button type="submit" class="secondary">Претражи</button>
             </form>
             <button class="primary"
                     type="button"
@@ -22,7 +22,7 @@
                     hx-target="body"
                     hx-trigger="click"
                     hx-swap="beforeend">
-                Dodaj novog svestenika
+                Додај новог свештеника
             </button>
         </section>
         <section>
@@ -31,11 +31,11 @@
                  hx-trigger="load"
                  hx-target="this"
                  hx-swap="outerHTML">
-                <div class="htmx-indicator">Ucitavanje...</div>
+                <div class="htmx-indicator">Учитавање...</div>
             </div>
         </section>
         <footer>
-            <button type="button" class="secondary" data-close-dialog>Zatvori</button>
+            <button type="button" class="secondary" data-close-dialog>Затвори</button>
         </footer>
     </article>
 </dialog>
