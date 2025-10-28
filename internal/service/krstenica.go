@@ -342,6 +342,13 @@ func validateKrstenicaUpdateRequest(krstenicaReq *dto.KrstenicaUpdateReq) (map[s
 		updates["country"] = *krstenicaReq.Country
 	}
 
+	if krstenicaReq.TownOfCertificate != nil {
+		if len(*krstenicaReq.TownOfCertificate) > 255 {
+			return nil, errorx.GetValidationError("Krstenica", "validation", "Town of certificate can not be longer than 255 characters")
+		}
+		updates["town_of_certificate"] = *krstenicaReq.TownOfCertificate
+	}
+
 	if krstenicaReq.Status != nil {
 		updates["status"] = *krstenicaReq.Status
 	}

@@ -174,35 +174,42 @@ func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 		"E17": krstenica.PlaceOfBirthday,
 		"G17": krstenica.MunicipalityOfBirthday,
 		// "I17": krstenica.Country,
-		"E20": formatDateTimeComma(krstenica.Baptism),
-		"F24": krstenica.TampleCity,
-		"H24": krstenica.TampleName,
-		"D27": krstenica.FirstName,
-		"F27": krstenica.LastName,
-		"H27": krstenica.Gender,
-		"E30": krstenica.ParentFirstName,
-		"G30": krstenica.ParentLastName,
-		"I30": krstenica.ParentOccupation,
-		"E31": krstenica.ParentCity,
-		"G31": krstenica.ParentReligion,
-		"G35": formatInt(krstenica.BirthOrder),
-		"K35": formatInt(krstenica.NumberOfCertificate),
-		"E38": boolToYesNo(krstenica.IsChurchMarried),
-		"E41": boolToYesNo(krstenica.IsTwin),
-		"G44": boolToYesNo(krstenica.HasPhysicalDisability),
-		"F47": krstenica.PriestFirstName,
-		"H47": krstenica.PriestLastName,
-		"E51": krstenica.GodfatherFirstName,
-		"G51": krstenica.GodfatherLastName,
-		"I51": krstenica.GodfatherOccupation,
-		"E52": krstenica.GodfatherCity,
-		"G52": krstenica.GodfatherReligion,
-		"E55": krstenica.Anagrafa,
-		"C58": krstenica.Comment,
-		"I58": krstenica.TownOfCertificate,
-		"K58": formatDate(krstenica.Certificate),
-		"F60": strings.TrimSpace(fmt.Sprintf("%s %s", krstenica.ParohFirstName, krstenica.ParohLastName)),
-		"C62": krstenica.Status,
+		"E20":  formatDateTimeComma(krstenica.Baptism),
+		"F24":  krstenica.TampleCity,
+		"H24":  krstenica.TampleName,
+		"D27":  krstenica.FirstName,
+		"F27":  krstenica.LastName,
+		"H27":  mapGenderToCyrillic(krstenica.Gender),
+		"E30":  krstenica.ParentFirstName,
+		"G30":  krstenica.ParentLastName,
+		"I30":  krstenica.ParentOccupation,
+		"E31":  krstenica.ParentCity,
+		"G31":  krstenica.ParentReligion,
+		"G32":  formatInt(krstenica.BirthOrder),
+		"E35":  boolToYesNoCyrillic(krstenica.IsChurchMarried),
+		"E37":  boolToYesNoCyrillic(krstenica.IsTwin),
+		"G39":  boolToYesNoCyrillic(krstenica.HasPhysicalDisability),
+		"F42":  krstenica.PriestFirstName,
+		"H42":  krstenica.PriestLastName,
+		"E45":  krstenica.GodfatherFirstName,
+		"G45":  krstenica.GodfatherLastName,
+		"I45":  krstenica.GodfatherOccupation,
+		"E46":  krstenica.GodfatherCity,
+		"G46":  krstenica.GodfatherReligion,
+		"E49":  krstenica.Anagrafa,
+		"C51":  krstenica.Comment,
+		"B589": formatInt(krstenica.NumberOfCertificate),
+		"B60":  "",
+		"C60":  "",
+		"B61":  krstenica.TownOfCertificate,
+		// "F60": strings.TrimSpace(fmt.Sprintf("%s %s", krstenica.ParohFirstName, krstenica.ParohLastName)),
+		// "C62": krstenica.Status,
+	}
+
+	if !krstenica.Certificate.IsZero() {
+		dayMonth, yearSuffix := splitDateDayMonthYearSuffix(krstenica.Certificate)
+		values["B60"] = dayMonth
+		values["C60"] = yearSuffix
 	}
 
 	if !krstenica.Baptism.IsZero() {
@@ -291,6 +298,15 @@ func formatDate(t time.Time) string {
 	return t.Format("02.01.2006.")
 }
 
+func splitDateDayMonthYearSuffix(t time.Time) (string, string) {
+	if t.IsZero() {
+		return "", ""
+	}
+	dayMonth := t.Format("02.01.")
+	yearSuffix := t.Format("06")
+	return dayMonth, yearSuffix
+}
+
 func formatInt(v int64) string {
 	if v == 0 {
 		return ""
@@ -303,6 +319,24 @@ func boolToYesNo(b bool) string {
 		return "DA"
 	}
 	return "NE"
+}
+
+func boolToYesNoCyrillic(b bool) string {
+	if b {
+		return "Да"
+	}
+	return "Не"
+}
+
+func mapGenderToCyrillic(gender string) string {
+	switch strings.ToLower(strings.TrimSpace(gender)) {
+	case "m", "musko", "male", "muško":
+		return "Мушко"
+	case "z", "zensko", "female", "žensko":
+		return "Женско"
+	default:
+		return gender
+	}
 }
 
 func addBackgroundPicture(file *excelize.File, sheetName, imagePath string) error {

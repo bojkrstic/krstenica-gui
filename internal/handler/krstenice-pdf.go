@@ -37,13 +37,41 @@ type textOffset struct {
 }
 
 var cellOffsets = map[string]textOffset{
-	"H11": {dx: 1.6, dy: -0.9},
-	"K11": {dx: -8.0, dy: -0.9},
+	"C11": {dx: 0.0, dy: -2.0},
+	"H11": {dx: 10.6, dy: -2.0},
+	"K11": {dx: 30.0, dy: -2.0},
 	"F14": {dx: 1.0, dy: -2.0},
 	"E17": {dx: 2.0, dy: -0.9},
+	"G17": {dx: 2.0, dy: -0.9},
 	"E20": {dx: 5.0, dy: 4.0},
 	"F24": {dx: 15.0, dy: -3.9},
-	"H24": {dx: 10.0, dy: -3.9},
+	"H24": {dx: 13.0, dy: -3.9},
+	"D27": {dx: 6.0, dy: -6.9},
+	"F27": {dx: 6.0, dy: -6.9},
+	"H27": {dx: 15.0, dy: -6.9},
+	"E30": {dx: 34.0, dy: -10.0},
+	"G30": {dx: 30.0, dy: -10.0},
+	"I30": {dx: 34.0, dy: -10.0},
+	"E31": {dx: 34.0, dy: -8.0},
+	"G31": {dx: 30.0, dy: -8.0},
+	"G32": {dx: 10.0, dy: 3.0},
+	// "K32": {dx: 7.0, dy: 3.0},
+	"E35": {dx: 5.0, dy: -1.0},
+	"E37": {dx: -12.0, dy: 1.0},
+	"G39": {dx: 25.0, dy: 4.0},
+	"F42": {dx: 0.0, dy: 2.0},
+	"H42": {dx: 0.0, dy: 2.0},
+	"E45": {dx: 0.0, dy: 2.0},
+	"G45": {dx: 0.0, dy: 2.0},
+	"I45": {dx: 20.0, dy: 2.0},
+	"E46": {dx: 0.0, dy: 4.0},
+	"G46": {dx: 0.0, dy: 4.0},
+	"E49": {dx: 20.0, dy: -0.9},
+	"C51": {dx: 10.0, dy: 1.8},
+	"B58": {dx: 4.0, dy: -0.9},
+	"B60": {dx: 0.0, dy: -2.0},
+	"C60": {dx: 7.0, dy: -2.0},
+	"B61": {dx: 2.0, dy: 1.0},
 }
 
 type worksheetLayout struct {
@@ -82,6 +110,7 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 	}
 
 	values := getKrstenicaCellValues(krstenica)
+	values["G32"] = formatBirthOrderOrdinal(krstenica.BirthOrder)
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.SetAutoPageBreak(false, 0)
@@ -106,9 +135,8 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 		"C2", "C3", "C4", "C9", "C11", "H11", "K11",
 		"F14", "E17", "G17", "I17", "E20", "F24", "H24",
 		"D27", "F27", "H27", "E30", "G30", "I30", "E31", "G31",
-		"G35", "K35", "E38", "E41", "G44", "F47", "H47",
-		"E51", "G51", "I51", "E52", "G52", "E55", "C58", "I58", "K58",
-		"F60", "C62",
+		"G32", "K32", "E35", "E37", "G39", "F42", "H42",
+		"E45", "G45", "I45", "E46", "G46", "E49", "C51", "B58", "B60", "C60", "B61",
 	}
 
 	paddingScaled := pdfCellPaddingMM * layout.scale
@@ -170,6 +198,36 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 		return fmt.Errorf("write pdf: %w", err)
 	}
 	return nil
+}
+
+func formatBirthOrderOrdinal(order int64) string {
+	ordinals := []string{
+		"прво",
+		"друго",
+		"треће",
+		"четврто",
+		"пето",
+		"шесто",
+		"седмо",
+		"осмо",
+		"девето",
+		"десето",
+		"једанаесто",
+		"дванаесто",
+		"тринаесто",
+		"четрнаесто",
+		"петнаесто",
+	}
+
+	if order <= 0 {
+		return ""
+	}
+
+	if idx := order - 1; idx >= 0 && idx < int64(len(ordinals)) {
+		return ordinals[idx]
+	}
+
+	return formatInt(order)
 }
 
 func drawBackgroundImage(pdf *gofpdf.Fpdf, layout *worksheetLayout, imagePath string) error {
