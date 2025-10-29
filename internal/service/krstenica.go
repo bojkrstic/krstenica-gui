@@ -8,6 +8,7 @@ import (
 	"krstenica/internal/model"
 	"krstenica/pkg"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -55,6 +56,8 @@ func (s *service) CreateKrstenica(ctx context.Context, krstenicaReq *dto.Krsteni
 		return nil, err
 	}
 
+	isChurchMarried := strings.TrimSpace(krstenicaReq.IsChurchMarried)
+
 	krstenica := &model.KrstenicaPost{
 		Book:                   krstenicaReq.Book,
 		Page:                   krstenicaReq.Page,
@@ -75,7 +78,7 @@ func (s *service) CreateKrstenica(ctx context.Context, krstenicaReq *dto.Krsteni
 		PlaceOfBirthday:        krstenicaReq.PlaceOfBirthday,
 		MunicipalityOfBirthday: krstenicaReq.MunicipalityOfBirthday,
 		Baptism:                sql.NullTime{Valid: true, Time: time.Now()},
-		IsChurchMarried:        krstenicaReq.IsChurchMarried,
+		IsChurchMarried:        isChurchMarried,
 		IsTwin:                 krstenicaReq.IsTwin,
 		HasPhysicalDisability:  krstenicaReq.HasPhysicalDisability,
 		Anagrafa:               krstenicaReq.Anagrafa,
@@ -174,31 +177,31 @@ func (s *service) ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAn
 
 func makeKrstenicaResponse(krstenica *model.Krstenica) *dto.Krstenica {
 	return &dto.Krstenica{
-		ID:            krstenica.ID,
-		Book:          krstenica.Book,
-		Page:          krstenica.Page,
-		CurrentNumber: krstenica.CurrentNumber,
-		EparhijaId:   int64Ptr(krstenica.EparhijaId),
-		EparhijaName: krstenica.EparhijaName,
-		TampleId:     int64Ptr(krstenica.TampleId),
-		TampleName:   krstenica.TampleName,
-		TampleCity:   krstenica.TampleCity,
-		ParentId:     int64Ptr(krstenica.ParentId),
-		ParentFirstName:  krstenica.ParentFirstName,
-		ParentLastName:   krstenica.ParentLastName,
-		ParentOccupation: krstenica.ParentOccupation,
-		ParentCity:       krstenica.ParentCity,
-		ParentReligion:   krstenica.ParentReligion,
-		GodfatherId:         int64Ptr(krstenica.GodfatherId),
-		GodfatherFirstName:  krstenica.GodfatherFirstName,
-		GodfatherLastName:   krstenica.GodfatherLastName,
-		GodfatherOccupation: krstenica.GodfatherOccupation,
-		GodfatherCity:       krstenica.GodfatherCity,
-		GodfatherReligion:   krstenica.GodfatherReligion,
-		ParohId:        int64Ptr(krstenica.ParohId),
-		ParohFirstName: krstenica.ParohFirstName,
-		ParohLastName:  krstenica.ParohLastName,
-		PriestId:       int64Ptr(krstenica.PriestId),
+		ID:                     krstenica.ID,
+		Book:                   krstenica.Book,
+		Page:                   krstenica.Page,
+		CurrentNumber:          krstenica.CurrentNumber,
+		EparhijaId:             int64Ptr(krstenica.EparhijaId),
+		EparhijaName:           krstenica.EparhijaName,
+		TampleId:               int64Ptr(krstenica.TampleId),
+		TampleName:             krstenica.TampleName,
+		TampleCity:             krstenica.TampleCity,
+		ParentId:               int64Ptr(krstenica.ParentId),
+		ParentFirstName:        krstenica.ParentFirstName,
+		ParentLastName:         krstenica.ParentLastName,
+		ParentOccupation:       krstenica.ParentOccupation,
+		ParentCity:             krstenica.ParentCity,
+		ParentReligion:         krstenica.ParentReligion,
+		GodfatherId:            int64Ptr(krstenica.GodfatherId),
+		GodfatherFirstName:     krstenica.GodfatherFirstName,
+		GodfatherLastName:      krstenica.GodfatherLastName,
+		GodfatherOccupation:    krstenica.GodfatherOccupation,
+		GodfatherCity:          krstenica.GodfatherCity,
+		GodfatherReligion:      krstenica.GodfatherReligion,
+		ParohId:                int64Ptr(krstenica.ParohId),
+		ParohFirstName:         krstenica.ParohFirstName,
+		ParohLastName:          krstenica.ParohLastName,
+		PriestId:               int64Ptr(krstenica.PriestId),
 		PriestFirstName:        krstenica.PriestFirstName,
 		PriestLastName:         krstenica.PriestLastName,
 		FirstName:              krstenica.FirstName,
@@ -244,6 +247,16 @@ func validateKrstenicaCreaterequest(krstenicaReq *dto.KrstenicaCreateReq) error 
 		return errorx.GetValidationError("Krstenica", "validation", "city of krstenica can not be longer than 255 characters")
 	}
 
+	krstenicaReq.BirthOrder = strings.TrimSpace(krstenicaReq.BirthOrder)
+	if len(krstenicaReq.BirthOrder) > 255 {
+		return errorx.GetValidationError("Krstenica", "validation", "Birth order can not be longer than 255 characters")
+	}
+
+	krstenicaReq.IsChurchMarried = strings.TrimSpace(krstenicaReq.IsChurchMarried)
+	if len(krstenicaReq.IsChurchMarried) > 20 {
+		return errorx.GetValidationError("Krstenica", "validation", "Is church married can not be longer than 20 characters")
+	}
+
 	return nil
 }
 
@@ -284,7 +297,11 @@ func validateKrstenicaUpdateRequest(krstenicaReq *dto.KrstenicaUpdateReq) (map[s
 		updates["birth_date"] = *krstenicaReq.BirthDate
 	}
 	if krstenicaReq.BirthOrder != nil {
-		updates["birth_order"] = *krstenicaReq.BirthOrder
+		trimmed := strings.TrimSpace(*krstenicaReq.BirthOrder)
+		if len(trimmed) > 255 {
+			return nil, errorx.GetValidationError("Krstenica", "validation", "Birth order can not be longer than 255 characters")
+		}
+		updates["birth_order"] = trimmed
 	}
 	if krstenicaReq.PlaceOfBirthday != nil {
 		updates["place_of_birthday"] = *krstenicaReq.PlaceOfBirthday
@@ -296,7 +313,11 @@ func validateKrstenicaUpdateRequest(krstenicaReq *dto.KrstenicaUpdateReq) (map[s
 		updates["baptism"] = *krstenicaReq.Baptism
 	}
 	if krstenicaReq.IsChurchMarried != nil {
-		updates["is_church_married"] = *krstenicaReq.IsChurchMarried
+		trimmed := strings.TrimSpace(*krstenicaReq.IsChurchMarried)
+		if len(trimmed) > 20 {
+			return nil, errorx.GetValidationError("Krstenica", "validation", "Is church married can not be longer than 20 characters")
+		}
+		updates["is_church_married"] = trimmed
 	}
 	if krstenicaReq.IsTwin != nil {
 		updates["is_twin"] = *krstenicaReq.IsTwin

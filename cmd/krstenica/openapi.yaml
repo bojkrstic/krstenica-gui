@@ -984,8 +984,7 @@ components:
           type: string
           format: date-time
         birth_order:
-          type: integer
-          format: int64
+          type: string
         place_of_birthday:
           type: string
         municipality_of_birthday:
@@ -994,7 +993,7 @@ components:
           type: string
           format: date-time
         is_church_married:
-          type: boolean
+          type: string
         is_twin:
           type: boolean
         has_physical_disability:
@@ -1102,8 +1101,7 @@ components:
           type: string
           format: date-time
         birth_order:
-          type: integer
-          format: int64
+          type: string
         place_of_birthday:
           type: string
         municipality_of_birthday:
@@ -1112,7 +1110,7 @@ components:
           type: string
           format: date-time
         is_church_married:
-          type: boolean
+          type: string
         is_twin:
           type: boolean
         has_physical_disability:
@@ -1214,8 +1212,7 @@ components:
           format: date-time
           nullable: true
         birth_order:
-          type: integer
-          format: int64
+          type: string
           nullable: true
         place_of_birthday:
           type: string
@@ -1228,7 +1225,7 @@ components:
           format: date-time
           nullable: true
         is_church_married:
-          type: boolean
+          type: string
           nullable: true
         is_twin:
           type: boolean

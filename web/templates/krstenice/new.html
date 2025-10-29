@@ -33,11 +33,7 @@
                         <input name="last_name" required>
                     </label>
                     <label>Пол детета
-                        <select name="gender" required>
-                            <option value="">Одабери</option>
-                            <option value="musko">Мушко</option>
-                            <option value="zensko">Женско</option>
-                        </select>
+                        <input name="gender" placeholder="Мушко / Женско" required>
                     </label>
                     <label>Град
                         <input name="city">
@@ -58,7 +54,7 @@
                         <input type="datetime-local" name="baptism">
                     </label>
                     <label>Рођење - редослед
-                        <input type="number" name="birth_order" min="1">
+                        <input name="birth_order" placeholder="Примери: Прво, Близанац А">
                     </label>
                     <label>Датум издавања сертификата
                         <input type="date" name="certificate">
@@ -155,12 +151,8 @@
                         </div>
                         <p class="field-comment" data-comment-field="priest_id"></p>
                     </label>
-                    <label>Родитељи нису у браку?
-                        <select name="is_church_married">
-                            <option value="">Непознато</option>
-                            <option value="true">ДА</option>
-                            <option value="false">НЕ</option>
-                        </select>
+                    <label>Је ли дете црквено брачно?
+                        <input name="is_church_married" placeholder="Да / Не">
                     </label>
                     <label>Дете је близанац?
                         <select name="is_twin">

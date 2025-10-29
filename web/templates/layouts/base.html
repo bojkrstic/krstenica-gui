@@ -200,17 +200,33 @@
                 return;
             }
             const params = event.detail.parameters;
-            const boolFields = ['is_church_married', 'is_twin', 'has_physical_disability'];
+            const boolFields = ['is_twin', 'has_physical_disability'];
+            const truthyValues = ['true', '1', 'yes', 'y', 'da', 'да'];
+            const falsyValues = ['false', '0', 'no', 'n', 'ne', 'не'];
             boolFields.forEach(function (name) {
-                if (name in params) {
-                    const value = params[name];
-                    params[name] = value === true || value === 'true';
-                    if (params[name] === false && value === '') {
-                        delete params[name];
-                    }
+                if (!(name in params)) {
+                    return;
                 }
+                const value = params[name];
+                if (value === true || value === false) {
+                    return;
+                }
+                if (value === '' || value === null || (typeof value === 'string' && value.trim() === '')) {
+                    delete params[name];
+                    return;
+                }
+                const normalized = String(value).trim().toLowerCase();
+                if (truthyValues.includes(normalized)) {
+                    params[name] = true;
+                    return;
+                }
+                if (falsyValues.includes(normalized)) {
+                    params[name] = false;
+                    return;
+                }
+                delete params[name];
             });
-            const numberFields = ['page', 'current_number', 'eparhija_id', 'tample_id', 'parent_id', 'godfather_id', 'priest_id', 'birth_order', 'number_of_certificate'];
+            const numberFields = ['page', 'current_number', 'eparhija_id', 'tample_id', 'parent_id', 'godfather_id', 'priest_id', 'number_of_certificate'];
             numberFields.forEach(function (name) {
                 if (params[name] !== undefined && params[name] !== '') {
                     params[name] = Number(params[name]);
@@ -231,7 +247,7 @@
                     delete params[name];
                 }
             });
-            const stringFields = ['book','first_name','last_name','gender','city','country','place_of_birthday','municipality_of_birthday','town_of_certificate','anagrafa'];
+            const stringFields = ['book','first_name','last_name','gender','city','country','place_of_birthday','municipality_of_birthday','town_of_certificate','anagrafa','birth_order','is_church_married'];
             stringFields.forEach(function(name){
                 if (params[name] === '') {
                     delete params[name];

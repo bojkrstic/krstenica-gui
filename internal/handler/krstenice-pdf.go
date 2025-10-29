@@ -68,7 +68,7 @@ var cellOffsets = map[string]textOffset{
 	"G46": {dx: 0.0, dy: 4.0},
 	"E49": {dx: 20.0, dy: -0.9},
 	"C51": {dx: 10.0, dy: 1.8},
-	"B58": {dx: 4.0, dy: -0.9},
+	"B58": {dx: 10.0, dy: -0.9},
 	"B60": {dx: 0.0, dy: -2.0},
 	"C60": {dx: 7.0, dy: -2.0},
 	"B61": {dx: 2.0, dy: 1.0},
@@ -110,7 +110,7 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 	}
 
 	values := getKrstenicaCellValues(krstenica)
-	values["G32"] = formatBirthOrderOrdinal(krstenica.BirthOrder)
+	values["G32"] = strings.TrimSpace(krstenica.BirthOrder)
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.SetAutoPageBreak(false, 0)
@@ -198,36 +198,6 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 		return fmt.Errorf("write pdf: %w", err)
 	}
 	return nil
-}
-
-func formatBirthOrderOrdinal(order int64) string {
-	ordinals := []string{
-		"прво",
-		"друго",
-		"треће",
-		"четврто",
-		"пето",
-		"шесто",
-		"седмо",
-		"осмо",
-		"девето",
-		"десето",
-		"једанаесто",
-		"дванаесто",
-		"тринаесто",
-		"четрнаесто",
-		"петнаесто",
-	}
-
-	if order <= 0 {
-		return ""
-	}
-
-	if idx := order - 1; idx >= 0 && idx < int64(len(ordinals)) {
-		return ordinals[idx]
-	}
-
-	return formatInt(order)
 }
 
 func drawBackgroundImage(pdf *gofpdf.Fpdf, layout *worksheetLayout, imagePath string) error {
