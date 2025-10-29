@@ -1,0 +1,31 @@
+{{ define "users/new.html" }}
+<dialog open class="modal" data-modal-type="users-new">
+    <article>
+        <header>
+            <h2>Нови корисник</h2>
+        </header>
+        <form
+            hx-post="/ui/users"
+            hx-target="#users-table"
+            hx-swap="innerHTML"
+            hx-include="closest form"
+            hx-on::after-request="if(event.detail.successful){const dlg=this.closest('dialog');if(dlg){dlg.close();dlg.remove();}}"
+            class="grid"
+        >
+            {{ if .Error }}
+            <p class="error-message" style="color:#b91c1c;">{{ .Error }}</p>
+            {{ end }}
+            <label>Корисничко име
+                <input name="username" required>
+            </label>
+            <label>Лозинка
+                <input type="password" name="password" required>
+            </label>
+            <footer>
+                <button type="submit" class="primary">Сачувај</button>
+                <button type="button" class="secondary" data-close-dialog>Откажи</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}

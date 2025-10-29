@@ -18,3 +18,8 @@ migration:
 
 jwt_secret: "krstenica-backend-secret"
 admin_jwt_secret: "krstenica-backend-secret"
+
+auth:
+  username: "admin"
+  password: "admin"
+  session_secret: "replace-this-secret"

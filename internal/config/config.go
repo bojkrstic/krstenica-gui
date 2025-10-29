@@ -25,6 +25,13 @@ type Config struct {
 	AdminJWTSecret string          `mapstructure:"admin_jwt_secret"`
 	Host           string          `mapstructure:"host"`
 	Migration      MigrationConfig `mapstructure:"migration"`
+	Auth           AuthConfig      `mapstructure:"auth"`
+}
+
+type AuthConfig struct {
+	Username      string `mapstructure:"username"`
+	Password      string `mapstructure:"password"`
+	SessionSecret string `mapstructure:"session_secret"`
 }
 
 func Load() (*Config, error) {

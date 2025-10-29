@@ -36,6 +36,13 @@ type Repo interface {
 	CreateKrstenica(ctx context.Context, krstenica *model.KrstenicaPost) (*model.Krstenica, error)
 	UpdateKrstenica(ctx context.Context, id int64, updates map[string]interface{}) error
 	ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]model.Krstenica, int64, error)
+
+	GetUserByUsername(ctx context.Context, username string) (*model.User, error)
+	CreateUser(ctx context.Context, user *model.User) (*model.User, error)
+	ListUsers(ctx context.Context) ([]model.User, error)
+	CountUsers(ctx context.Context) (int64, error)
+	GetUserByID(ctx context.Context, id int64) (*model.User, error)
+	UpdateUser(ctx context.Context, id int64, updates map[string]interface{}) error
 }
 
 type repo struct {
@@ -44,6 +51,49 @@ type repo struct {
 
 func NewRepository(db *gorm.DB) Repo {
 	return &repo{db: db}
+}
+
+func (r *repo) GetUserByUsername(ctx context.Context, username string) (*model.User, error) {
+	var user model.User
+	if err := r.db.WithContext(ctx).Where("username = ?", username).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *repo) CreateUser(ctx context.Context, user *model.User) (*model.User, error) {
+	if err := r.db.WithContext(ctx).Create(user).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *repo) ListUsers(ctx context.Context) ([]model.User, error) {
+	var users []model.User
+	if err := r.db.WithContext(ctx).Order("username ASC").Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (r *repo) CountUsers(ctx context.Context) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&model.User{}).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *repo) GetUserByID(ctx context.Context, id int64) (*model.User, error) {
+	var user model.User
+	if err := r.db.WithContext(ctx).First(&user, id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *repo) UpdateUser(ctx context.Context, id int64, updates map[string]interface{}) error {
+	return r.db.WithContext(ctx).Model(&model.User{}).Where("id = ?", id).Updates(updates).Error
 }
 
 func Paginate(db *gorm.DB, dest interface{}, limit int) *gorm.DB {

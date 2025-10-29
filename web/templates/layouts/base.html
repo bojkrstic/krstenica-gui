@@ -91,6 +91,13 @@
             background: var(--pico-secondary);
             color: white;
         }
+        .error-message {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #b91c1c;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+        }
         dialog.modal {
             border: none;
             max-width: 600px;
@@ -127,6 +134,12 @@
             min-height: 1rem;
             margin-top: 0.25rem;
         }
+        .logout-form {
+            display: inline;
+        }
+        .logout-form button {
+            margin: 0;
+        }
     </style>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 </head>
@@ -144,6 +157,12 @@
                     <li><a href="/ui/hramovi">Храмови</a></li>
                     <li><a href="/ui/svestenici">Свештеници</a></li>
                     <li><a href="/ui/osobe">Особе</a></li>
+                    <li><a href="/ui/users">Корисници</a></li>
+                    <li>
+                        <form class="logout-form" method="post" action="/ui/logout">
+                            <button type="submit" class="secondary outline">Одјава</button>
+                        </form>
+                    </li>
                 </ul>
             </nav>
         </header>

@@ -46,24 +46,19 @@ func (h *httpHandler) addRoutes() {
 
 	//print
 	adminRouter.GET(pathWithAction("adminv2", "krstenice-print/:id"), h.getKrstenicePrint()) //preview=true or default value is false
+
+	//users
+	adminRouter.GET(pathWithAction("adminv2", "users"), h.listUsers())
+	adminRouter.POST(pathWithAction("adminv2", "users"), h.createUser())
+	adminRouter.PUT(pathWithAction("adminv2", "users/:id"), h.updateUser())
 }
 
 func (h *httpHandler) needAdminAccess() gin.HandlerFunc {
-	//return middleware.VerifyToken("PFG-BO-MEMBER", h.conf.AdminJWTSecret)
-
-	//will be added later
-	return func(ctx *gin.Context) {
-
-	}
+	return h.requireAPIAuth()
 }
 
 func (h *httpHandler) needUserAccess() gin.HandlerFunc {
-	//return middleware.VerifyToken(token.PFGCasinoRoleUser, h.conf.JWTSecret)
-
-	//will be added later
-	return func(ctx *gin.Context) {
-
-	}
+	return h.requireAPIAuth()
 }
 
 func pathWithAction(module string, action string) string {

@@ -1,0 +1,83 @@
+{{ define "auth/login.html" }}
+<!DOCTYPE html>
+<html lang="sr-Cyrl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ if .Title }}{{ .Title }} | Крштеница GUI{{ else }}Крштеница GUI{{ end }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: #f7f8fb;
+            font-family: "Inter", "Segoe UI", sans-serif;
+        }
+        .login-card {
+            max-width: 420px;
+            width: 100%;
+            padding: 2.5rem;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+        }
+        .login-card h1 {
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        .login-card p.subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+        .error-message {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #b91c1c;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        form label {
+            display: block;
+            margin-bottom: 1rem;
+        }
+        form label span {
+            display: block;
+            font-size: 0.85rem;
+            color: #475569;
+            margin-bottom: 0.35rem;
+        }
+        form button[type="submit"] {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <article class="login-card">
+        <h1>Крштеница</h1>
+        <p class="subtitle">Унесите креденцијале за приступ контролној табли.</p>
+
+        {{ if .Error }}
+        <div class="error-message">{{ .Error }}</div>
+        {{ end }}
+
+        <form method="post" action="/ui/login">
+            <input type="hidden" name="return" value="{{ .ReturnURL }}">
+            <label>
+                <span>Корисничко име</span>
+                <input type="text" name="username" autocomplete="username" required>
+            </label>
+            <label>
+                <span>Лозинка</span>
+                <input type="password" name="password" autocomplete="current-password" required>
+            </label>
+            <button type="submit" class="primary">Пријави се</button>
+        </form>
+    </article>
+</body>
+</html>
+{{ end }}

@@ -1,0 +1,31 @@
+{{ define "users/edit.html" }}
+<dialog open class="modal" data-modal-type="users-edit">
+    <article>
+        <header>
+            <h2>Промена лозинке</h2>
+        </header>
+        <form
+            hx-put="/ui/users/{{ if .User}}{{ .User.ID }}{{ else }}{{ .ID }}{{ end }}"
+            hx-target="#users-table"
+            hx-swap="innerHTML"
+            hx-include="closest form"
+            hx-on::after-request="if(event.detail.successful){const dlg=this.closest('dialog');if(dlg){dlg.close();dlg.remove();}}"
+            class="grid"
+        >
+            {{ if .Error }}
+            <p class="error-message">{{ .Error }}</p>
+            {{ end }}
+            <label>Корисничко име
+                <input value="{{ if .User}}{{ .User.Username }}{{ end }}" readonly>
+            </label>
+            <label>Нова лозинка
+                <input type="password" name="password" required>
+            </label>
+            <footer>
+                <button type="submit" class="primary">Сачувај</button>
+                <button type="button" class="secondary" data-close-dialog>Откажи</button>
+            </footer>
+        </form>
+    </article>
+</dialog>
+{{ end }}

@@ -1,0 +1,24 @@
+{{ define "users/index.html" }}
+{{ template "layouts/base" . }}
+{{ end }}
+
+{{ define "users/content" }}
+<section class="page-title">
+    <div>
+        <h1>Корисници</h1>
+        <p>Управљање системским налозима.</p>
+    </div>
+    <div class="actions">
+        <button
+            class="primary"
+            hx-get="/ui/users/new"
+            hx-target="body"
+            hx-trigger="click"
+            hx-swap="beforeend">
+            Нови корисник
+        </button>
+    </div>
+</section>
+
+<div id="users-table" hx-get="/ui/users/table" hx-trigger="load"></div>
+{{ end }}

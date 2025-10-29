@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"html/template"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -54,8 +56,13 @@ func (h *httpHandler) Init() {
 	templateDir := resolveDir("web/templates")
 	h.mustLoadTemplates(templateDir)
 
+	h.addAuthRoutes()
 	h.addRoutes()
 	h.addGuiRoutes()
+
+	if err := h.service.EnsureDefaultUser(context.Background()); err != nil {
+		log.Fatalf("failed to ensure default user: %v", err)
+	}
 
 	// Spawing go-routine when starting server.
 	go func() {

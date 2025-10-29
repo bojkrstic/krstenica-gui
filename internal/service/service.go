@@ -38,6 +38,13 @@ type Service interface {
 	CreateKrstenica(ctx context.Context, personReq *dto.KrstenicaCreateReq) (*dto.Krstenica, error)
 	UpdateKrstenica(ctx context.Context, id int64, personReq *dto.KrstenicaUpdateReq) (*dto.Krstenica, error)
 	DeleteKrstenica(ctx context.Context, id int64) error
+
+	AuthenticateUser(ctx context.Context, username, password string) (bool, error)
+	EnsureDefaultUser(ctx context.Context) error
+	ListUsers(ctx context.Context) ([]*dto.User, error)
+	CreateUser(ctx context.Context, req *dto.UserCreateReq) (*dto.User, error)
+	GetUser(ctx context.Context, id int64) (*dto.User, error)
+	UpdateUserPassword(ctx context.Context, id int64, password string) (*dto.User, error)
 }
 
 type service struct {

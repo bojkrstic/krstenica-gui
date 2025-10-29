@@ -1,0 +1,34 @@
+{{ define "users/table.html" }}
+<table>
+    <thead>
+        <tr>
+            <th>Корисничко име</th>
+            <th>Креиран</th>
+            <th>Акције</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ if .Items }}
+            {{ range .Items }}
+            <tr>
+                <td>{{ .Username }}</td>
+                <td>{{ .CreatedAt.Format "02.01.2006. 15:04" }}</td>
+                <td>
+                    <button class="secondary outline"
+                        hx-get="/ui/users/{{ .ID }}/edit"
+                        hx-target="body"
+                        hx-trigger="click"
+                        hx-swap="beforeend">
+                        Промени лозинку
+                    </button>
+                </td>
+            </tr>
+            {{ end }}
+        {{ else }}
+            <tr>
+                <td colspan="3">Нема корисника.</td>
+            </tr>
+        {{ end }}
+    </tbody>
+</table>
+{{ end }}
