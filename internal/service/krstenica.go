@@ -58,6 +58,7 @@ func (s *service) CreateKrstenica(ctx context.Context, krstenicaReq *dto.Krsteni
 
 	isChurchMarried := strings.TrimSpace(krstenicaReq.IsChurchMarried)
 	isTwin := strings.TrimSpace(krstenicaReq.IsTwin)
+	hasPhysical := strings.TrimSpace(krstenicaReq.HasPhysicalDisability)
 
 	krstenica := &model.KrstenicaPost{
 		Book:                   krstenicaReq.Book,
@@ -81,7 +82,7 @@ func (s *service) CreateKrstenica(ctx context.Context, krstenicaReq *dto.Krsteni
 		Baptism:                sql.NullTime{Valid: true, Time: time.Now()},
 		IsChurchMarried:        isChurchMarried,
 		IsTwin:                 isTwin,
-		HasPhysicalDisability:  krstenicaReq.HasPhysicalDisability,
+		HasPhysicalDisability:  hasPhysical,
 		Anagrafa:               krstenicaReq.Anagrafa,
 		NumberOfCertificate:    krstenicaReq.NumberOfCertificate,
 		TownOfCertificate:      krstenicaReq.TownOfCertificate,
@@ -263,6 +264,11 @@ func validateKrstenicaCreaterequest(krstenicaReq *dto.KrstenicaCreateReq) error 
 		return errorx.GetValidationError("Krstenica", "validation", "Is twin can not be longer than 20 characters")
 	}
 
+	krstenicaReq.HasPhysicalDisability = strings.TrimSpace(krstenicaReq.HasPhysicalDisability)
+	if len(krstenicaReq.HasPhysicalDisability) > 20 {
+		return errorx.GetValidationError("Krstenica", "validation", "Has physical disability can not be longer than 20 characters")
+	}
+
 	return nil
 }
 
@@ -333,7 +339,11 @@ func validateKrstenicaUpdateRequest(krstenicaReq *dto.KrstenicaUpdateReq) (map[s
 		updates["is_twin"] = trimmed
 	}
 	if krstenicaReq.HasPhysicalDisability != nil {
-		updates["has_physical_disability"] = *krstenicaReq.HasPhysicalDisability
+		trimmed := strings.TrimSpace(*krstenicaReq.HasPhysicalDisability)
+		if len(trimmed) > 20 {
+			return nil, errorx.GetValidationError("Krstenica", "validation", "Has physical disability can not be longer than 20 characters")
+		}
+		updates["has_physical_disability"] = trimmed
 	}
 	if krstenicaReq.Anagrafa != nil {
 		updates["anagrafa"] = *krstenicaReq.Anagrafa

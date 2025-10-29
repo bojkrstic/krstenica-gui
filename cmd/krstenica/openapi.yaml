@@ -997,7 +997,7 @@ components:
         is_twin:
           type: string
         has_physical_disability:
-          type: boolean
+          type: string
         anagrafa:
           type: string
         number_of_certificate:
@@ -1114,7 +1114,7 @@ components:
         is_twin:
           type: string
         has_physical_disability:
-          type: boolean
+          type: string
         anagrafa:
           type: string
         number_of_certificate:
@@ -1231,7 +1231,7 @@ components:
           type: string
           nullable: true
         has_physical_disability:
-          type: boolean
+          type: string
           nullable: true
         anagrafa:
           type: string

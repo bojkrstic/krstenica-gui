@@ -162,11 +162,7 @@
                         <input name="is_twin" value="{{ .Krstenica.IsTwin }}" placeholder="Да / Не">
                     </label>
                     <label>Физички недостатак?
-                        <select name="has_physical_disability">
-                            <option value="">Непознато</option>
-                            <option value="true" {{ if .Krstenica.HasPhysicalDisability }}selected{{ end }}>ДА</option>
-                            <option value="false" {{ if not .Krstenica.HasPhysicalDisability }}selected{{ end }}>НЕ</option>
-                        </select>
+                        <input name="has_physical_disability" value="{{ .Krstenica.HasPhysicalDisability }}" placeholder="Да / Не">
                     </label>
                 </div>
             </section>

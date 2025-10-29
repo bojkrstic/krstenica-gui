@@ -200,7 +200,7 @@
                 return;
             }
             const params = event.detail.parameters;
-            const boolFields = ['has_physical_disability'];
+            const boolFields = [];
             const truthyValues = ['true', '1', 'yes', 'y', 'da', 'да'];
             const falsyValues = ['false', '0', 'no', 'n', 'ne', 'не'];
             boolFields.forEach(function (name) {
@@ -247,7 +247,7 @@
                     delete params[name];
                 }
             });
-            const stringFields = ['book','first_name','last_name','gender','city','country','place_of_birthday','municipality_of_birthday','town_of_certificate','anagrafa','birth_order','is_church_married','is_twin'];
+            const stringFields = ['book','first_name','last_name','gender','city','country','place_of_birthday','municipality_of_birthday','town_of_certificate','anagrafa','birth_order','is_church_married','is_twin','has_physical_disability'];
             stringFields.forEach(function(name){
                 if (params[name] === '') {
                     delete params[name];
