@@ -43,7 +43,7 @@ type Krstenica struct {
 	MunicipalityOfBirthday string    `json:"municipality_of_birthday"`
 	Baptism                time.Time `json:"baptism"`
 	IsChurchMarried        string    `json:"is_church_married"`
-	IsTwin                 bool      `json:"is_twin"`
+	IsTwin                 string    `json:"is_twin"`
 	HasPhysicalDisability  bool      `json:"has_physical_disability"`
 	Anagrafa               string    `json:"anagrafa"`
 	NumberOfCertificate    int64     `json:"number_of_certificate"`
@@ -75,7 +75,7 @@ type KrstenicaCreateReq struct {
 	MunicipalityOfBirthday string    `json:"municipality_of_birthday" form:"municipality_of_birthday"`
 	Baptism                time.Time `json:"baptism" form:"baptism" time_format:"2006-01-02T15:04:05Z07:00"`
 	IsChurchMarried        string    `json:"is_church_married" form:"is_church_married"`
-	IsTwin                 bool      `json:"is_twin" form:"is_twin"`
+	IsTwin                 string    `json:"is_twin" form:"is_twin"`
 	HasPhysicalDisability  bool      `json:"has_physical_disability" form:"has_physical_disability"`
 	Anagrafa               string    `json:"anagrafa" form:"anagrafa"`
 	NumberOfCertificate    int64     `json:"number_of_certificate" form:"number_of_certificate"`
@@ -105,7 +105,7 @@ type KrstenicaUpdateReq struct {
 	MunicipalityOfBirthday *string    `json:"municipality_of_birthday" form:"municipality_of_birthday"`
 	Baptism                *time.Time `json:"baptism" form:"baptism" time_format:"2006-01-02T15:04:05Z07:00"`
 	IsChurchMarried        *string    `json:"is_church_married" form:"is_church_married"`
-	IsTwin                 *bool      `json:"is_twin" form:"is_twin"`
+	IsTwin                 *string    `json:"is_twin" form:"is_twin"`
 	HasPhysicalDisability  *bool      `json:"has_physical_disability" form:"has_physical_disability"`
 	Anagrafa               *string    `json:"anagrafa" form:"anagrafa"`
 	NumberOfCertificate    *int64     `json:"number_of_certificate" form:"number_of_certificate"`

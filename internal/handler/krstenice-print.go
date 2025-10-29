@@ -187,7 +187,7 @@ func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 		"G31": krstenica.ParentReligion,
 		"G32": strings.TrimSpace(krstenica.BirthOrder),
 		"E35": strings.TrimSpace(krstenica.IsChurchMarried),
-		"E37": boolToYesNoCyrillic(krstenica.IsTwin),
+		"E37": strings.TrimSpace(krstenica.IsTwin),
 		"G39": boolToYesNoCyrillic(krstenica.HasPhysicalDisability),
 		"F42": krstenica.PriestFirstName,
 		"H42": krstenica.PriestLastName,

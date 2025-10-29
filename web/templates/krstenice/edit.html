@@ -159,11 +159,7 @@
                         <input name="is_church_married" value="{{ .Krstenica.IsChurchMarried }}" placeholder="Да / Не">
                     </label>
                     <label>Дете је близанац?
-                        <select name="is_twin">
-                            <option value="">Непознато</option>
-                            <option value="true" {{ if .Krstenica.IsTwin }}selected{{ end }}>ДА</option>
-                            <option value="false" {{ if not .Krstenica.IsTwin }}selected{{ end }}>НЕ</option>
-                        </select>
+                        <input name="is_twin" value="{{ .Krstenica.IsTwin }}" placeholder="Да / Не">
                     </label>
                     <label>Физички недостатак?
                         <select name="has_physical_disability">

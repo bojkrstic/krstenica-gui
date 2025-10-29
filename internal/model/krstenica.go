@@ -52,7 +52,7 @@ type Krstenica struct {
 	MunicipalityOfBirthday string       `gorm:"column:municipality_of_birthday"`
 	Baptism                sql.NullTime `gorm:"column:baptism"`
 	IsChurchMarried        string       `gorm:"column:is_church_married"`
-	IsTwin                 bool         `gorm:"column:is_twin"`
+	IsTwin                 string       `gorm:"column:is_twin"`
 	HasPhysicalDisability  bool         `gorm:"column:has_physical_disability"`
 	Anagrafa               string       `gorm:"column:anagrafa"`
 	NumberOfCertificate    int64        `gorm:"column:number_of_certificate"`
@@ -107,7 +107,7 @@ type KrstenicaPost struct {
 	MunicipalityOfBirthday string       `gorm:"column:municipality_of_birthday"`
 	Baptism                sql.NullTime `gorm:"column:baptism"`
 	IsChurchMarried        string       `gorm:"column:is_church_married"`
-	IsTwin                 bool         `gorm:"column:is_twin"`
+	IsTwin                 string       `gorm:"column:is_twin"`
 	HasPhysicalDisability  bool         `gorm:"column:has_physical_disability"`
 	Anagrafa               string       `gorm:"column:anagrafa"`
 	NumberOfCertificate    int64        `gorm:"column:number_of_certificate"`

@@ -995,7 +995,7 @@ components:
         is_church_married:
           type: string
         is_twin:
-          type: boolean
+          type: string
         has_physical_disability:
           type: boolean
         anagrafa:
@@ -1112,7 +1112,7 @@ components:
         is_church_married:
           type: string
         is_twin:
-          type: boolean
+          type: string
         has_physical_disability:
           type: boolean
         anagrafa:
@@ -1228,7 +1228,7 @@ components:
           type: string
           nullable: true
         is_twin:
-          type: boolean
+          type: string
           nullable: true
         has_physical_disability:
           type: boolean
