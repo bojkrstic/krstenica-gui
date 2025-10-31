@@ -20,7 +20,6 @@
                 <th>Свештеник</th>
                 <th>Крштење</th>
                 <th>Статус</th>
-                <th>Крштеница #</th>
                 <th>Епархија</th>
                 <th>Кум</th>
                 <th>Акције</th>
@@ -45,7 +44,6 @@
                 </td>
                 <td>{{ formatDate .Baptism }}</td>
                 <td><span class="badge">{{ .Status }}</span></td>
-                <td>{{ .CurrentNumber }}</td>
                 <td>{{ .EparhijaName }}</td>
                 <td>{{ .GodfatherFirstName }} {{ .GodfatherLastName }}</td>
                 <td>
@@ -84,6 +82,14 @@
                                 <path d="M8 12.5h7M8 15.5h5.5M8 18.5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>
                             <span>PDF</span>
+                        </a>
+                        <a class="secondary icon-button" href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf&amp;template_version=2" target="_blank" title="Преузми као PDF (верзија 2)">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                <path d="M15 2v5.5H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M8 12.5h7M8 15.5h5.5M8 18.5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            <span>PDF v2</span>
                         </a>
                     </div>
                 </td>

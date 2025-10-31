@@ -78,6 +78,15 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		defer os.RemoveAll(targetDir)
 
 		backgroundImage := resolveFile("krstenica_obrada.jpg")
+		backgroundFullBleed := true
+		if v, ok := filters.Filters[pkg.FilterKey{Property: "template_version", Operator: "eq"}]; ok && len(v) > 0 {
+			version := strings.TrimSpace(strings.ToLower(v[0]))
+			switch version {
+			case "2", "v2", "verzija2", "version2":
+				backgroundImage = ""
+				backgroundFullBleed = false
+			}
+		}
 
 		var (
 			targetFile   string
@@ -88,7 +97,7 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		switch outputFormat {
 		case "pdf":
 			targetFile = filepath.Join(targetDir, "krstenica.pdf")
-			if err := fillKrstenicaPDFFile(krstenica, file, targetFile, backgroundImage); err != nil {
+			if err := fillKrstenicaPDFFile(krstenica, file, targetFile, backgroundImage, backgroundFullBleed); err != nil {
 				log.Println("Error generating PDF file:", err)
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to generate PDF file: %v", err)})
 				return
@@ -116,7 +125,7 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 				return
 			}
 
-			if err := fillKrstenicaExcelFile(krstenica, targetFile, backgroundImage); err != nil {
+			if err := fillKrstenicaExcelFile(krstenica, targetFile, backgroundImage, backgroundFullBleed); err != nil {
 				log.Println("Error generating Excel file:", err)
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to generate Excel file: %v", err)})
 				return
@@ -164,64 +173,64 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 
 func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 	values := map[string]string{
-		"C2":  krstenica.Book,
-		"C3":  formatInt(krstenica.Page),
-		"C4":  formatInt(krstenica.CurrentNumber),
-		"C9":  krstenica.EparhijaName,
-		"C11": krstenica.TampleName,
-		"H11": krstenica.TampleCity,
-		"F14": formatDateTimeComma(krstenica.BirthDate),
-		"E17": krstenica.PlaceOfBirthday,
-		"G17": krstenica.MunicipalityOfBirthday,
+		"C1":  krstenica.Book,
+		"C2":  formatInt(krstenica.Page),
+		"C3":  formatInt(krstenica.CurrentNumber),
+		"C8":  krstenica.EparhijaName,
+		"C10": krstenica.TampleName,
+		"I10": krstenica.TampleCity,
+		"F13": formatDateTimeComma(krstenica.BirthDate),
+		"E16": krstenica.PlaceOfBirthday,
+		"G16": krstenica.MunicipalityOfBirthday,
 		// "I17": krstenica.Country,
-		"E20": formatDateTimeComma(krstenica.Baptism),
-		"F24": krstenica.TampleCity,
-		"H24": krstenica.TampleName,
+		"E19": formatDateTimeComma(krstenica.Baptism),
+		"G24": krstenica.TampleCity,
+		"I24": krstenica.TampleName,
 		"D27": krstenica.FirstName,
 		"F27": krstenica.LastName,
-		"H27": mapGenderToCyrillic(krstenica.Gender),
-		"E30": krstenica.ParentFirstName,
-		"G30": krstenica.ParentLastName,
-		"I30": krstenica.ParentOccupation,
-		"E31": krstenica.ParentCity,
-		"G31": krstenica.ParentReligion,
-		"G32": strings.TrimSpace(krstenica.BirthOrder),
-		"E35": strings.TrimSpace(krstenica.IsChurchMarried),
-		"E37": strings.TrimSpace(krstenica.IsTwin),
-		"G39": strings.TrimSpace(krstenica.HasPhysicalDisability),
-		"F42": krstenica.PriestFirstName,
-		"H42": krstenica.PriestLastName,
-		"E45": krstenica.GodfatherFirstName,
-		"G45": krstenica.GodfatherLastName,
-		"I45": krstenica.GodfatherOccupation,
-		"E46": krstenica.GodfatherCity,
-		"G46": krstenica.GodfatherReligion,
-		"E49": krstenica.Anagrafa,
-		"C51": krstenica.Comment,
-		"B58": formatInt(krstenica.NumberOfCertificate),
-		"B60": "",
-		"C60": "",
-		"B61": krstenica.TownOfCertificate,
+		"I27": mapGenderToCyrillic(krstenica.Gender),
+		"F30": krstenica.ParentFirstName,
+		"I30": krstenica.ParentLastName,
+		"K30": krstenica.ParentOccupation,
+		"F31": krstenica.ParentCity,
+		"I31": krstenica.ParentReligion,
+		"I32": strings.TrimSpace(krstenica.BirthOrder),
+		"E36": strings.TrimSpace(krstenica.IsChurchMarried),
+		"E38": strings.TrimSpace(krstenica.IsTwin),
+		"I41": strings.TrimSpace(krstenica.HasPhysicalDisability),
+		"F43": krstenica.PriestFirstName,
+		"H43": krstenica.PriestLastName,
+		"E48": krstenica.GodfatherFirstName,
+		"G48": krstenica.GodfatherLastName,
+		"I48": krstenica.GodfatherOccupation,
+		"E49": krstenica.GodfatherCity,
+		"G49": krstenica.GodfatherReligion,
+		"E51": krstenica.Anagrafa,
+		"C54": krstenica.Comment,
+		"B62": formatInt(krstenica.NumberOfCertificate),
+		"B63": "",
+		"C63": "",
+		"B65": krstenica.TownOfCertificate,
 		// "F60": strings.TrimSpace(fmt.Sprintf("%s %s", krstenica.ParohFirstName, krstenica.ParohLastName)),
 		// "C62": krstenica.Status,
 	}
 
 	if !krstenica.Certificate.IsZero() {
 		dayMonth, yearSuffix := splitDateDayMonthYearSuffix(krstenica.Certificate)
-		values["B60"] = dayMonth
-		values["C60"] = yearSuffix
+		values["B63"] = dayMonth
+		values["C63"] = yearSuffix
 	}
 
 	if !krstenica.Baptism.IsZero() {
-		values["K11"] = fmt.Sprintf("%d", krstenica.Baptism.Year())
+		values["N10"] = krstenica.Baptism.Format("06")
 	} else {
-		values["K11"] = ""
+		values["N10"] = ""
 	}
 
 	return values
 }
 
-func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string, backgroundImage string) error {
+func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string, backgroundImage string, fullBleed bool) error {
 
 	// Proveriti da li fajl postoji
 	if _, err := os.Stat(targetFile); os.IsNotExist(err) {
@@ -250,7 +259,7 @@ func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string, backgro
 
 	if backgroundImage != "" {
 		if _, err := os.Stat(backgroundImage); err == nil {
-			if err := addBackgroundPicture(xlsxEx, sheetName, backgroundImage); err != nil {
+			if err := addBackgroundPicture(xlsxEx, sheetName, backgroundImage, fullBleed); err != nil {
 				log.Println("Ne može da doda pozadinsku sliku:", err)
 			}
 		} else {
@@ -339,16 +348,23 @@ func mapGenderToCyrillic(gender string) string {
 	}
 }
 
-func addBackgroundPicture(file *excelize.File, sheetName, imagePath string) error {
+func addBackgroundPicture(file *excelize.File, sheetName, imagePath string, fullBleed bool) error {
 	printObject := true
-	if err := file.AddPicture(sheetName, "A1", imagePath, &excelize.GraphicOptions{
+	scaleX := 1.6
+	scaleY := 1.55
+	if fullBleed {
+		scaleX = 2.2
+		scaleY = 2.2
+	}
+	options := &excelize.GraphicOptions{
 		OffsetX:     0,
 		OffsetY:     0,
-		ScaleX:      1.6,
-		ScaleY:      1.55,
+		ScaleX:      scaleX,
+		ScaleY:      scaleY,
 		Positioning: "moveAndSize",
 		PrintObject: &printObject,
-	}); err != nil {
+	}
+	if err := file.AddPicture(sheetName, "A1", imagePath, options); err != nil {
 		return err
 	}
 	return nil

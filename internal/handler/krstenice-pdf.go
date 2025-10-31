@@ -4,6 +4,10 @@ import (
 	"archive/zip"
 	"encoding/xml"
 	"fmt"
+	"image"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"math"
 	"os"
@@ -37,41 +41,45 @@ type textOffset struct {
 }
 
 var cellOffsets = map[string]textOffset{
-	"C11": {dx: 0.0, dy: -2.0},
-	"H11": {dx: 10.6, dy: -2.0},
-	"K11": {dx: 30.0, dy: -2.0},
-	"F14": {dx: 1.0, dy: -2.0},
-	"E17": {dx: 2.0, dy: -0.9},
-	"G17": {dx: 2.0, dy: -0.9},
-	"E20": {dx: 5.0, dy: 4.0},
-	"F24": {dx: 15.0, dy: -3.9},
-	"H24": {dx: 13.0, dy: -3.9},
-	"D27": {dx: 6.0, dy: -6.9},
-	"F27": {dx: 6.0, dy: -6.9},
-	"H27": {dx: 15.0, dy: -6.9},
-	"E30": {dx: 34.0, dy: -10.0},
-	"G30": {dx: 30.0, dy: -10.0},
-	"I30": {dx: 34.0, dy: -10.0},
-	"E31": {dx: 34.0, dy: -8.0},
-	"G31": {dx: 30.0, dy: -8.0},
-	"G32": {dx: 10.0, dy: 3.0},
+	"C1":  {dx: 0.0, dy: -8.0},
+	"C2":  {dx: 0.0, dy: -7.0},
+	"C3":  {dx: 0.0, dy: -3.5},
+	"C8":  {dx: 0.0, dy: -5.0},
+	"C10": {dx: 0.0, dy: -6.0},
+	"I10": {dx: 10.6, dy: -6.0},
+	"N10": {dx: 2.0, dy: -6.0},
+	"F13": {dx: 10.0, dy: -5.0},
+	"E16": {dx: 12.0, dy: -3.0},
+	"G16": {dx: 12.0, dy: -3.0},
+	"E19": {dx: 12.0, dy: 3.0},
+	"G24": {dx: 10.0, dy: -6.0},
+	"I24": {dx: 10.0, dy: -6.0},
+	"D27": {dx: 10.0, dy: -8.0},
+	"F27": {dx: 8.0, dy: -8.0},
+	"I27": {dx: 0.0, dy: -8.0},
+	"F30": {dx: 12.0, dy: -8.0},
+	"I30": {dx: 0.0, dy: -8.0},
+	"K30": {dx: 0.0, dy: -8.0},
+	"F31": {dx: 12.0, dy: -7.0},
+	"I31": {dx: 0.0, dy: -7.0},
+	"I32": {dx: -10.0, dy: 7.0},
 	// "K32": {dx: 7.0, dy: 3.0},
-	"E35": {dx: 5.0, dy: -1.0},
-	"E37": {dx: -12.0, dy: 1.0},
-	"G39": {dx: 25.0, dy: 4.0},
-	"F42": {dx: 0.0, dy: 2.0},
-	"H42": {dx: 0.0, dy: 2.0},
-	"E45": {dx: 0.0, dy: 2.0},
-	"G45": {dx: 0.0, dy: 2.0},
-	"I45": {dx: 20.0, dy: 2.0},
-	"E46": {dx: 0.0, dy: 4.0},
-	"G46": {dx: 0.0, dy: 4.0},
-	"E49": {dx: 20.0, dy: -0.9},
-	"C51": {dx: 10.0, dy: 1.8},
-	"B58": {dx: 10.0, dy: -0.9},
-	"B60": {dx: 0.0, dy: -2.0},
-	"C60": {dx: 7.0, dy: -2.0},
-	"B61": {dx: 2.0, dy: 1.0},
+	"E36": {dx: 15.0, dy: -3.0},
+	"E38": {dx: -10.0, dy: 3.0},
+	"I41": {dx: 5.0, dy: 1.0},
+	"F43": {dx: 10.0, dy: 9.0},
+	"H43": {dx: 10.0, dy: 9.0},
+	"E48": {dx: 10.0, dy: -2.0},
+	"G48": {dx: 10.0, dy: -2.0},
+	"I48": {dx: 30.0, dy: -2.0},
+	"E49": {dx: 10.0, dy: 0.0},
+	"G49": {dx: 10.0, dy: 0.0},
+	"E51": {dx: 30.0, dy: 7.0},
+	"C54": {dx: 20.0, dy: 1.0},
+	"B62": {dx: 10.0, dy: -2.0},
+	"B63": {dx: 0.0, dy: 4.0},
+	"C63": {dx: 8.0, dy: 4.0},
+	"B65": {dx: 2.0, dy: 2.0},
 }
 
 type worksheetLayout struct {
@@ -103,7 +111,7 @@ type cellRect struct {
 	height float64
 }
 
-func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, backgroundImage string) error {
+func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, backgroundImage string, fullBleed bool) error {
 	layout, err := loadWorksheetLayout(templatePath)
 	if err != nil {
 		return fmt.Errorf("load worksheet layout: %w", err)
@@ -125,18 +133,18 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 
 	if backgroundImage != "" {
 		if _, err := os.Stat(backgroundImage); err == nil {
-			if err := drawBackgroundImage(pdf, layout, backgroundImage); err != nil {
+			if err := drawBackgroundImage(pdf, layout, backgroundImage, fullBleed); err != nil {
 				return fmt.Errorf("draw background: %w", err)
 			}
 		}
 	}
 
 	cellOrder := []string{
-		"C2", "C3", "C4", "C9", "C11", "H11", "K11",
-		"F14", "E17", "G17", "I17", "E20", "F24", "H24",
-		"D27", "F27", "H27", "E30", "G30", "I30", "E31", "G31",
-		"G32", "K32", "E35", "E37", "G39", "F42", "H42",
-		"E45", "G45", "I45", "E46", "G46", "E49", "C51", "B58", "B60", "C60", "B61",
+		"C1", "C2", "C3", "C8", "C10", "I10", "N10",
+		"F13", "E16", "G16", "E19", "G24", "I24",
+		"D27", "F27", "I27", "F30", "I30", "K30", "F31", "I31",
+		"I32", "K32", "E36", "E38", "I41", "F43", "H43",
+		"E48", "G48", "I48", "E49", "G49", "E51", "C54", "B62", "B63", "C63", "B65",
 	}
 
 	paddingScaled := pdfCellPaddingMM * layout.scale
@@ -200,11 +208,38 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 	return nil
 }
 
-func drawBackgroundImage(pdf *gofpdf.Fpdf, layout *worksheetLayout, imagePath string) error {
+func drawBackgroundImage(pdf *gofpdf.Fpdf, layout *worksheetLayout, imagePath string, fullBleed bool) error {
 	contentW := layout.contentWidthMM * layout.scale
 	contentH := layout.contentHeightMM * layout.scale
 
 	pageW, pageH := pdf.GetPageSize()
+	imgType := strings.ToUpper(strings.TrimPrefix(filepath.Ext(imagePath), "."))
+
+	if fullBleed {
+		targetW := pageW
+		targetH := pageH
+		offsetX := 0.0
+		offsetY := 0.0
+
+		if imgW, imgH, err := imageSize(imagePath); err == nil && imgW > 0 && imgH > 0 {
+			imgRatio := float64(imgW) / float64(imgH)
+			pageRatio := pageW / pageH
+			if imgRatio > 0 {
+				if imgRatio > pageRatio {
+					targetH = pageH
+					targetW = pageH * imgRatio
+					offsetX = (pageW - targetW) / 2
+				} else {
+					targetW = pageW
+					targetH = pageW / imgRatio
+					offsetY = (pageH - targetH) / 2
+				}
+			}
+		}
+
+		pdf.ImageOptions(imagePath, offsetX, offsetY, targetW, targetH, false, gofpdf.ImageOptions{ImageType: imgType}, 0, "")
+		return nil
+	}
 
 	if contentW <= 0 {
 		contentW = pageW - layout.leftMarginMM - layout.rightMarginMM
@@ -222,9 +257,21 @@ func drawBackgroundImage(pdf *gofpdf.Fpdf, layout *worksheetLayout, imagePath st
 	x := layout.leftMarginMM
 	y := layout.topMarginMM
 
-	imgType := strings.ToUpper(strings.TrimPrefix(filepath.Ext(imagePath), "."))
 	pdf.ImageOptions(imagePath, x, y, contentW, contentH, false, gofpdf.ImageOptions{ImageType: imgType}, 0, "")
 	return nil
+}
+
+func imageSize(path string) (int, int, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return 0, 0, err
+	}
+	defer f.Close()
+	cfg, _, err := image.DecodeConfig(f)
+	if err != nil {
+		return 0, 0, err
+	}
+	return cfg.Width, cfg.Height, nil
 }
 
 func (l *worksheetLayout) cellRect(cell string) (cellRect, bool) {
