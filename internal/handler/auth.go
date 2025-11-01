@@ -171,13 +171,44 @@ func (h *httpHandler) parseSessionToken(token string) (string, error) {
 }
 
 func (h *httpHandler) issueSessionCookie(ctx *gin.Context, token string) {
-	secure := strings.HasPrefix(strings.ToLower(strings.TrimSpace(h.conf.Host)), "https")
-	ctx.SetCookie(sessionCookieName, token, int(sessionDuration.Seconds()), "/", "", secure, true)
+	ctx.SetCookie(sessionCookieName, token, int(sessionDuration.Seconds()), "/", "", h.isSecureRequest(ctx), true)
 }
 
 func (h *httpHandler) clearSessionCookie(ctx *gin.Context) {
-	secure := strings.HasPrefix(strings.ToLower(strings.TrimSpace(h.conf.Host)), "https")
-	ctx.SetCookie(sessionCookieName, "", -1, "/", "", secure, true)
+	ctx.SetCookie(sessionCookieName, "", -1, "/", "", h.isSecureRequest(ctx), true)
+}
+
+// isSecureRequest inspects the request/proxy headers to decide if cookies need the Secure flag.
+func (h *httpHandler) isSecureRequest(ctx *gin.Context) bool {
+	if ctx.Request.TLS != nil {
+		return true
+	}
+
+	if proto := strings.TrimSpace(ctx.GetHeader("X-Forwarded-Proto")); strings.EqualFold(proto, "https") {
+		return true
+	}
+
+	if forwarded := ctx.GetHeader("Forwarded"); forwarded != "" {
+		for _, entry := range strings.Split(forwarded, ",") {
+			for _, part := range strings.Split(entry, ";") {
+				fragment := strings.TrimSpace(part)
+				if fragment == "" {
+					continue
+				}
+				keyValue := strings.SplitN(fragment, "=", 2)
+				if len(keyValue) != 2 {
+					continue
+				}
+				if strings.EqualFold(strings.TrimSpace(keyValue[0]), "proto") &&
+					strings.EqualFold(strings.Trim(strings.TrimSpace(keyValue[1]), `"`), "https") {
+					return true
+				}
+			}
+		}
+	}
+
+	host := strings.TrimSpace(h.conf.Host)
+	return strings.HasPrefix(strings.ToLower(host), "https")
 }
 
 func (h *httpHandler) signPayload(payload string) string {
