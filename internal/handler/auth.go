@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"net/url"
@@ -18,14 +19,16 @@ import (
 const (
 	sessionCookieName   = "krstenica_session"
 	contextUserKey      = "krstenica_authenticated_user"
-	sessionDuration     = 24 * time.Hour
+	sessionDuration     = 30 * time.Minute
 	defaultRedirectPath = "/ui"
+	apiTokenDuration    = 30 * time.Minute
 )
 
 func (h *httpHandler) addAuthRoutes() {
 	h.router.GET("/ui/login", h.renderLogin())
 	h.router.POST("/ui/login", h.handleLogin())
 	h.router.POST("/ui/logout", h.requireUIAuth(), h.handleLogout())
+	h.router.POST("/"+routePrefix+"/auth/login", h.handleAPILogin())
 }
 
 func (h *httpHandler) renderLogin() gin.HandlerFunc {
@@ -94,6 +97,42 @@ func (h *httpHandler) handleLogout() gin.HandlerFunc {
 	}
 }
 
+func (h *httpHandler) handleAPILogin() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var req struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}
+
+		if err := ctx.ShouldBindJSON(&req); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "neispravan format zahteva"})
+			return
+		}
+
+		ok, err := h.credentialsMatch(ctx, req.Username, req.Password)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "greska pri provjeri korisnika"})
+			return
+		}
+		if !ok {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "pogresno korisnicko ime ili lozinka"})
+			return
+		}
+
+		token, expiresAt, err := h.createJWTToken(req.Username)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "greska pri generisanju tokena"})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"token":      token,
+			"token_type": "Bearer",
+			"expires_at": expiresAt.UTC().Format(time.RFC3339),
+		})
+	}
+}
+
 func (h *httpHandler) credentialsMatch(ctx *gin.Context, username, password string) (bool, error) {
 	return h.service.AuthenticateUser(ctx.Request.Context(), username, password)
 }
@@ -117,6 +156,12 @@ func (h *httpHandler) requireUIAuth() gin.HandlerFunc {
 
 func (h *httpHandler) requireAPIAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		if username, ok := h.authenticateAPIRequest(ctx); ok {
+			ctx.Set(contextUserKey, username)
+			ctx.Next()
+			return
+		}
+
 		if username, ok := h.authenticateRequest(ctx); ok {
 			ctx.Set(contextUserKey, username)
 			ctx.Next()
@@ -125,6 +170,29 @@ func (h *httpHandler) requireAPIAuth() gin.HandlerFunc {
 
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 	}
+}
+
+func (h *httpHandler) authenticateAPIRequest(ctx *gin.Context) (string, bool) {
+	authHeader := strings.TrimSpace(ctx.GetHeader("Authorization"))
+	if authHeader == "" {
+		return "", false
+	}
+
+	const bearerPrefix = "Bearer "
+	if len(authHeader) <= len(bearerPrefix) || !strings.EqualFold(authHeader[:len(bearerPrefix)], bearerPrefix) {
+		return "", false
+	}
+
+	token := strings.TrimSpace(authHeader[len(bearerPrefix):])
+	if token == "" {
+		return "", false
+	}
+
+	username, err := h.parseJWTToken(token)
+	if err != nil {
+		return "", false
+	}
+	return username, true
 }
 
 func (h *httpHandler) authenticateRequest(ctx *gin.Context) (string, bool) {
@@ -222,6 +290,119 @@ func (h *httpHandler) signPayload(payload string) string {
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write([]byte(payload))
 	return hex.EncodeToString(mac.Sum(nil))
+}
+
+func (h *httpHandler) createJWTToken(username string) (string, time.Time, error) {
+	username = strings.TrimSpace(username)
+	if username == "" {
+		return "", time.Time{}, errors.New("username is required")
+	}
+	secret := strings.TrimSpace(h.jwtSecret())
+	if secret == "" {
+		return "", time.Time{}, errors.New("jwt secret is not configured")
+	}
+
+	now := time.Now().UTC()
+	expiresAt := now.Add(apiTokenDuration)
+
+	header := map[string]string{
+		"alg": "HS256",
+		"typ": "JWT",
+	}
+
+	claims := map[string]interface{}{
+		"sub": username,
+		"iat": now.Unix(),
+		"nbf": now.Unix(),
+		"exp": expiresAt.Unix(),
+	}
+
+	headerJSON, err := json.Marshal(header)
+	if err != nil {
+		return "", time.Time{}, err
+	}
+	claimsJSON, err := json.Marshal(claims)
+	if err != nil {
+		return "", time.Time{}, err
+	}
+
+	segments := []string{
+		base64.RawURLEncoding.EncodeToString(headerJSON),
+		base64.RawURLEncoding.EncodeToString(claimsJSON),
+	}
+
+	signingInput := strings.Join(segments, ".")
+	signature := base64.RawURLEncoding.EncodeToString(h.signJWT(signingInput, secret))
+
+	token := signingInput + "." + signature
+	return token, expiresAt, nil
+}
+
+func (h *httpHandler) parseJWTToken(token string) (string, error) {
+	token = strings.TrimSpace(token)
+	parts := strings.Split(token, ".")
+	if len(parts) != 3 {
+		return "", errors.New("invalid token")
+	}
+
+	secret := strings.TrimSpace(h.jwtSecret())
+	if secret == "" {
+		return "", errors.New("jwt secret is not configured")
+	}
+
+	signingInput := strings.Join(parts[:2], ".")
+	expectedSignature := h.signJWT(signingInput, secret)
+	actualSignature, err := base64.RawURLEncoding.DecodeString(parts[2])
+	if err != nil {
+		return "", errors.New("invalid token signature")
+	}
+	if !hmac.Equal(actualSignature, expectedSignature) {
+		return "", errors.New("invalid token signature")
+	}
+
+	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return "", errors.New("invalid token payload")
+	}
+
+	var claims struct {
+		Subject   string `json:"sub"`
+		ExpiresAt int64  `json:"exp"`
+		NotBefore int64  `json:"nbf"`
+	}
+	if err := json.Unmarshal(payload, &claims); err != nil {
+		return "", errors.New("invalid token payload")
+	}
+	if strings.TrimSpace(claims.Subject) == "" {
+		return "", errors.New("invalid token subject")
+	}
+
+	now := time.Now().UTC().Unix()
+	if claims.NotBefore != 0 && now < claims.NotBefore {
+		return "", errors.New("token not yet valid")
+	}
+	if claims.ExpiresAt != 0 && now >= claims.ExpiresAt {
+		return "", errors.New("token expired")
+	}
+
+	return claims.Subject, nil
+}
+
+func (h *httpHandler) jwtSecret() string {
+	if h.conf == nil {
+		return ""
+	}
+	secret := strings.TrimSpace(h.conf.AdminJWTSecret)
+	if secret == "" {
+		secret = strings.TrimSpace(h.conf.JWTSecret)
+	}
+	return secret
+}
+
+func (h *httpHandler) signJWT(input, secret string) []byte {
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(input))
+	return mac.Sum(nil)
 }
 
 func sanitizeReturnURL(value string) string {

@@ -11,7 +11,9 @@ import (
 )
 
 type usersTableData struct {
-	Items []*dto.User
+	Items   []*dto.User
+	Error   string
+	Success string
 }
 
 func (h *httpHandler) renderUsersPage() gin.HandlerFunc {
@@ -31,12 +33,7 @@ func (h *httpHandler) renderUsersPage() gin.HandlerFunc {
 
 func (h *httpHandler) renderUsersTable() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		users, err := h.service.ListUsers(ctx.Request.Context())
-		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{"Message": err.Error()})
-			return
-		}
-		ctx.HTML(http.StatusOK, "users/table.html", usersTableData{Items: users})
+		h.usersTableResponse(ctx, "", "")
 	}
 }
 
@@ -54,18 +51,13 @@ func (h *httpHandler) handleUsersCreate() gin.HandlerFunc {
 			ctx.HTML(http.StatusBadRequest, "users/new.html", gin.H{"Error": "Неисправан унос"})
 			return
 		}
-		_, err := h.service.CreateUser(ctx.Request.Context(), &req)
+		created, err := h.service.CreateUser(ctx.Request.Context(), &req)
 		if err != nil {
 			ctx.Header("HX-Retarget", "closest dialog")
 			ctx.HTML(http.StatusBadRequest, "users/new.html", gin.H{"Error": err.Error()})
 			return
 		}
-		users, err := h.service.ListUsers(ctx.Request.Context())
-		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{"Message": err.Error()})
-			return
-		}
-		ctx.HTML(http.StatusOK, "users/table.html", usersTableData{Items: users})
+		h.usersTableResponse(ctx, "Корисник '"+created.Username+"' је додат.", "")
 	}
 }
 
@@ -92,31 +84,52 @@ func (h *httpHandler) handleUsersUpdate() gin.HandlerFunc {
 			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{"Message": "Непознат корисник"})
 			return
 		}
-		user, err := h.service.GetUser(ctx.Request.Context(), id)
+		existing, err := h.service.GetUser(ctx.Request.Context(), id)
 		if err != nil {
 			ctx.Header("HX-Retarget", "closest dialog")
 			ctx.HTML(http.StatusInternalServerError, "users/edit.html", gin.H{"Error": err.Error()})
 			return
 		}
 
-		password := ctx.PostForm("password")
-		if strings.TrimSpace(password) == "" {
+		var req dto.UserUpdateReq
+		if err := ctx.ShouldBind(&req); err != nil {
 			ctx.Header("HX-Retarget", "closest dialog")
-			ctx.HTML(http.StatusBadRequest, "users/edit.html", gin.H{"Error": "Лозинка је обавезна", "User": user})
+			ctx.HTML(http.StatusBadRequest, "users/edit.html", gin.H{"Error": "Неисправан унос", "User": existing})
+			return
+		}
+		if strings.TrimSpace(req.Username) == "" {
+			ctx.Header("HX-Retarget", "closest dialog")
+			ctx.HTML(http.StatusBadRequest, "users/edit.html", gin.H{"Error": "Корисничко име је обавезно", "User": existing})
 			return
 		}
 
-		if _, err = h.service.UpdateUserPassword(ctx.Request.Context(), id, password); err != nil {
-			ctx.Header("HX-Retarget", "closest dialog")
-			ctx.HTML(http.StatusBadRequest, "users/edit.html", gin.H{"Error": err.Error(), "User": user})
-			return
-		}
-		users, err := h.service.ListUsers(ctx.Request.Context())
+		updated, err := h.service.UpdateUser(ctx.Request.Context(), id, &req)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{"Message": err.Error()})
+			ctx.Header("HX-Retarget", "closest dialog")
+			ctx.HTML(http.StatusBadRequest, "users/edit.html", gin.H{"Error": err.Error(), "User": existing})
 			return
 		}
-		ctx.HTML(http.StatusOK, "users/table.html", usersTableData{Items: users})
+		h.usersTableResponse(ctx, "Корисник '"+updated.Username+"' је измењен.", "")
+	}
+}
+
+func (h *httpHandler) handleUsersDelete() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+		if err != nil {
+			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{"Message": "Непознат корисник"})
+			return
+		}
+		user, err := h.service.GetUser(ctx.Request.Context(), id)
+		if err != nil {
+			h.usersTableResponse(ctx, "", err.Error())
+			return
+		}
+		if err := h.service.DeleteUser(ctx.Request.Context(), id); err != nil {
+			h.usersTableResponse(ctx, "", err.Error())
+			return
+		}
+		h.usersTableResponse(ctx, "Корисник '"+user.Username+"' је обрисан.", "")
 	}
 }
 
@@ -154,18 +167,44 @@ func (h *httpHandler) updateUser() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 			return
 		}
-		var payload struct {
-			Password string `json:"password"`
-		}
+		var payload dto.UserUpdateReq
 		if err := ctx.ShouldBindJSON(&payload); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
 			return
 		}
-		user, err := h.service.UpdateUserPassword(ctx.Request.Context(), id, payload.Password)
+		user, err := h.service.UpdateUser(ctx.Request.Context(), id, &payload)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		ctx.JSON(http.StatusOK, user)
 	}
+}
+
+func (h *httpHandler) deleteUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+			return
+		}
+		if err := h.service.DeleteUser(ctx.Request.Context(), id); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.Status(http.StatusNoContent)
+	}
+}
+
+func (h *httpHandler) usersTableResponse(ctx *gin.Context, successMsg, errorMsg string) {
+	users, err := h.service.ListUsers(ctx.Request.Context())
+	if err != nil {
+		ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{"Message": err.Error()})
+		return
+	}
+	ctx.HTML(http.StatusOK, "users/table.html", usersTableData{
+		Items:   users,
+		Success: successMsg,
+		Error:   errorMsg,
+	})
 }

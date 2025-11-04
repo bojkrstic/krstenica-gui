@@ -44,7 +44,8 @@ type Service interface {
 	ListUsers(ctx context.Context) ([]*dto.User, error)
 	CreateUser(ctx context.Context, req *dto.UserCreateReq) (*dto.User, error)
 	GetUser(ctx context.Context, id int64) (*dto.User, error)
-	UpdateUserPassword(ctx context.Context, id int64, password string) (*dto.User, error)
+	UpdateUser(ctx context.Context, id int64, req *dto.UserUpdateReq) (*dto.User, error)
+	DeleteUser(ctx context.Context, id int64) error
 }
 
 type service struct {

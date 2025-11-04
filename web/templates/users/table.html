@@ -1,4 +1,11 @@
 {{ define "users/table.html" }}
+{{ if .Success }}
+<p class="message-success" style="color:#15803d;">{{ .Success }}</p>
+{{ end }}
+{{ if .Error }}
+<p class="message-error" style="color:#b91c1c;">{{ .Error }}</p>
+{{ end }}
+
 <table>
     <thead>
         <tr>
@@ -19,7 +26,14 @@
                         hx-target="body"
                         hx-trigger="click"
                         hx-swap="beforeend">
-                        Промени лозинку
+                        Промени
+                    </button>
+                    <button class="danger outline"
+                        hx-delete="/ui/users/{{ .ID }}"
+                        hx-target="#users-table"
+                        hx-swap="innerHTML"
+                        hx-confirm="Да ли сте сигурни да желите да обришете корисника '{{ .Username }}'?">
+                        Обриши
                     </button>
                 </td>
             </tr>

@@ -77,6 +77,7 @@ func (h *httpHandler) addGuiRoutes() {
 	protected.GET("/ui/users/:id/edit", h.renderUsersEdit())
 	protected.POST("/ui/users", h.handleUsersCreate())
 	protected.PUT("/ui/users/:id", h.handleUsersUpdate())
+	protected.DELETE("/ui/users/:id", h.handleUsersDelete())
 }
 
 func (h *httpHandler) renderDashboard() gin.HandlerFunc {

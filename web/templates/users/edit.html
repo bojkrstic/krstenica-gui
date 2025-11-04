@@ -2,7 +2,7 @@
 <dialog open class="modal" data-modal-type="users-edit">
     <article>
         <header>
-            <h2>Промена лозинке</h2>
+            <h2>Измена корисника</h2>
         </header>
         <form
             hx-put="/ui/users/{{ if .User}}{{ .User.ID }}{{ else }}{{ .ID }}{{ end }}"
@@ -16,10 +16,10 @@
             <p class="error-message">{{ .Error }}</p>
             {{ end }}
             <label>Корисничко име
-                <input value="{{ if .User}}{{ .User.Username }}{{ end }}" readonly>
+                <input name="username" value="{{ if .User}}{{ .User.Username }}{{ end }}" required>
             </label>
             <label>Нова лозинка
-                <input type="password" name="password" required>
+                <input type="password" name="password" placeholder="Оставите празно ако не мењате">
             </label>
             <footer>
                 <button type="submit" class="primary">Сачувај</button>

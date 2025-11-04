@@ -180,6 +180,8 @@
                     {{ template "svestenici/content" . }}
                 {{ else if eq .ContentTemplate "osobe/content" }}
                     {{ template "osobe/content" . }}
+                {{ else if eq .ContentTemplate "users/content" }}
+                    {{ template "users/content" . }}
                 {{ else }}
                     <p>Страница није доступна.</p>
                 {{ end }}

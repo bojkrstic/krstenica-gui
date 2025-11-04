@@ -124,19 +124,69 @@ func (s *service) GetUser(ctx context.Context, id int64) (*dto.User, error) {
 	}, nil
 }
 
-func (s *service) UpdateUserPassword(ctx context.Context, id int64, password string) (*dto.User, error) {
-	password = strings.TrimSpace(password)
-	if password == "" {
-		return nil, errors.New("password is required")
+func (s *service) UpdateUser(ctx context.Context, id int64, req *dto.UserUpdateReq) (*dto.User, error) {
+	if req == nil {
+		return nil, errors.New("request is required")
 	}
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+
+	current, err := s.repo.GetUserByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	if err := s.repo.UpdateUser(ctx, id, map[string]interface{}{"password_hash": string(hash)}); err != nil {
+
+	updates := make(map[string]interface{})
+
+	username := strings.TrimSpace(req.Username)
+	if username != "" && username != current.Username {
+		if len(username) > 255 {
+			return nil, errors.New("username can not be longer than 255 characters")
+		}
+		if _, err := s.repo.GetUserByUsername(ctx, username); err == nil {
+			return nil, errors.New("username already exists")
+		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
+		updates["username"] = username
+	}
+
+	password := strings.TrimSpace(req.Password)
+	if password != "" {
+		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
+		updates["password_hash"] = string(hash)
+	}
+
+	if len(updates) == 0 {
+		return &dto.User{
+			ID:        current.ID,
+			Username:  current.Username,
+			CreatedAt: current.CreatedAt,
+		}, nil
+	}
+
+	if err := s.repo.UpdateUser(ctx, id, updates); err != nil {
 		return nil, err
 	}
+
 	return s.GetUser(ctx, id)
+}
+
+func (s *service) DeleteUser(ctx context.Context, id int64) error {
+	if _, err := s.repo.GetUserByID(ctx, id); err != nil {
+		return err
+	}
+
+	count, err := s.repo.CountUsers(ctx)
+	if err != nil {
+		return err
+	}
+	if count <= 1 {
+		return errors.New("не може се обрисати последњи корисник")
+	}
+
+	return s.repo.DeleteUser(ctx, id)
 }
 
 func (s *service) createUserInternal(ctx context.Context, username, password string) error {

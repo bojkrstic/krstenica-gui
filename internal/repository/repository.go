@@ -43,6 +43,7 @@ type Repo interface {
 	CountUsers(ctx context.Context) (int64, error)
 	GetUserByID(ctx context.Context, id int64) (*model.User, error)
 	UpdateUser(ctx context.Context, id int64, updates map[string]interface{}) error
+	DeleteUser(ctx context.Context, id int64) error
 }
 
 type repo struct {
@@ -94,6 +95,10 @@ func (r *repo) GetUserByID(ctx context.Context, id int64) (*model.User, error) {
 
 func (r *repo) UpdateUser(ctx context.Context, id int64, updates map[string]interface{}) error {
 	return r.db.WithContext(ctx).Model(&model.User{}).Where("id = ?", id).Updates(updates).Error
+}
+
+func (r *repo) DeleteUser(ctx context.Context, id int64) error {
+	return r.db.WithContext(ctx).Delete(&model.User{}, id).Error
 }
 
 func Paginate(db *gorm.DB, dest interface{}, limit int) *gorm.DB {

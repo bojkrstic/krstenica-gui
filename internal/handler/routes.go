@@ -51,6 +51,7 @@ func (h *httpHandler) addRoutes() {
 	adminRouter.GET(pathWithAction("adminv2", "users"), h.listUsers())
 	adminRouter.POST(pathWithAction("adminv2", "users"), h.createUser())
 	adminRouter.PUT(pathWithAction("adminv2", "users/:id"), h.updateUser())
+	adminRouter.DELETE(pathWithAction("adminv2", "users/:id"), h.deleteUser())
 }
 
 func (h *httpHandler) needAdminAccess() gin.HandlerFunc {
