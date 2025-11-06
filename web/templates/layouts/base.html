@@ -268,7 +268,7 @@
                     delete params[name];
                 }
             });
-            const stringFields = ['book','first_name','last_name','gender','city','country','place_of_birthday','municipality_of_birthday','town_of_certificate','anagrafa','birth_order','is_church_married','is_twin','has_physical_disability'];
+            const stringFields = ['book','first_name','gender','city','country','place_of_birthday','municipality_of_birthday','town_of_certificate','anagrafa','birth_order','is_church_married','is_twin','has_physical_disability'];
             stringFields.forEach(function(name){
                 if (params[name] === '') {
                     delete params[name];
