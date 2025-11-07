@@ -176,12 +176,10 @@ func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 		"C1":  krstenica.Book,
 		"C2":  formatInt(krstenica.Page),
 		"C3":  formatInt(krstenica.CurrentNumber),
-		"C8":  krstenica.EparhijaName,
+		"F8":  krstenica.EparhijaName,
 		"C10": krstenica.TampleName,
 		"I10": krstenica.TampleCity,
 		"F13": formatDateTimeComma(krstenica.BirthDate),
-		"E16": krstenica.PlaceOfBirthday,
-		"G16": krstenica.MunicipalityOfBirthday,
 		// "I17": krstenica.Country,
 		"E19": formatDateTimeComma(krstenica.Baptism),
 		"G24": krstenica.TampleCity,
@@ -212,6 +210,24 @@ func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 		"B65": krstenica.TownOfCertificate,
 		// "F60": strings.TrimSpace(fmt.Sprintf("%s %s", krstenica.ParohFirstName, krstenica.ParohLastName)),
 		// "C62": krstenica.Status,
+	}
+
+	placeBirth := strings.TrimSpace(krstenica.PlaceOfBirthday)
+	municipalityBirth := strings.TrimSpace(krstenica.MunicipalityOfBirthday)
+	values["E16"] = ""
+	values["F16"] = ""
+	values["G16"] = ""
+
+	switch {
+	case placeBirth != "" && municipalityBirth != "" && strings.EqualFold(placeBirth, municipalityBirth):
+		values["F16"] = municipalityBirth
+	case placeBirth == "" && municipalityBirth != "":
+		values["G16"] = municipalityBirth
+	case municipalityBirth == "" && placeBirth != "":
+		values["E16"] = placeBirth
+	default:
+		values["E16"] = placeBirth
+		values["G16"] = municipalityBirth
 	}
 
 	if !krstenica.Certificate.IsZero() {
