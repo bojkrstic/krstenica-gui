@@ -192,24 +192,28 @@ func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 		"F31": krstenica.ParentCity,
 		"I31": krstenica.ParentReligion,
 		"I32": strings.TrimSpace(krstenica.BirthOrder),
-		"E36": strings.TrimSpace(krstenica.IsChurchMarried),
-		"E38": strings.TrimSpace(krstenica.IsTwin),
+		"I36": strings.TrimSpace(krstenica.IsChurchMarried),
+		"I38": strings.TrimSpace(krstenica.IsTwin),
 		"I41": strings.TrimSpace(krstenica.HasPhysicalDisability),
 		"F43": krstenica.PriestFirstName,
 		"H43": krstenica.PriestLastName,
 		"E48": krstenica.GodfatherFirstName,
 		"G48": krstenica.GodfatherLastName,
-		"I48": krstenica.GodfatherOccupation,
+		"K48": strings.TrimSpace(krstenica.PriestTitle),
 		"E49": krstenica.GodfatherCity,
 		"G49": krstenica.GodfatherReligion,
 		"E51": krstenica.Anagrafa,
 		"C54": krstenica.Comment,
-		"B62": formatInt(krstenica.NumberOfCertificate),
+		"B62": strings.TrimSpace(krstenica.NumberOfCertificate),
 		"B63": "",
 		"C63": "",
 		"B65": krstenica.TownOfCertificate,
 		// "F60": strings.TrimSpace(fmt.Sprintf("%s %s", krstenica.ParohFirstName, krstenica.ParohLastName)),
 		// "C62": krstenica.Status,
+	}
+
+	if values["K48"] == "" {
+		values["K48"] = strings.TrimSpace(krstenica.GodfatherOccupation)
 	}
 
 	placeBirth := strings.TrimSpace(krstenica.PlaceOfBirthday)

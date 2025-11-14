@@ -206,6 +206,7 @@ func makeKrstenicaResponse(krstenica *model.Krstenica) *dto.Krstenica {
 		PriestId:               int64Ptr(krstenica.PriestId),
 		PriestFirstName:        krstenica.PriestFirstName,
 		PriestLastName:         krstenica.PriestLastName,
+		PriestTitle:            krstenica.PriestTitle,
 		FirstName:              krstenica.FirstName,
 		LastName:               krstenica.LastName,
 		Gender:                 krstenica.Gender,
@@ -247,6 +248,11 @@ func validateKrstenicaCreaterequest(krstenicaReq *dto.KrstenicaCreateReq) error 
 
 	if len(krstenicaReq.City) > 255 {
 		return errorx.GetValidationError("Krstenica", "validation", "city of krstenica can not be longer than 255 characters")
+	}
+
+	krstenicaReq.NumberOfCertificate = strings.TrimSpace(krstenicaReq.NumberOfCertificate)
+	if len(krstenicaReq.NumberOfCertificate) > 255 {
+		return errorx.GetValidationError("Krstenica", "validation", "Number of certificate can not be longer than 255 characters")
 	}
 
 	krstenicaReq.BirthOrder = strings.TrimSpace(krstenicaReq.BirthOrder)
@@ -349,7 +355,11 @@ func validateKrstenicaUpdateRequest(krstenicaReq *dto.KrstenicaUpdateReq) (map[s
 		updates["anagrafa"] = *krstenicaReq.Anagrafa
 	}
 	if krstenicaReq.NumberOfCertificate != nil {
-		updates["number_of_certificate"] = *krstenicaReq.NumberOfCertificate
+		trimmed := strings.TrimSpace(*krstenicaReq.NumberOfCertificate)
+		if len(trimmed) > 255 {
+			return nil, errorx.GetValidationError("Krstenica", "validation", "Number of certificate can not be longer than 255 characters")
+		}
+		updates["number_of_certificate"] = trimmed
 	}
 	if krstenicaReq.Certificate != nil {
 		updates["certificate"] = *krstenicaReq.Certificate

@@ -247,7 +247,7 @@
                 }
                 delete params[name];
             });
-            const numberFields = ['page', 'current_number', 'eparhija_id', 'tample_id', 'parent_id', 'godfather_id', 'priest_id', 'number_of_certificate'];
+            const numberFields = ['page', 'current_number', 'eparhija_id', 'tample_id', 'parent_id', 'godfather_id', 'priest_id'];
             numberFields.forEach(function (name) {
                 if (params[name] !== undefined && params[name] !== '') {
                     params[name] = Number(params[name]);
@@ -268,7 +268,7 @@
                     delete params[name];
                 }
             });
-            const stringFields = ['book','first_name','gender','city','country','place_of_birthday','municipality_of_birthday','town_of_certificate','anagrafa','birth_order','is_church_married','is_twin','has_physical_disability'];
+            const stringFields = ['book','first_name','gender','city','country','place_of_birthday','municipality_of_birthday','town_of_certificate','anagrafa','birth_order','is_church_married','is_twin','has_physical_disability','number_of_certificate'];
             stringFields.forEach(function(name){
                 if (params[name] === '') {
                     delete params[name];

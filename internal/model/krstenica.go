@@ -40,6 +40,7 @@ type Krstenica struct {
 	PriestId            sql.NullInt64 `gorm:"column:priest_id"`
 	PriestFirstName     string        `gorm:"column:priest_first_name"`
 	PriestLastName      string        `gorm:"column:priest_last_name"`
+	PriestTitle         string        `gorm:"column:priest_title"`
 	FirstName           string        `gorm:"column:first_name"`
 	LastName            string        `gorm:"column:last_name"`
 	Gender              string        `gorm:"column:gender"`
@@ -55,7 +56,7 @@ type Krstenica struct {
 	IsTwin                 string       `gorm:"column:is_twin"`
 	HasPhysicalDisability  string       `gorm:"column:has_physical_disability"`
 	Anagrafa               string       `gorm:"column:anagrafa"`
-	NumberOfCertificate    int64        `gorm:"column:number_of_certificate"`
+	NumberOfCertificate    string       `gorm:"column:number_of_certificate"`
 	TownOfCertificate      string       `gorm:"column:town_of_certificate"`
 	Certificate            sql.NullTime `gorm:"column:certificate"`
 	Comment                string       `gorm:"column:comment"`
@@ -110,7 +111,7 @@ type KrstenicaPost struct {
 	IsTwin                 string       `gorm:"column:is_twin"`
 	HasPhysicalDisability  string       `gorm:"column:has_physical_disability"`
 	Anagrafa               string       `gorm:"column:anagrafa"`
-	NumberOfCertificate    int64        `gorm:"column:number_of_certificate"`
+	NumberOfCertificate    string       `gorm:"column:number_of_certificate"`
 	TownOfCertificate      string       `gorm:"column:town_of_certificate"`
 	Certificate            sql.NullTime `gorm:"column:certificate"`
 	Comment                string       `gorm:"column:comment"`

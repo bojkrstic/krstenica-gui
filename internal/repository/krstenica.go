@@ -52,7 +52,8 @@ func (r *repo) GetKrstenicaByID(ctx context.Context, id int64) (*model.Krstenica
 		pa.first_name as paroh_first_name,
 		pa.last_name as paroh_last_name,
 		pr.first_name as priest_first_name,
-		pr.last_name as priest_last_name`).
+		pr.last_name as priest_last_name,
+		pr.title as priest_title`).
 		First(&krstenica).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) { // Umesto `err == gorm.ErrRecordNotFound`
@@ -122,7 +123,8 @@ func (r *repo) ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSo
 		pa.first_name as paroh_first_name,
 		pa.last_name as paroh_last_name,
 		pr.first_name as priest_first_name,
-		pr.last_name as priest_last_name`).
+		pr.last_name as priest_last_name,
+		pr.title as priest_title`).
 		Order(orderBy)
 
 	query = applyPagination(query, filterAndSort)
@@ -168,7 +170,7 @@ var allowedAtributesInKrstenicaFilters = []string{
 	"godfather_occupation",
 	"godfather_city",
 	"godfather_religion",
-	"paroh_first_name", "paroh_last_name", "priest_first_name", "priest_last_name",
+	"paroh_first_name", "paroh_last_name", "priest_first_name", "priest_last_name", "priest_title",
 	"first_name", "last_name", "gender", "city", "country", "birth_date", "birth_order", "place_of_birthday", "municipality_of_birthday", "baptism",
 	"is_church_married", "is_twin", "has_physical_disability", "anagrafa", "number_of_certificate", "town_of_certificate", "certificate",
 	"comment", "status", "created_at",
@@ -186,7 +188,7 @@ var allowedAtributesInKrstenicaSort = []string{
 	"godfather_occupation",
 	"godfather_city",
 	"godfather_religion",
-	"paroh_first_name", "paroh_last_name", "priest_first_name", "priest_last_name",
+	"paroh_first_name", "paroh_last_name", "priest_first_name", "priest_last_name", "priest_title",
 	"first_name", "last_name", "gender", "city", "country", "birth_date", "birth_order", "place_of_birthday", "municipality_of_birthday", "baptism",
 	"is_church_married", "is_twin", "has_physical_disability", "anagrafa", "number_of_certificate", "town_of_certificate", "certificate",
 	"comment", "status", "created_at",
@@ -248,6 +250,9 @@ func transformKrstenicaSortAttribute(p string) (string, error) {
 	if p == "priest_last_name" {
 		return "pr.last_name", nil
 	}
+	if p == "priest_title" {
+		return "pr.title", nil
+	}
 
 	return "t." + p, nil
 }
@@ -307,6 +312,9 @@ func validateKrstenicaFilterAttr(p string, v []string) (string, error) {
 	}
 	if p == "priest_last_name" {
 		return "pr.last_name", nil
+	}
+	if p == "priest_title" {
+		return "pr.title", nil
 	}
 
 	return "t." + p, nil

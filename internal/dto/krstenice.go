@@ -32,6 +32,7 @@ type Krstenica struct {
 	PriestId               *int64    `json:"priest_id"`
 	PriestFirstName        string    `json:"priest_first_name"`
 	PriestLastName         string    `json:"priest_last_name"`
+	PriestTitle             string    `json:"priest_title"`
 	FirstName              string    `json:"first_name"`
 	LastName               string    `json:"last_name"`
 	Gender                 string    `json:"gender"`
@@ -46,7 +47,7 @@ type Krstenica struct {
 	IsTwin                 string    `json:"is_twin"`
 	HasPhysicalDisability  string    `json:"has_physical_disability"`
 	Anagrafa               string    `json:"anagrafa"`
-	NumberOfCertificate    int64     `json:"number_of_certificate"`
+	NumberOfCertificate    string    `json:"number_of_certificate"`
 	TownOfCertificate      string    `json:"town_of_certificate"`
 	Certificate            time.Time `json:"certificate"`
 	Comment                string    `json:"comment"`
@@ -78,7 +79,7 @@ type KrstenicaCreateReq struct {
 	IsTwin                 string    `json:"is_twin" form:"is_twin"`
 	HasPhysicalDisability  string    `json:"has_physical_disability" form:"has_physical_disability"`
 	Anagrafa               string    `json:"anagrafa" form:"anagrafa"`
-	NumberOfCertificate    int64     `json:"number_of_certificate" form:"number_of_certificate"`
+	NumberOfCertificate    string    `json:"number_of_certificate" form:"number_of_certificate"`
 	TownOfCertificate      string    `json:"town_of_certificate" form:"town_of_certificate"`
 	Certificate            time.Time `json:"certificate" form:"certificate" time_format:"2006-01-02T15:04:05Z07:00"`
 	Comment                string    `json:"comment" form:"comment"`
@@ -108,7 +109,7 @@ type KrstenicaUpdateReq struct {
 	IsTwin                 *string    `json:"is_twin" form:"is_twin"`
 	HasPhysicalDisability  *string    `json:"has_physical_disability" form:"has_physical_disability"`
 	Anagrafa               *string    `json:"anagrafa" form:"anagrafa"`
-	NumberOfCertificate    *int64     `json:"number_of_certificate" form:"number_of_certificate"`
+	NumberOfCertificate    *string    `json:"number_of_certificate" form:"number_of_certificate"`
 	TownOfCertificate      *string    `json:"town_of_certificate" form:"town_of_certificate"`
 	Certificate            *time.Time `json:"certificate" form:"certificate" time_format:"2006-01-02T15:04:05Z07:00"`
 	Comment                *string    `json:"comment" form:"comment"`
