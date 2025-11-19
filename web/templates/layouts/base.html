@@ -255,12 +255,38 @@
                     delete params[name];
                 }
             });
-            const dateFields = ['birth_date', 'baptism', 'certificate'];
-            dateFields.forEach(function (name) {
+            const dateTimeFields = ['birth_date'];
+            dateTimeFields.forEach(function (name) {
                 if (params[name]) {
                     const dateValue = new Date(params[name]);
                     if (!isNaN(dateValue.valueOf())) {
                         params[name] = dateValue.toISOString();
+                    } else {
+                        delete params[name];
+                    }
+                } else {
+                    delete params[name];
+                }
+            });
+            const isoDateFields = ['certificate'];
+            isoDateFields.forEach(function (name) {
+                if (params[name]) {
+                    const dateValue = new Date(params[name]);
+                    if (!isNaN(dateValue.valueOf())) {
+                        params[name] = dateValue.toISOString();
+                    } else {
+                        delete params[name];
+                    }
+                } else {
+                    delete params[name];
+                }
+            });
+            const dateOnlyFields = ['baptism'];
+            dateOnlyFields.forEach(function (name) {
+                if (params[name]) {
+                    const dateValue = new Date(params[name]);
+                    if (!isNaN(dateValue.valueOf())) {
+                        params[name] = dateValue.toISOString().split('T')[0];
                     } else {
                         delete params[name];
                     }

@@ -47,8 +47,8 @@
                     <label>Датум и време рођења
                         <input type="datetime-local" name="birth_date" value="{{ if not (.Krstenica.BirthDate.IsZero) }}{{ .Krstenica.BirthDate.Format "2006-01-02T15:04" }}{{ end }}">
                     </label>
-                    <label>Датум и време крштења
-                        <input type="datetime-local" name="baptism" value="{{ if not (.Krstenica.Baptism.IsZero) }}{{ .Krstenica.Baptism.Format "2006-01-02T15:04" }}{{ end }}">
+                    <label>Датум крштења
+                        <input type="date" name="baptism" value="{{ if not (.Krstenica.Baptism.IsZero) }}{{ .Krstenica.Baptism.Format "2006-01-02" }}{{ end }}">
                     </label>
                     <label>Рођење - редослед
                         <input name="birth_order" value="{{ .Krstenica.BirthOrder }}" placeholder="Примери: Прво, Близанац А">

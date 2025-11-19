@@ -991,7 +991,7 @@ components:
           type: string
         baptism:
           type: string
-          format: date-time
+          format: date
         is_church_married:
           type: string
         is_twin:
@@ -1107,7 +1107,7 @@ components:
           type: string
         baptism:
           type: string
-          format: date-time
+          format: date
         is_church_married:
           type: string
         is_twin:
@@ -1220,7 +1220,7 @@ components:
           nullable: true
         baptism:
           type: string
-          format: date-time
+          format: date
           nullable: true
         is_church_married:
           type: string

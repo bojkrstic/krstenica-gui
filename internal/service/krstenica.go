@@ -60,6 +60,19 @@ func (s *service) CreateKrstenica(ctx context.Context, krstenicaReq *dto.Krsteni
 	isTwin := strings.TrimSpace(krstenicaReq.IsTwin)
 	hasPhysical := strings.TrimSpace(krstenicaReq.HasPhysicalDisability)
 
+	birthDate := sql.NullTime{}
+	if !krstenicaReq.BirthDate.IsZero() {
+		birthDate = sql.NullTime{Valid: true, Time: krstenicaReq.BirthDate}
+	}
+	baptismDate := sql.NullTime{}
+	if !krstenicaReq.Baptism.IsZero() {
+		baptismDate = sql.NullTime{Valid: true, Time: krstenicaReq.Baptism}
+	}
+	certificateDate := sql.NullTime{}
+	if !krstenicaReq.Certificate.IsZero() {
+		certificateDate = sql.NullTime{Valid: true, Time: krstenicaReq.Certificate}
+	}
+
 	krstenica := &model.KrstenicaPost{
 		Book:                   krstenicaReq.Book,
 		Page:                   krstenicaReq.Page,
@@ -75,18 +88,18 @@ func (s *service) CreateKrstenica(ctx context.Context, krstenicaReq *dto.Krsteni
 		Gender:                 krstenicaReq.Gender,
 		City:                   krstenicaReq.City,
 		Country:                krstenicaReq.Country,
-		BirthDate:              sql.NullTime{Valid: true, Time: time.Now()},
+		BirthDate:              birthDate,
 		BirthOrder:             krstenicaReq.BirthOrder,
 		PlaceOfBirthday:        krstenicaReq.PlaceOfBirthday,
 		MunicipalityOfBirthday: krstenicaReq.MunicipalityOfBirthday,
-		Baptism:                sql.NullTime{Valid: true, Time: time.Now()},
+		Baptism:                baptismDate,
 		IsChurchMarried:        isChurchMarried,
 		IsTwin:                 isTwin,
 		HasPhysicalDisability:  hasPhysical,
 		Anagrafa:               krstenicaReq.Anagrafa,
 		NumberOfCertificate:    krstenicaReq.NumberOfCertificate,
 		TownOfCertificate:      krstenicaReq.TownOfCertificate,
-		Certificate:            sql.NullTime{Valid: true, Time: time.Now()},
+		Certificate:            certificateDate,
 		Comment:                krstenicaReq.Comment,
 		Status:                 string(model.KrstenicaStatusActive),
 		CreatedAt:              sql.NullTime{Valid: true, Time: time.Now()},

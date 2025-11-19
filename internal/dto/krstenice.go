@@ -74,7 +74,7 @@ type KrstenicaCreateReq struct {
 	BirthOrder             string    `json:"birth_order" form:"birth_order"`
 	PlaceOfBirthday        string    `json:"place_of_birthday" form:"place_of_birthday"`
 	MunicipalityOfBirthday string    `json:"municipality_of_birthday" form:"municipality_of_birthday"`
-	Baptism                time.Time `json:"baptism" form:"baptism" time_format:"2006-01-02T15:04:05Z07:00"`
+	Baptism                time.Time `json:"baptism" form:"baptism" time_format:"2006-01-02"`
 	IsChurchMarried        string    `json:"is_church_married" form:"is_church_married"`
 	IsTwin                 string    `json:"is_twin" form:"is_twin"`
 	HasPhysicalDisability  string    `json:"has_physical_disability" form:"has_physical_disability"`
@@ -104,7 +104,7 @@ type KrstenicaUpdateReq struct {
 	BirthOrder             *string    `json:"birth_order" form:"birth_order"`
 	PlaceOfBirthday        *string    `json:"place_of_birthday" form:"place_of_birthday"`
 	MunicipalityOfBirthday *string    `json:"municipality_of_birthday" form:"municipality_of_birthday"`
-	Baptism                *time.Time `json:"baptism" form:"baptism" time_format:"2006-01-02T15:04:05Z07:00"`
+	Baptism                *time.Time `json:"baptism" form:"baptism" time_format:"2006-01-02"`
 	IsChurchMarried        *string    `json:"is_church_married" form:"is_church_married"`
 	IsTwin                 *string    `json:"is_twin" form:"is_twin"`
 	HasPhysicalDisability  *string    `json:"has_physical_disability" form:"has_physical_disability"`

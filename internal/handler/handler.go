@@ -39,13 +39,14 @@ func (h *httpHandler) Init() {
 
 	staticDir := resolveDir("web/static")
 	h.router.Static("/static", staticDir)
-	h.router.SetFuncMap(template.FuncMap{
-		"formatDate": func(t time.Time) string {
-			if t.IsZero() {
-				return "-"
-			}
-			return t.Format("02.01.2006")
-		},
+		h.router.SetFuncMap(template.FuncMap{
+			"formatDate": func(t time.Time) string {
+				formatted := formatSerbianDate(t)
+				if formatted == "" {
+					return "-"
+				}
+				return formatted
+			},
 		"int64Value": func(v *int64) string {
 			if v == nil {
 				return ""

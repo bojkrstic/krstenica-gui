@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/xuri/excelize/v2"
@@ -181,7 +182,7 @@ func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 		"I10": krstenica.TampleCity,
 		"F13": formatDateTimeComma(krstenica.BirthDate),
 		// "I17": krstenica.Country,
-		"E19": formatDateTimeComma(krstenica.Baptism),
+		"E19": formatDateComma(krstenica.Baptism),
 		"G24": krstenica.TampleCity,
 		"I24": krstenica.TampleName,
 		"F27": krstenica.FirstName,
@@ -306,17 +307,15 @@ func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string, backgro
 }
 
 func formatDateTime(t time.Time) string {
-	if t.IsZero() {
-		return ""
-	}
-	return t.Format("02.01.2006. 15:04")
+	return formatSerbianDateTime(t)
 }
 
 func formatDateTimeComma(t time.Time) string {
-	if t.IsZero() {
-		return ""
-	}
-	return t.Format("2006, 01, 02, 15:04")
+	return formatSerbianDateTime(t)
+}
+
+func formatDateComma(t time.Time) string {
+	return formatSerbianDate(t)
 }
 
 func formatDate(t time.Time) string {
@@ -365,6 +364,83 @@ func mapGenderToCyrillic(gender string) string {
 	default:
 		return gender
 	}
+}
+
+var serbianMonths = []string{
+	"",
+	"јануар",
+	"фебруар",
+	"март",
+	"април",
+	"мај",
+	"јун",
+	"јул",
+	"август",
+	"септембар",
+	"октобар",
+	"новембар",
+	"децембар",
+}
+
+func formatSerbianDate(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+
+	local := t.In(time.Local)
+	monthIdx := int(local.Month())
+	monthName := ""
+	if monthIdx >= 1 && monthIdx <= 12 {
+		monthName = serbianMonths[monthIdx]
+	}
+
+	return fmt.Sprintf("%d    %s    %d", local.Year(), monthName, local.Day())
+}
+
+func formatSerbianDateTime(t time.Time) string {
+	date := formatSerbianDate(t)
+	if date == "" {
+		return ""
+	}
+
+	local := t.In(time.Local)
+	if hasClockComponent(local) {
+		return fmt.Sprintf("%s      у %02d:%02d часова", date, local.Hour(), local.Minute())
+	}
+
+	return date
+}
+
+func hasClockComponent(t time.Time) bool {
+	return t.Hour() != 0 || t.Minute() != 0 || t.Second() != 0
+}
+
+func filterEmpty(lines []string) []string {
+	res := make([]string, 0, len(lines))
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			continue
+		}
+		res = append(res, trimmed)
+	}
+	return res
+}
+
+const yearLabelColumn = 12
+
+func formatYearLine(label, year string) string {
+	padded := padToColumn(label, yearLabelColumn)
+	return fmt.Sprintf("%s%s    год.", padded, year)
+}
+
+func padToColumn(label string, column int) string {
+	width := utf8.RuneCountInString(label)
+	spaces := column - width
+	if spaces < 1 {
+		spaces = 1
+	}
+	return label + strings.Repeat(" ", spaces)
 }
 
 func addBackgroundPicture(file *excelize.File, sheetName, imagePath string, fullBleed bool) error {
