@@ -35,6 +35,10 @@ var forcedWrapCells = map[string]bool{
 	"C58": true,
 }
 
+var boldCells = map[string]bool{
+	"F27": true,
+}
+
 type textOffset struct {
 	dx float64
 	dy float64
@@ -44,19 +48,19 @@ var cellOffsets = map[string]textOffset{
 	"C1":  {dx: 0.0, dy: -8.0},
 	"C2":  {dx: 0.0, dy: -7.0},
 	"C3":  {dx: 0.0, dy: -3.5},
-	"F8":  {dx: 8.0, dy: -5.0},
+	"F8":  {dx: 12.0, dy: -5.0},
 	"C10": {dx: 0.0, dy: -6.0},
 	"I10": {dx: 10.6, dy: -6.0},
 	"N10": {dx: 2.0, dy: -6.0},
-	"F13": {dx: 10.0, dy: -5.0},
+	"F13": {dx: 12.0, dy: -5.0},
 	"E16": {dx: 12.0, dy: -3.0},
-	"F16": {dx: 8.0, dy: -3.0},
+	"F16": {dx: 12.0, dy: -3.0},
 	"G16": {dx: 12.0, dy: -3.0},
-	"E19": {dx: 12.0, dy: 3.0},
-	"G24": {dx: 10.0, dy: -6.0},
-	"I24": {dx: 10.0, dy: -6.0},
-	"D27": {dx: 10.0, dy: -8.0},
-	"F27": {dx: 8.0, dy: -8.0},
+	"F19": {dx: 12.0, dy: 3.0},
+	"G24": {dx: 12.0, dy: -6.0},
+	"I24": {dx: 12.0, dy: -6.0},
+	"D27": {dx: 12.0, dy: -8.0},
+	"F27": {dx: 12.0, dy: -8.0},
 	"I27": {dx: 0.0, dy: -8.0},
 	"F30": {dx: 12.0, dy: -8.0},
 	"I30": {dx: 0.0, dy: -8.0},
@@ -68,7 +72,7 @@ var cellOffsets = map[string]textOffset{
 	"I36": {dx: -10.0, dy: -3.0},
 	"I38": {dx: -10.0, dy: 3.0},
 	"I41": {dx: 5.0, dy: 1.0},
-	"F43": {dx: 10.0, dy: 9.0},
+	"F43": {dx: 12.0, dy: 9.0},
 	"H43": {dx: 10.0, dy: 9.0},
 	"K43": {dx: 0.0, dy: 9.0},
 	"E48": {dx: 10.0, dy: -2.0},
@@ -132,6 +136,10 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 	if err := pdf.Error(); err != nil {
 		return fmt.Errorf("register utf-8 font: %w", err)
 	}
+	pdf.AddUTF8FontFromBytes("DejaVuSans", "B", dejavuSansFontBold)
+	if err := pdf.Error(); err != nil {
+		return fmt.Errorf("register bold utf-8 font: %w", err)
+	}
 
 	if backgroundImage != "" {
 		if _, err := os.Stat(backgroundImage); err == nil {
@@ -143,7 +151,7 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 
 	cellOrder := []string{
 		"C1", "C2", "C3", "F8", "C10", "I10", "N10",
-		"F13", "E16", "F16", "G16", "E19", "G24", "I24",
+		"F13", "E16", "F16", "G16", "F19", "G24", "I24",
 		"D27", "F27", "I27", "F30", "I30", "K30", "F31", "I31",
 		"I32", "K32", "I36", "I38", "I41", "F43", "H43", "K43",
 		"E48", "G48", "K48", "E49", "G49", "E51", "C54", "B62", "B63", "C63", "B65",
@@ -174,7 +182,11 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 			fontSizeScaled = fontSize
 		}
 
-		pdf.SetFont("DejaVuSans", "", fontSizeScaled)
+		fontStyle := ""
+		if boldCells[cell] {
+			fontStyle = "B"
+		}
+		pdf.SetFont("DejaVuSans", fontStyle, fontSizeScaled)
 
 		wrapText := style.wrapText || forcedWrapCells[cell]
 		offset := textOffset{dx: defaultTextOffsetXMM, dy: defaultTextOffsetYMM}

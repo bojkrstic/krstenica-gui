@@ -182,7 +182,7 @@ func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 		"I10": krstenica.TampleCity,
 		"F13": formatDateTimeComma(krstenica.BirthDate),
 		// "I17": krstenica.Country,
-		"E19": formatDateComma(krstenica.Baptism),
+		"F19": formatDateComma(krstenica.Baptism),
 		"G24": krstenica.TampleCity,
 		"I24": krstenica.TampleName,
 		"F27": krstenica.FirstName,
@@ -297,6 +297,8 @@ func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string, backgro
 		set(cell, value)
 	}
 
+	setCellBold(xlsxEx, sheetName, "F27")
+
 	// Snimanje fajla
 	if err := xlsxEx.SaveAs(targetFile); err != nil {
 		log.Println("Greška pri čuvanju fajla:", err)
@@ -304,6 +306,36 @@ func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string, backgro
 	}
 
 	return nil
+}
+
+func setCellBold(xlsxEx *excelize.File, sheetName, cell string) {
+	style := &excelize.Style{}
+	if styleID, err := xlsxEx.GetCellStyle(sheetName, cell); err == nil {
+		if existing, err := xlsxEx.GetStyle(styleID); err == nil && existing != nil {
+			style = existing
+		} else if err != nil {
+			log.Printf("get style definition for %s failed: %v", cell, err)
+		}
+	} else {
+		log.Printf("get style for %s failed: %v", cell, err)
+	}
+
+	if style.Font == nil {
+		style.Font = &excelize.Font{}
+	}
+	if style.Font.Bold {
+		return
+	}
+	style.Font.Bold = true
+
+	boldStyleID, err := xlsxEx.NewStyle(style)
+	if err != nil {
+		log.Printf("create bold style for %s failed: %v", cell, err)
+		return
+	}
+	if err := xlsxEx.SetCellStyle(sheetName, cell, cell, boldStyleID); err != nil {
+		log.Printf("apply bold style to %s failed: %v", cell, err)
+	}
 }
 
 func formatDateTime(t time.Time) string {
