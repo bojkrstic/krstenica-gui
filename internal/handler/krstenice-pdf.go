@@ -77,7 +77,7 @@ var cellOffsets = map[string]textOffset{
 	"K43": {dx: 0.0, dy: 9.0},
 	"E48": {dx: 10.0, dy: -2.0},
 	"G48": {dx: 10.0, dy: -2.0},
-	"K48": {dx: 0.0, dy: -2.0},
+	// "K48": {dx: 0.0, dy: -2.0},
 	"E49": {dx: 10.0, dy: 0.0},
 	"G49": {dx: 10.0, dy: 0.0},
 	"E51": {dx: 30.0, dy: 7.0},
@@ -117,6 +117,28 @@ type cellRect struct {
 	height float64
 }
 
+func formatCyrillicIzCity(city string) string {
+	trimmed := strings.TrimSpace(city)
+	if trimmed == "" {
+		return ""
+	}
+	cityText := fmt.Sprintf("из %s", trimmed)
+	runes := []rune(cityText)
+	if len(runes) == 0 {
+		return cityText
+	}
+	lastIdx := len(runes) - 1
+	switch runes[lastIdx] {
+	case 'а':
+		return cityText
+	case 'a':
+		runes[lastIdx] = 'а'
+	default:
+		runes = append(runes, 'а')
+	}
+	return string(runes)
+}
+
 func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, backgroundImage string, fullBleed bool) error {
 	layout, err := loadWorksheetLayout(templatePath)
 	if err != nil {
@@ -125,6 +147,110 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 
 	values := getKrstenicaCellValues(krstenica)
 	values["G32"] = strings.TrimSpace(krstenica.BirthOrder)
+	priestFirst := strings.TrimSpace(values["F43"])
+	priestLast := strings.TrimSpace(values["H43"])
+	priestTitle := strings.TrimSpace(values["K43"])
+	var priestParts []string
+	if priestFirst != "" {
+		priestParts = append(priestParts, priestFirst)
+	}
+	if priestLast != "" {
+		priestParts = append(priestParts, priestLast)
+	}
+	priestText := strings.Join(priestParts, " ")
+	if priestTitle != "" {
+		if priestText != "" {
+			priestText = fmt.Sprintf("%s, %s", priestText, priestTitle)
+		} else {
+			priestText = priestTitle
+		}
+	}
+	if priestText != "" {
+		values["F43"] = priestText
+		values["H43"] = ""
+		values["K43"] = ""
+	}
+	parentFirst := strings.TrimSpace(values["F30"])
+	parentLast := strings.TrimSpace(values["I30"])
+	parentOccupation := strings.TrimSpace(values["K30"])
+	var parentParts []string
+	if parentFirst != "" {
+		parentParts = append(parentParts, parentFirst)
+	}
+	if parentLast != "" {
+		parentParts = append(parentParts, parentLast)
+	}
+	parentText := strings.Join(parentParts, " ")
+	if parentOccupation != "" {
+		if parentText != "" {
+			parentText = fmt.Sprintf("%s, %s", parentText, parentOccupation)
+		} else {
+			parentText = parentOccupation
+		}
+	}
+	if parentText != "" {
+		values["F30"] = parentText
+		values["I30"] = ""
+		values["K30"] = ""
+	}
+	godfatherFirst := strings.TrimSpace(values["E48"])
+	godfatherLast := strings.TrimSpace(values["G48"])
+	godfatherOccupation := strings.TrimSpace(values["K48"])
+	var godfatherParts []string
+	if godfatherFirst != "" {
+		godfatherParts = append(godfatherParts, godfatherFirst)
+	}
+	if godfatherLast != "" {
+		godfatherParts = append(godfatherParts, godfatherLast)
+	}
+	godfatherText := strings.Join(godfatherParts, " ")
+	if godfatherText != "" {
+		if godfatherOccupation != "" {
+			godfatherText = fmt.Sprintf("%s, %s", godfatherText, godfatherOccupation)
+		} else {
+			godfatherText = godfatherText + ","
+		}
+		values["E48"] = godfatherText
+		values["G48"] = ""
+		values["K48"] = ""
+	}
+	templeCity := strings.TrimSpace(values["G24"])
+	templeName := strings.TrimSpace(values["I24"])
+	var templeParts []string
+	if templeCity != "" {
+		cityText := strings.TrimSuffix(templeCity, ",")
+		cityText = strings.TrimSpace(cityText)
+		if cityText != "" {
+			templeParts = append(templeParts, cityText+",")
+		}
+	}
+	if templeName != "" {
+		templeParts = append(templeParts, templeName)
+	}
+	if len(templeParts) > 0 {
+		values["G24"] = strings.Join(templeParts, " ")
+		values["I24"] = ""
+	}
+	if cityText := formatCyrillicIzCity(values["F31"]); cityText != "" {
+		values["F31"] = cityText
+	}
+	if religion, ok := values["I31"]; ok {
+		religion = strings.TrimSpace(religion)
+		if religion != "" {
+			religion = religion + " "
+		}
+		values["I31"] = religion
+	}
+	if godfatherCity := formatCyrillicIzCity(values["E49"]); godfatherCity != "" {
+		values["E49"] = godfatherCity
+	}
+	if godfatherReligion, ok := values["G49"]; ok {
+		godfatherReligion = strings.TrimSpace(godfatherReligion)
+		if godfatherReligion != "" {
+			godfatherReligion = godfatherReligion + " "
+		}
+		values["G49"] = godfatherReligion
+	}
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.SetAutoPageBreak(false, 0)
@@ -154,7 +280,7 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 		"F13", "E16", "F16", "G16", "F19", "G24", "I24",
 		"D27", "F27", "I27", "F30", "I30", "K30", "F31", "I31",
 		"I32", "K32", "I36", "I38", "I41", "F43", "H43", "K43",
-		"E48", "G48", "K48", "E49", "G49", "E51", "C54", "B62", "B63", "C63", "B65",
+		"E48", "G48", "E49", "G49", "E51", "C54", "B62", "B63", "C63", "B65",
 	}
 
 	paddingScaled := pdfCellPaddingMM * layout.scale
@@ -192,6 +318,11 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 		offset := textOffset{dx: defaultTextOffsetXMM, dy: defaultTextOffsetYMM}
 		if o, ok := cellOffsets[cell]; ok {
 			offset = o
+		}
+		if cell == "N10" {
+			if trimmed := strings.TrimSpace(value); len(trimmed) == 4 {
+				offset.dx -= 8.0
+			}
 		}
 		if wrapText {
 			x := layout.leftMarginMM + (rect.x+pdfCellPaddingMM)*layout.scale + offset.dx*layout.scale

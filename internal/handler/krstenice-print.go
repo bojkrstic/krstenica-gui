@@ -198,9 +198,9 @@ func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 		"I41": strings.TrimSpace(krstenica.HasPhysicalDisability),
 		"F43": krstenica.PriestFirstName,
 		"H43": krstenica.PriestLastName,
+		"K43": strings.TrimSpace(krstenica.PriestTitle),
 		"E48": krstenica.GodfatherFirstName,
 		"G48": krstenica.GodfatherLastName,
-		"K48": strings.TrimSpace(krstenica.PriestTitle),
 		"E49": krstenica.GodfatherCity,
 		"G49": krstenica.GodfatherReligion,
 		"E51": krstenica.Anagrafa,
@@ -242,12 +242,20 @@ func getKrstenicaCellValues(krstenica *dto.Krstenica) map[string]string {
 	}
 
 	if !krstenica.Baptism.IsZero() {
-		values["N10"] = krstenica.Baptism.Format("06")
+		values["N10"] = formatBaptismYear(krstenica.Baptism)
 	} else {
 		values["N10"] = ""
 	}
 
 	return values
+}
+
+func formatBaptismYear(t time.Time) string {
+	year := t.Year()
+	if year < 2000 {
+		return fmt.Sprintf("%04d", year)
+	}
+	return t.Format("06")
 }
 
 func fillKrstenicaExcelFile(krstenica *dto.Krstenica, targetFile string, backgroundImage string, fullBleed bool) error {
