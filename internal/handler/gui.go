@@ -22,6 +22,8 @@ const (
 	refreshOsobeEvent      = "{\"refresh-osobe-table\": true}"
 )
 
+var dateInputReplacer = strings.NewReplacer("/", "-", ".", "-")
+
 func (h *httpHandler) addGuiRoutes() {
 	protected := h.router.Group("", h.requireUIAuth())
 
@@ -1269,6 +1271,7 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 		country := strings.TrimSpace(ctx.PostForm("country"))
 		city := strings.TrimSpace(ctx.PostForm("city"))
 		birthDateRaw := strings.TrimSpace(ctx.PostForm("birth_date"))
+		normalizedBirthDate := normalizeDateInputString(birthDateRaw)
 
 		formState := gin.H{
 			"FirstName":   firstName,
@@ -1284,6 +1287,9 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 			"Context":     contextValue,
 			"PickerField": pickerField,
 		}
+		if normalizedBirthDate != "" {
+			formState["BirthDate"] = normalizedBirthDate
+		}
 
 		if firstName == "" || lastName == "" || role == "" {
 			ctx.HTML(http.StatusBadRequest, "osobe/new.html", gin.H{
@@ -1296,11 +1302,11 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 		}
 
 		var birthDate time.Time
-		if birthDateRaw != "" {
-			parsed, err := time.Parse("2006-01-02", birthDateRaw)
+		if normalizedBirthDate != "" {
+			parsed, err := time.Parse("2006-01-02", normalizedBirthDate)
 			if err != nil {
 				ctx.HTML(http.StatusBadRequest, "osobe/new.html", gin.H{
-					"Error":   "Neispravan format datuma. Koristite YYYY-MM-DD.",
+					"Error":   "Neispravan format datuma. Koristite YYYY/MM/DD.",
 					"Form":    formState,
 					"Context": contextValue,
 					"Field":   pickerField,
@@ -1365,7 +1371,15 @@ func (h *httpHandler) handleOsobeUpdate() gin.HandlerFunc {
 		country := strings.TrimSpace(ctx.PostForm("country"))
 		city := strings.TrimSpace(ctx.PostForm("city"))
 		birthDateRaw := strings.TrimSpace(ctx.PostForm("birth_date"))
+		normalizedBirthDate := normalizeDateInputString(birthDateRaw)
 		status := strings.TrimSpace(ctx.PostForm("status"))
+
+		birthDateWasProvided := normalizedBirthDate != ""
+		var parsedBirthDate time.Time
+		var birthDateParseErr error
+		if birthDateWasProvided {
+			parsedBirthDate, birthDateParseErr = time.Parse("2006-01-02", normalizedBirthDate)
+		}
 
 		if firstName == "" || lastName == "" || role == "" {
 			ctx.HTML(http.StatusBadRequest, "osobe/edit.html", gin.H{
@@ -1382,17 +1396,17 @@ func (h *httpHandler) handleOsobeUpdate() gin.HandlerFunc {
 					Country:    country,
 					City:       city,
 					Status:     status,
+					BirthDate:  parsedBirthDate,
 				},
 			})
 			return
 		}
 
 		var birthDatePtr *time.Time
-		if birthDateRaw != "" {
-			parsed, err := time.Parse("2006-01-02", birthDateRaw)
-			if err != nil {
+		if birthDateWasProvided {
+			if birthDateParseErr != nil {
 				ctx.HTML(http.StatusBadRequest, "osobe/edit.html", gin.H{
-					"Error": "Neispravan format datuma. Koristite YYYY-MM-DD.",
+					"Error": "Neispravan format datuma. Koristite YYYY/MM/DD.",
 					"Osoba": &dto.Person{
 						ID:         int64(id),
 						FirstName:  firstName,
@@ -1409,7 +1423,7 @@ func (h *httpHandler) handleOsobeUpdate() gin.HandlerFunc {
 				})
 				return
 			}
-			birthDatePtr = &parsed
+			birthDatePtr = &parsedBirthDate
 		}
 
 		req := &dto.PersonUpdateReq{}
@@ -1691,4 +1705,12 @@ func isPagingKey(key string) bool {
 	default:
 		return false
 	}
+}
+
+func normalizeDateInputString(value string) string {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return ""
+	}
+	return dateInputReplacer.Replace(trimmed)
 }

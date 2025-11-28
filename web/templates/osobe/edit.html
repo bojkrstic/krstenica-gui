@@ -52,7 +52,20 @@
                         <input name="city" value="{{ .Osoba.City }}">
                     </label>
                     <label>Датум рођења
-                        <input type="date" name="birth_date" value="{{ if not (.Osoba.BirthDate.IsZero) }}{{ .Osoba.BirthDate.Format "2006-01-02" }}{{ end }}">
+                        <div class="date-input-control">
+                            <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
+                                    <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
+                                </svg>
+                            </button>
+                            <input
+                                type="date"
+                                name="birth_date"
+                                value="{{ if not (.Osoba.BirthDate.IsZero) }}{{ .Osoba.BirthDate.Format "2006-01-02" }}{{ end }}"
+                            >
+                        </div>
+                        <small class="date-input-hint">Формат: YYYY/MM/DD</small>
                     </label>
                     <label>Статус
                         <select name="status">

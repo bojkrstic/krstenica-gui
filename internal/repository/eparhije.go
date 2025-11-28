@@ -48,10 +48,10 @@ func (r *repo) ListEparhije(ctx context.Context, filterAndSort *pkg.FilterAndSor
 
 	if orderBy != "" {
 		if !strings.Contains(orderBy, "t.id") {
-			orderBy += ", t.id"
+			orderBy += ", t.id DESC"
 		}
 	} else {
-		orderBy = "t.id"
+		orderBy = "t.id DESC"
 	}
 
 	query := r.db.WithContext(ctx).

@@ -73,6 +73,32 @@
             gap: 0.5rem;
             align-items: center;
         }
+        .date-input-control {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .date-input-control input {
+            flex: 1;
+            padding-left: 2.75rem;
+        }
+        .date-input-icon {
+            position: absolute;
+            left: 0.35rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            color: #475569;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        .date-input-icon svg {
+            width: 1.1rem;
+            height: 1.1rem;
+        }
         .input-with-action input[readonly] {
             flex: 1;
         }
@@ -133,6 +159,33 @@
             color: #64748b;
             min-height: 1rem;
             margin-top: 0.25rem;
+        }
+        .validation-error {
+            font-size: 0.8rem;
+            color: #b91c1c;
+            margin-top: 0.25rem;
+        }
+        .validation-error[hidden] {
+            display: none;
+        }
+        .field-error input,
+        .field-error .input-with-action input,
+        .field-error select,
+        .field-error textarea,
+        .input-error {
+            border-color: #dc2626 !important;
+            background: #fef2f2 !important;
+        }
+        .form-errors {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #b91c1c;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .form-errors[hidden] {
+            display: none;
         }
         .logout-form {
             display: inline;
@@ -213,8 +266,74 @@
                     dialog.close();
                     dialog.remove();
                 }
+                return;
             }
+
+            const iconBtn = event.target.closest('[data-open-date-picker]');
+            if (!iconBtn) {
+                return;
+            }
+            const control = iconBtn.closest('.date-input-control');
+            if (!control) {
+                return;
+            }
+            const input = control.querySelector('input');
+            if (!input) {
+                return;
+            }
+            if (typeof input.showPicker === 'function') {
+                try {
+                    input.showPicker();
+                    return;
+                } catch (err) {
+                    // ignore and focus
+                }
+            }
+            input.focus();
         });
+
+        function parseDateOnlyInput(value) {
+            if (value === undefined || value === null) {
+                return null;
+            }
+            var trimmed = String(value).trim();
+            if (!trimmed) {
+                return null;
+            }
+            var match = trimmed.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+            if (!match) {
+                return null;
+            }
+            var year = match[1];
+            var month = match[2].padStart(2, '0');
+            var day = match[3].padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        }
+
+        function parseDateTimeInput(value) {
+            if (value === undefined || value === null) {
+                return null;
+            }
+            var trimmed = String(value).trim();
+            if (!trimmed) {
+                return null;
+            }
+            var match = trimmed.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})(?:\s+|T)(\d{1,2}):(\d{2})$/);
+            if (!match) {
+                return null;
+            }
+            var year = match[1];
+            var month = match[2].padStart(2, '0');
+            var day = match[3].padStart(2, '0');
+            var hours = match[4].padStart(2, '0');
+            var minutes = match[5].padStart(2, '0');
+            var isoCandidate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+            var dateValue = new Date(isoCandidate);
+            if (isNaN(dateValue.valueOf())) {
+                return null;
+            }
+            return dateValue;
+        }
         document.body.addEventListener('htmx:configRequest', function (event) {
             const form = event.target.closest('[data-json-form]');
             if (!form) {
@@ -258,8 +377,8 @@
             const dateTimeFields = ['birth_date'];
             dateTimeFields.forEach(function (name) {
                 if (params[name]) {
-                    const dateValue = new Date(params[name]);
-                    if (!isNaN(dateValue.valueOf())) {
+                    const dateValue = parseDateTimeInput(params[name]);
+                    if (dateValue) {
                         params[name] = dateValue.toISOString();
                     } else {
                         delete params[name];
@@ -271,9 +390,14 @@
             const isoDateFields = ['certificate'];
             isoDateFields.forEach(function (name) {
                 if (params[name]) {
-                    const dateValue = new Date(params[name]);
-                    if (!isNaN(dateValue.valueOf())) {
-                        params[name] = dateValue.toISOString();
+                    const normalizedValue = parseDateOnlyInput(params[name]);
+                    if (normalizedValue) {
+                        const dateValue = new Date(normalizedValue);
+                        if (!isNaN(dateValue.valueOf())) {
+                            params[name] = dateValue.toISOString();
+                        } else {
+                            delete params[name];
+                        }
                     } else {
                         delete params[name];
                     }
@@ -284,9 +408,9 @@
             const dateOnlyFields = ['baptism'];
             dateOnlyFields.forEach(function (name) {
                 if (params[name]) {
-                    const dateValue = new Date(params[name]);
-                    if (!isNaN(dateValue.valueOf())) {
-                        params[name] = dateValue.toISOString().split('T')[0];
+                    const normalizedValue = parseDateOnlyInput(params[name]);
+                    if (normalizedValue) {
+                        params[name] = normalizedValue;
                     } else {
                         delete params[name];
                     }
@@ -302,6 +426,147 @@
             });
             event.detail.parameters = params;
         });
+
+        const requiredPickerFieldLabels = {
+            parent_id: 'Родитељ',
+            godfather_id: 'Кум',
+            priest_id: 'Свештеник'
+        };
+        const pickerFieldsCache = new WeakMap();
+        const pickerFormState = new WeakMap();
+
+        function getRequiredPickerFields(form) {
+            if (!(form instanceof HTMLFormElement)) {
+                return [];
+            }
+            if (pickerFieldsCache.has(form)) {
+                return pickerFieldsCache.get(form);
+            }
+            const attr = form.getAttribute('data-required-picker-fields') || '';
+            const fields = attr.split(',').map(function (name) {
+                return name.trim();
+            }).filter(Boolean);
+            pickerFieldsCache.set(form, fields);
+            return fields;
+        }
+
+        function ensurePickerFormState(form) {
+            if (!pickerFormState.has(form)) {
+                pickerFormState.set(form, {
+                    touched: false,
+                    missing: new Set(),
+                    summary: form.querySelector('[data-form-errors]') || null
+                });
+            }
+            return pickerFormState.get(form);
+        }
+
+        function updatePickerSummary(form, state) {
+            if (!state) {
+                return;
+            }
+            let summary = state.summary;
+            if (!summary) {
+                summary = form.querySelector('[data-form-errors]');
+                state.summary = summary || null;
+            }
+            if (!summary) {
+                return;
+            }
+            if (!state.touched || state.missing.size === 0) {
+                summary.hidden = true;
+                summary.textContent = '';
+                return;
+            }
+            const labels = Array.from(state.missing).map(function (field) {
+                return requiredPickerFieldLabels[field] || field;
+            });
+            summary.hidden = false;
+            summary.textContent = 'Попуните обавезна поља: ' + labels.join(', ') + '.';
+        }
+
+        function setPickerFieldVisualState(form, fieldName, isValid, state) {
+            const displayInput = form.querySelector('[data-display-field="' + fieldName + '"]');
+            const label = displayInput ? displayInput.closest('label') : null;
+            const errorElement = form.querySelector('[data-error-field="' + fieldName + '"]');
+
+            if (!isValid) {
+                state.missing.add(fieldName);
+                if (label) {
+                    label.classList.add('field-error');
+                }
+                if (displayInput) {
+                    displayInput.classList.add('input-error');
+                }
+                if (errorElement) {
+                    errorElement.textContent = 'Поље је обавезно';
+                    errorElement.hidden = false;
+                }
+            } else {
+                state.missing.delete(fieldName);
+                if (label) {
+                    label.classList.remove('field-error');
+                }
+                if (displayInput) {
+                    displayInput.classList.remove('input-error');
+                }
+                if (errorElement) {
+                    errorElement.textContent = '';
+                    errorElement.hidden = true;
+                }
+            }
+
+            updatePickerSummary(form, state);
+        }
+
+        function validatePickerField(form, fieldName) {
+            const hiddenInput = form.querySelector('input[name="' + fieldName + '"]');
+            const value = hiddenInput ? String(hiddenInput.value || '').trim() : '';
+            const isValid = value !== '';
+            const state = ensurePickerFormState(form);
+            if (!state.touched) {
+                return isValid;
+            }
+            setPickerFieldVisualState(form, fieldName, isValid, state);
+            return isValid;
+        }
+
+        function validatePickerFieldsOnSubmit(form) {
+            const fields = getRequiredPickerFields(form);
+            if (!fields.length) {
+                return false;
+            }
+            const state = ensurePickerFormState(form);
+            state.touched = true;
+            let hasErrors = false;
+            fields.forEach(function (fieldName) {
+                const valid = validatePickerField(form, fieldName);
+                if (!valid) {
+                    hasErrors = true;
+                }
+            });
+            return hasErrors;
+        }
+
+        document.addEventListener('submit', function (event) {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement)) {
+                return;
+            }
+            if (!form.matches('form[data-required-picker-fields]')) {
+                return;
+            }
+            const hasErrors = validatePickerFieldsOnSubmit(form);
+            if (!hasErrors) {
+                return;
+            }
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            const firstInvalid = form.querySelector('.input-error');
+            if (firstInvalid && typeof firstInvalid.focus === 'function') {
+                firstInvalid.focus();
+            }
+        }, true);
 
         document.body.addEventListener("person-selected", function (event) {
             const detail = event.detail || {};
@@ -329,6 +594,24 @@
 
             document.querySelectorAll("[data-comment-field='" + detail.field + "']").forEach(function (commentElement) {
                 commentElement.textContent = detail.label || "";
+            });
+
+            document.querySelectorAll("form[data-required-picker-fields] input[name='" + detail.field + "']").forEach(function (input) {
+                const form = input.form;
+                if (!form) {
+                    return;
+                }
+                const fields = getRequiredPickerFields(form);
+                if (!fields.length || fields.indexOf(detail.field) === -1) {
+                    return;
+                }
+                const state = ensurePickerFormState(form);
+                if (!state.touched) {
+                    return;
+                }
+                requestAnimationFrame(function () {
+                    validatePickerField(form, detail.field);
+                });
             });
         });
 

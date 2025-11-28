@@ -49,10 +49,10 @@ func (r *repo) ListPersons(ctx context.Context, filterAndSort *pkg.FilterAndSort
 
 	if orderBy != "" {
 		if !strings.Contains(orderBy, "t.id") {
-			orderBy += ", t.id"
+			orderBy += ", t.id DESC"
 		}
 	} else {
-		orderBy = "t.id"
+		orderBy = "t.id DESC"
 	}
 	query := r.db.WithContext(ctx).
 		Table("persons AS t").

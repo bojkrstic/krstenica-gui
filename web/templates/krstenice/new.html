@@ -13,7 +13,9 @@
             hx-encoding="json"
             hx-on::after-request="if(event.target!==this){return;}if(event.detail.successful){if(window.refreshKrsteniceTable){window.refreshKrsteniceTable();}var root=document.getElementById('dialog-root');if(root){root.innerHTML='';}}"
             data-json-form
+            data-required-picker-fields="parent_id,godfather_id,priest_id"
         >
+            <div class="form-errors" data-form-errors hidden role="alert"></div>
             <section>
                 <h4>Основни подаци</h4>
                 <div class="form-grid">
@@ -45,16 +47,55 @@
                 <h4>Датуми</h4>
                 <div class="form-grid">
                     <label>Датум и време рођења
-                        <input type="datetime-local" name="birth_date">
+                        <div class="date-input-control">
+                            <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум и време">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
+                                    <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
+                                </svg>
+                            </button>
+                            <input
+                                type="datetime-local"
+                                name="birth_date"
+                                required
+                            >
+                        </div>
+                        <small class="date-input-hint">Формат: YYYY/MM/DD HH:MM</small>
                     </label>
                     <label>Датум крштења
-                        <input type="date" name="baptism">
+                        <div class="date-input-control">
+                            <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
+                                    <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
+                                </svg>
+                            </button>
+                            <input
+                                type="date"
+                                name="baptism"
+                                required
+                            >
+                        </div>
+                        <small class="date-input-hint">Формат: YYYY/MM/DD</small>
                     </label>
                     <label>Рођење - редослед
                         <input name="birth_order" placeholder="Примери: Прво, Близанац А">
                     </label>
                     <label>Датум издавања сертификата
-                        <input type="date" name="certificate">
+                        <div class="date-input-control">
+                            <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
+                                    <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
+                                </svg>
+                            </button>
+                            <input
+                                type="date"
+                                name="certificate"
+                                required
+                            >
+                        </div>
+                        <small class="date-input-hint">Формат: YYYY/MM/DD</small>
                     </label>
                 </div>
             </section>
@@ -116,6 +157,7 @@
                             </button>
                         </div>
                         <p class="field-comment" data-comment-field="parent_id"></p>
+                        <p class="validation-error" data-error-field="parent_id" hidden></p>
                     </label>
 
                     <label>Кум
@@ -132,6 +174,7 @@
                             </button>
                         </div>
                         <p class="field-comment" data-comment-field="godfather_id"></p>
+                        <p class="validation-error" data-error-field="godfather_id" hidden></p>
                     </label>
                     <label>Свештеник
                         <input type="hidden" name="priest_id">
@@ -147,6 +190,7 @@
                             </button>
                         </div>
                         <p class="field-comment" data-comment-field="priest_id"></p>
+                        <p class="validation-error" data-error-field="priest_id" hidden></p>
                     </label>
                     <label>Је ли дете црквено брачно?
                         <input name="is_church_married" placeholder="Да / Не">
@@ -216,6 +260,14 @@
       if (hiddenInput) {
         hiddenInput.value = id;
       }
+
+      document.body.dispatchEvent(new CustomEvent('person-selected', {
+        detail: {
+          field: field,
+          id: id,
+          label: fullName
+        }
+      }));
 
       const pickerDialog = btn.closest("dialog[data-modal-type='picker']");
       if (pickerDialog) {

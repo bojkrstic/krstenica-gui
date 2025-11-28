@@ -87,10 +87,10 @@ func (r *repo) ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSo
 
 	if orderBy != "" {
 		if !strings.Contains(orderBy, "t.id") {
-			orderBy += ", t.id"
+			orderBy += ", t.id DESC"
 		}
 	} else {
-		orderBy = "t.id"
+		orderBy = "t.id DESC"
 	}
 	eparhijaJoin := "LEFT JOIN eparhije as ep on ep.id = t.eparhija_id AND ep.status != 'deleted'"
 	tampleJoin := "LEFT JOIN tamples as tm on tm.id = t.tample_id AND tm.status != 'deleted'"
