@@ -45,11 +45,12 @@
                     <label>Адреса
                         <input name="address" value="{{ .Osoba.Address }}">
                     </label>
-                    <label>Држава
-                        <input name="country" value="{{ .Osoba.Country }}">
-                    </label>
+                    <div class="form-field-connector" aria-hidden="true">из</div>
                     <label>Град
                         <input name="city" value="{{ .Osoba.City }}">
+                    </label>
+                    <label>Држава
+                        <input name="country" value="{{ .Osoba.Country }}">
                     </label>
                     <label>Датум рођења
                         <div class="date-input-control">

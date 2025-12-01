@@ -49,11 +49,12 @@
                     <label>Адреса
                         <input name="address" value="{{ if .Form }}{{ .Form.Address }}{{ end }}">
                     </label>
-                    <label>Држава
-                        <input name="country" value="{{ if .Form }}{{ .Form.Country }}{{ end }}">
-                    </label>
+                    <div class="form-field-connector" aria-hidden="true">из</div>
                     <label>Град
                         <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
+                    </label>
+                    <label>Држава
+                        <input name="country" value="{{ if .Form }}{{ .Form.Country }}{{ end }}">
                     </label>
                     <label>Датум рођења
                         <div class="date-input-control">

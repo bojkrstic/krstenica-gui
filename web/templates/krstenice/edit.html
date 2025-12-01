@@ -28,23 +28,27 @@
                     <label>Текући број
                         <input type="number" name="current_number" min="1" value="{{ if gt .Krstenica.CurrentNumber 0 }}{{ .Krstenica.CurrentNumber }}{{ end }}" required>
                     </label>
-                    <label>Име детета
-                        <input name="first_name" value="{{ .Krstenica.FirstName }}" required>
+                    <label>Епархија
+                        <select name="eparhija_id">
+                            <option value="">Одабери епархију</option>
+                            {{ range .Eparhije }}
+                            <option value="{{ .ID }}" {{ if eq (int64Value $.Krstenica.EparhijaId) (printf "%d" .ID) }}selected{{ end }}>{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
+                            {{ end }}
+                        </select>
                     </label>
-                    <label>Пол детета
-                        <input name="gender" value="{{ .Krstenica.Gender }}" placeholder="Мушко / Женско" required>
-                    </label>
-                    <label>Град
-                        <input name="city" value="{{ .Krstenica.City }}">
-                    </label>
-                    <label>Држава
-                        <input name="country" value="{{ .Krstenica.Country }}">
+                    <label>Храм
+                        <select name="tample_id">
+                            <option value="">Одабери храм</option>
+                            {{ range .Hramovi }}
+                            <option value="{{ .ID }}" {{ if eq (int64Value $.Krstenica.TampleId) (printf "%d" .ID) }}selected{{ end }}>{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
+                            {{ end }}
+                        </select>
                     </label>
                 </div>
             </section>
 
             <section>
-                <h4>Датуми</h4>
+                <h4>Рођење и крштење</h4>
                 <div class="form-grid">
                     <label>Датум и време рођења
                         <div class="date-input-control">
@@ -63,6 +67,12 @@
                         </div>
                         <small class="date-input-hint">Формат: YYYY/MM/DD HH:MM</small>
                     </label>
+                    <label>Место рођења
+                        <input name="place_of_birthday" value="{{ .Krstenica.PlaceOfBirthday }}">
+                    </label>
+                    <label>Општина рођења
+                        <input name="municipality_of_birthday" value="{{ .Krstenica.MunicipalityOfBirthday }}">
+                    </label>
                     <label>Датум крштења
                         <div class="date-input-control">
                             <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
@@ -80,65 +90,23 @@
                         </div>
                         <small class="date-input-hint">Формат: YYYY/MM/DD</small>
                     </label>
-                    <label>Рођење - редослед
-                        <input name="birth_order" value="{{ .Krstenica.BirthOrder }}" placeholder="Примери: Прво, Близанац А">
-                    </label>
-                    <label>Датум издавања сертификата
-                        <div class="date-input-control">
-                            <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
-                                    <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
-                                </svg>
-                            </button>
-                            <input
-                                type="date"
-                                name="certificate"
-                                value="{{ if not (.Krstenica.Certificate.IsZero) }}{{ .Krstenica.Certificate.Format "2006-01-02" }}{{ end }}"
-                                required
-                            >
-                        </div>
-                        <small class="date-input-hint">Формат: YYYY/MM/DD</small>
-                    </label>
                 </div>
             </section>
 
             <section>
-                <h4>Место рођења</h4>
+                <h4>Дете</h4>
                 <div class="form-grid">
-                    <label>Место рођења
-                        <input name="place_of_birthday" value="{{ .Krstenica.PlaceOfBirthday }}">
+                    <label>Име детета
+                        <input name="first_name" value="{{ .Krstenica.FirstName }}" required>
                     </label>
-                    <label>Општина рођења
-                        <input name="municipality_of_birthday" value="{{ .Krstenica.MunicipalityOfBirthday }}">
+                    <label>Пол детета
+                        <input name="gender" value="{{ .Krstenica.Gender }}" placeholder="Мушко / Женско" required>
                     </label>
-                    <label>Место сертификата
-                        <input name="town_of_certificate" value="{{ .Krstenica.TownOfCertificate }}">
+                    <label>Град
+                        <input name="city" value="{{ .Krstenica.City }}">
                     </label>
-                </div>
-            </section>
-
-            <section>
-                <h4>Епархија и храм</h4>
-                <div class="form-grid">
-                    <label>Епархија
-                        <select name="eparhija_id">
-                            <option value="">Одабери епархију</option>
-                            {{ range .Eparhije }}
-                            <option value="{{ .ID }}" {{ if eq (int64Value $.Krstenica.EparhijaId) (printf "%d" .ID) }}selected{{ end }}>{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
-                            {{ end }}
-                        </select>
-                    </label>
-                    <label>Храм
-                        <select name="tample_id">
-                            <option value="">Одабери храм</option>
-                            {{ range .Hramovi }}
-                            <option value="{{ .ID }}" {{ if eq (int64Value $.Krstenica.TampleId) (printf "%d" .ID) }}selected{{ end }}>{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
-                            {{ end }}
-                        </select>
-                    </label>
-                    <label>Број сертификата
-                        <input type="text" name="number_of_certificate" value="{{ .Krstenica.NumberOfCertificate }}">
+                    <label>Држава
+                        <input name="country" value="{{ .Krstenica.Country }}">
                     </label>
                 </div>
             </section>
@@ -163,6 +131,37 @@
                         <p class="field-comment" data-comment-field="parent_id">{{ $parentLabel }}</p>
                         <p class="validation-error" data-error-field="parent_id" hidden></p>
                     </label>
+                    <label>Рођење - редослед
+                        <input name="birth_order" value="{{ .Krstenica.BirthOrder }}" placeholder="Примери: Прво, Близанац А">
+                    </label>
+                    <label>Је ли дете црквено брачно?
+                        <input name="is_church_married" value="{{ .Krstenica.IsChurchMarried }}" placeholder="Да / Не">
+                    </label>
+                    <label>Дете је близанац?
+                        <input name="is_twin" value="{{ .Krstenica.IsTwin }}" placeholder="Да / Не">
+                    </label>
+                    <label>Физички недостатак?
+                        <input name="has_physical_disability" value="{{ .Krstenica.HasPhysicalDisability }}" placeholder="Да / Не">
+                    </label>
+                </div>
+                <div class="form-grid">
+                    {{ $priestLabel := printf "%s %s" .Krstenica.PriestFirstName .Krstenica.PriestLastName }}
+                    <label>Свештеник
+                        <input type="hidden" name="priest_id" value="{{ int64Value .Krstenica.PriestId }}">
+                        <div class="input-with-action">
+                            <input type="text" data-display-field="priest_id" placeholder="Није одабрано" value="{{ $priestLabel }}">
+                            <button class="secondary"
+                                type="button"
+                                hx-get="/ui/svestenici/picker?field=priest_id"
+                                hx-target="body"
+                                hx-trigger="click"
+                                hx-swap="beforeend">
+                                Одабери
+                            </button>
+                        </div>
+                        <p class="field-comment" data-comment-field="priest_id">{{ $priestLabel }}</p>
+                        <p class="validation-error" data-error-field="priest_id" hidden></p>
+                    </label>
 
                     {{ $godfatherLabel := printf "%s %s" .Krstenica.GodfatherFirstName .Krstenica.GodfatherLastName }}
                     <label>Кум
@@ -181,32 +180,35 @@
                         <p class="field-comment" data-comment-field="godfather_id">{{ $godfatherLabel }}</p>
                         <p class="validation-error" data-error-field="godfather_id" hidden></p>
                     </label>
+                </div>
+            </section>
 
-                    {{ $priestLabel := printf "%s %s" .Krstenica.PriestFirstName .Krstenica.PriestLastName }}
-                    <label>Свештеник
-                        <input type="hidden" name="priest_id" value="{{ int64Value .Krstenica.PriestId }}">
-                        <div class="input-with-action">
-                            <input type="text" data-display-field="priest_id" placeholder="Није одабрано" value="{{ $priestLabel }}">
-                            <button class="secondary"
-                                type="button"
-                                hx-get="/ui/svestenici/picker?field=priest_id"
-                                hx-target="body"
-                                hx-trigger="click"
-                                hx-swap="beforeend">
-                                Одабери
+            <section>
+                <h4>Издавање сертификата</h4>
+                <div class="form-grid">
+                    <label>Број сертификата
+                        <input type="text" name="number_of_certificate" value="{{ .Krstenica.NumberOfCertificate }}">
+                    </label>
+                    <div class="form-field-connector" aria-hidden="true">у</div>
+                    <label>Место сертификата
+                        <input name="town_of_certificate" value="{{ .Krstenica.TownOfCertificate }}">
+                    </label>
+                    <label>Датум издавања сертификата
+                        <div class="date-input-control">
+                            <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
+                                    <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
+                                </svg>
                             </button>
+                            <input
+                                type="date"
+                                name="certificate"
+                                value="{{ if not (.Krstenica.Certificate.IsZero) }}{{ .Krstenica.Certificate.Format "2006-01-02" }}{{ end }}"
+                                required
+                            >
                         </div>
-                        <p class="field-comment" data-comment-field="priest_id">{{ $priestLabel }}</p>
-                        <p class="validation-error" data-error-field="priest_id" hidden></p>
-                    </label>
-                    <label>Је ли дете црквено брачно?
-                        <input name="is_church_married" value="{{ .Krstenica.IsChurchMarried }}" placeholder="Да / Не">
-                    </label>
-                    <label>Дете је близанац?
-                        <input name="is_twin" value="{{ .Krstenica.IsTwin }}" placeholder="Да / Не">
-                    </label>
-                    <label>Физички недостатак?
-                        <input name="has_physical_disability" value="{{ .Krstenica.HasPhysicalDisability }}" placeholder="Да / Не">
+                        <small class="date-input-hint">Формат: YYYY/MM/DD</small>
                     </label>
                 </div>
             </section>
