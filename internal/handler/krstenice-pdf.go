@@ -122,21 +122,7 @@ func formatCyrillicIzCity(city string) string {
 	if trimmed == "" {
 		return ""
 	}
-	cityText := fmt.Sprintf("из %s", trimmed)
-	runes := []rune(cityText)
-	if len(runes) == 0 {
-		return cityText
-	}
-	lastIdx := len(runes) - 1
-	switch runes[lastIdx] {
-	case 'а':
-		return cityText
-	case 'a':
-		runes[lastIdx] = 'а'
-	default:
-		runes = append(runes, 'а')
-	}
-	return string(runes)
+	return fmt.Sprintf("из %s", trimmed)
 }
 
 func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, backgroundImage string, fullBleed bool) error {
