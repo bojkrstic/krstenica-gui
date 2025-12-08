@@ -1,5 +1,5 @@
 {{ define "krstenice/table.html" }}
-<div id="krstenice-table">
+<div id="krstenice-table" class="data-grid-wrapper">
     <form id="krstenice-state" hidden>
         <input type="hidden" name="page_number" value="{{ .Pagination.Page }}">
         <input type="hidden" name="page_size" value="{{ .Pagination.PageSize }}">
@@ -8,8 +8,8 @@
         {{ end }}
     </form>
     {{ if .Items }}
-    <p><strong>Укупно:</strong> {{ .Total }}</p>
-    <table role="grid">
+    <p class="muted"><strong>Укупно:</strong> {{ .Total }}</p>
+    <table class="result-grid krstenice-grid" role="grid">
         <thead>
             <tr>
                 <th>Број књиге</th>
@@ -19,7 +19,6 @@
                 <th>Храм</th>
                 <th>Свештеник</th>
                 <th>Крштење</th>
-                <th>Статус</th>
                 <th>Епархија</th>
                 <th>Кум</th>
                 <th>Акције</th>
@@ -43,45 +42,62 @@
                     {{ .PriestFirstName }} {{ .PriestLastName }}
                 </td>
                 <td>{{ formatDate .Baptism }}</td>
-                <td><span class="badge">{{ .Status }}</span></td>
                 <td>{{ .EparhijaName }}</td>
                 <td>{{ .GodfatherFirstName }} {{ .GodfatherLastName }}</td>
-                <td>
+                <td class="actions-cell">
                     <div class="table-actions">
-                        <button class="secondary outline"
+                        <button class="icon-action"
                             type="button"
+                            title="Измени"
+                            aria-label="Измени"
                             hx-get="/ui/krstenice/{{ .ID }}/edit"
                             hx-target="#dialog-root"
                             hx-trigger="click"
                             hx-swap="innerHTML"
                             hx-include="#krstenice-state, #krstenice-default-state">
-                            Измени
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M4 21h4l11-11-4-4L4 17v4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                <path d="M14 5l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
                         </button>
-                        <button class="contrast outline"
+                        <button class="icon-action danger"
                             type="button"
+                            title="Обриши"
+                            aria-label="Обриши"
                             hx-delete="/api/v1/adminv2/krstenice/{{ .ID }}"
                             hx-confirm="Да ли сте сигурни да желите да обришете крштеницу?"
                             hx-target="#krstenice-table"
                             hx-include="#krstenice-state, #krstenice-default-state"
                             hx-swap="none"
                             hx-on::after-request="if(event.detail.successful && window.refreshKrsteniceTable){window.refreshKrsteniceTable();}">
-                            Обриши
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M5 7h14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M9 7V5h6v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M8 7v11a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                            </svg>
                         </button>
-                        <a class="secondary icon-button" href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf" target="_blank" title="Преузми као PDF">
+                        <a class="icon-action link"
+                            href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf"
+                            target="_blank"
+                            title="Преузми као PDF"
+                            aria-label="PDF">
                             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                 <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
                                 <path d="M15 2v5.5H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M8 12.5h7M8 15.5h5.5M8 18.5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M8 12.5h6M8 15.5h4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>
-                            <span>PDF</span>
                         </a>
-                        <a class="secondary icon-button" href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf&amp;template_version=2" target="_blank" title="Преузми као PDF (верзија 2)">
+                        <a class="icon-action link"
+                            href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf&amp;template_version=2"
+                            target="_blank"
+                            title="Преузми као PDF верзија 2"
+                            aria-label="PDF верзија 2">
                             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                 <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
                                 <path d="M15 2v5.5H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M8 12.5h7M8 15.5h5.5M8 18.5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M8 12.5h6M8 15.5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M9 18h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>
-                            <span>PDF v2</span>
                         </a>
                     </div>
                 </td>

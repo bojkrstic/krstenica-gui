@@ -3,18 +3,12 @@
 {{ end }}
 
 {{ define "krstenice/content" }}
-<section class="page-title">
-    <div>
-        <h1>Крштенице</h1>
-        <p>Листа евидентираних крштења са брзим претрагама.</p>
-    </div>
-    <div class="actions">
-        <form class="inline-filter" hx-get="/ui/krstenice/table" hx-target="#krstenice-table" hx-trigger="submit" hx-swap="outerHTML">
-            <input type="hidden" name="page_number" value="1">
-            <input type="hidden" name="page_size" value="10">
-            <input type="search" name="first_name" placeholder="Тражи по имену" aria-label="Тражи по имену">
-            <button type="submit" class="secondary">Претражи</button>
-        </form>
+<section class="card">
+    <div class="page-title">
+        <div>
+            <h1>Крштенице</h1>
+            <p class="muted">Листа евидентираних крштења са брзим претрагама и пречицама.</p>
+        </div>
         <button
             class="primary"
             hx-get="/ui/krstenice/new"
@@ -25,15 +19,26 @@
             type="button"
         >Нова крштеница</button>
     </div>
+    <form class="inline-filter" hx-get="/ui/krstenice/table" hx-target="#krstenice-table" hx-trigger="submit" hx-swap="outerHTML">
+        <input type="hidden" name="page_number" value="1">
+        <input type="hidden" name="page_size" value="10">
+        <div class="field-group">
+            <label for="krstenice-search">Претрага по имену</label>
+            <input type="search" id="krstenice-search" name="first_name" placeholder="нпр. Милица" aria-label="Тражи по имену">
+        </div>
+        <button type="submit" class="secondary">Претражи</button>
+    </form>
 </section>
 
 <form id="krstenice-default-state" hidden>
     <input type="hidden" name="page_number" value="1">
     <input type="hidden" name="page_size" value="10">
+    <input type="hidden" name="status" value="active">
 </form>
 
 <section>
     <div id="krstenice-table"
+         class="data-grid-wrapper"
          hx-get="/ui/krstenice/table"
          hx-trigger="load, refresh-krstenice-table from:body"
          hx-target="this"

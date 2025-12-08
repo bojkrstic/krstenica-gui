@@ -3,22 +3,12 @@
 {{ end }}
 
 {{ define "hramovi/content" }}
-<section class="page-title">
-    <div>
-        <h1>Храмови</h1>
-        <p>Преглед, додавање и измена храмова.</p>
-    </div>
-    <div class="actions">
-        <form class="inline-filter"
-              hx-get="/ui/hramovi/table"
-              hx-target="#hramovi-table"
-              hx-trigger="submit"
-              hx-swap="outerHTML">
-            <input type="hidden" name="page_number" value="1">
-            <input type="hidden" name="page_size" value="10">
-            <input type="search" name="name" placeholder="Тражи по називу" aria-label="Тражи по називу">
-            <button type="submit" class="secondary">Претражи</button>
-        </form>
+<section class="card">
+    <div class="page-title">
+        <div>
+            <h1>Храмови</h1>
+            <p class="muted">Преглед, додавање и измена храмова.</p>
+        </div>
         <button class="primary"
             type="button"
             hx-get="/ui/hramovi/new"
@@ -29,6 +19,23 @@
             Нови храм
         </button>
     </div>
+    <form class="inline-filter"
+          hx-get="/ui/hramovi/table"
+          hx-target="#hramovi-table"
+          hx-trigger="submit"
+          hx-swap="outerHTML">
+        <input type="hidden" name="page_number" value="1">
+        <input type="hidden" name="page_size" value="10">
+        <div class="field-group">
+            <label for="hramovi-search">Претрага по називу</label>
+            <input type="search"
+                   id="hramovi-search"
+                   name="name"
+                   placeholder="нпр. Св. Сава"
+                   aria-label="Тражи по називу">
+        </div>
+        <button type="submit" class="secondary">Претражи</button>
+    </form>
 </section>
 
 <form id="hramovi-default-state" hidden>
@@ -38,6 +45,7 @@
 
 <section>
     <div id="hramovi-table"
+         class="data-grid-wrapper"
          hx-get="/ui/hramovi/table"
          hx-trigger="load, refresh-hramovi-table from:body"
          hx-target="this"

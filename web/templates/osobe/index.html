@@ -3,22 +3,12 @@
 {{ end }}
 
 {{ define "osobe/content" }}
-<section class="page-title">
-    <div>
-        <h1>Особе</h1>
-        <p>Евиденција родитеља, кумова и осталих особа повезаних са крштењем.</p>
-    </div>
-    <div class="actions">
-        <form class="inline-filter"
-              hx-get="/ui/osobe/table"
-              hx-target="#osobe-table"
-              hx-trigger="submit"
-              hx-swap="outerHTML">
-            <input type="hidden" name="page_number" value="1">
-            <input type="hidden" name="page_size" value="10">
-            <input type="search" name="last_name" placeholder="Тражи по делу презимена" aria-label="Тражи по делу презимена">
-            <button type="submit" class="secondary">Претражи</button>
-        </form>
+<section class="card">
+    <div class="page-title">
+        <div>
+            <h1>Особе</h1>
+            <p class="muted">Евиденција родитеља, кумова и осталих особа повезаних са крштењем.</p>
+        </div>
         <button class="primary"
             type="button"
             hx-get="/ui/osobe/new"
@@ -29,6 +19,23 @@
             Нова особа
         </button>
     </div>
+    <form class="inline-filter"
+          hx-get="/ui/osobe/table"
+          hx-target="#osobe-table"
+          hx-trigger="submit"
+          hx-swap="outerHTML">
+        <input type="hidden" name="page_number" value="1">
+        <input type="hidden" name="page_size" value="10">
+        <div class="field-group">
+            <label for="osobe-search">Претрага по презимену</label>
+            <input type="search"
+                   id="osobe-search"
+                   name="last_name"
+                   placeholder="нпр. Јовановић"
+                   aria-label="Тражи по делу презимена">
+        </div>
+        <button type="submit" class="secondary">Претражи</button>
+    </form>
 </section>
 
 <form id="osobe-default-state" hidden>
@@ -38,6 +45,7 @@
 
 <section>
     <div id="osobe-table"
+         class="data-grid-wrapper"
          hx-get="/ui/osobe/table"
          hx-trigger="load, refresh-osobe-table from:body"
          hx-target="this"
