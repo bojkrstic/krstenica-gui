@@ -1105,7 +1105,7 @@ func (h *httpHandler) buildSvesteniciTable(values url.Values, basePath string) (
 func (h *httpHandler) renderOsobePage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "osobe/index.html", gin.H{
-			"Title":           "Osobe",
+			"Title":           "Особе из евиденције",
 			"ContentTemplate": "osobe/content",
 		})
 	}
