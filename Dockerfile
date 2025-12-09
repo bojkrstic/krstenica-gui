@@ -1,41 +1,32 @@
-# Use the latest Go 1.22 image as the build stage
+# 1. Build stage
 FROM golang:1.22-alpine AS builder
 
-# Set environment variables
-ENV CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64
-
-# Create working directory inside container
 WORKDIR /app
 
-# Copy go.mod and go.sum first to download dependencies
+# Go mod fajlovi
 COPY go.mod go.sum ./
-
-# Ensure Go version is correct before running `go mod download`
-RUN go version
-
-# Download dependencies
 RUN go mod download
 
-# Copy the rest of the application files
+# Ceo kod (uključuje web/templates, internal, cmd, itd.)
 COPY . .
 
-# Build the application
-# RUN go build -o app .
-RUN CGO_ENABLED=0 GOOS=linux go build -o krstenica cmd/krstenica/main.go
+# Build binara (main je u cmd/krstenica)
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server ./cmd/krstenica
 
-# Use a minimal image for the final container
-FROM alpine:latest 
+# 2. Runtime stage
+FROM alpine:latest
 
 WORKDIR /app
-## We have to copy the output from our
-## builder stage to our production stage
-COPY --from=builder /app/krstenica .
-COPY --from=builder /app/config . 
 
+# Binarna aplikacija
+COPY --from=builder /app/server .
 
-USER nobody
+# 🔹 OVO JE KLJUČNO: kopiramo web/ da bi /app/web/templates postojao
+COPY web /app/web
 
-# Run the application
-CMD ["./krstenica"]
+# 🔹 dodaj slike koje PDF koristi
+COPY krstenica-obrada2.jpg krstenica_obrada.jpg /app/
+
+EXPOSE 8011
+
+CMD ["./server"]
