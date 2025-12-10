@@ -359,10 +359,7 @@ func formatDateComma(t time.Time) string {
 }
 
 func formatDate(t time.Time) string {
-	if t.IsZero() {
-		return ""
-	}
-	return t.Format("02.01.2006.")
+	return formatSerbianDate(t)
 }
 
 func splitDateDayMonthYearSuffix(t time.Time) (string, string) {
@@ -445,7 +442,7 @@ func formatSerbianDateTime(t time.Time) string {
 
 	local := t.In(time.Local)
 	if hasClockComponent(local) {
-		return fmt.Sprintf("%s      у %02d:%02d часова", date, local.Hour(), local.Minute())
+		return fmt.Sprintf("%s    у    %02d:%02d часова", date, local.Hour(), local.Minute())
 	}
 
 	return date

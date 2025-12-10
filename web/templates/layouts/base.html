@@ -399,6 +399,13 @@
             width: 1.1rem;
             height: 1.1rem;
         }
+        .native-date-input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+            height: 0;
+        }
         .input-with-action input[readonly] {
             flex: 1;
         }
@@ -538,21 +545,21 @@
     </div>
     <script>
         document.body.addEventListener('htmx:afterSwap', function (event) {
-            if (!event.target) {
-                return;
-            }
+            if (event.target) {
+                var maybeDialog = event.target.matches('dialog') ? event.target : null;
+                if (!maybeDialog && event.target.id === 'dialog-root') {
+                    var dialogs = event.target.querySelectorAll('dialog');
+                    if (dialogs.length) {
+                        maybeDialog = dialogs[dialogs.length - 1];
+                    }
+                }
 
-            var maybeDialog = event.target.matches('dialog') ? event.target : null;
-            if (!maybeDialog && event.target.id === 'dialog-root') {
-                var dialogs = event.target.querySelectorAll('dialog');
-                if (dialogs.length) {
-                    maybeDialog = dialogs[dialogs.length - 1];
+                if (maybeDialog && !maybeDialog.open && typeof maybeDialog.showModal === 'function') {
+                    maybeDialog.showModal();
                 }
             }
 
-            if (maybeDialog && !maybeDialog.open && typeof maybeDialog.showModal === 'function') {
-                maybeDialog.showModal();
-            }
+            setupDateInputControls(event.target || document);
         });
         document.body.addEventListener('click', function (event) {
             if (event.target.matches('[data-close-dialog]')) {
@@ -572,19 +579,19 @@
             if (!control) {
                 return;
             }
-            const input = control.querySelector('input');
-            if (!input) {
-                return;
-            }
-            if (typeof input.showPicker === 'function') {
+            const pickerInput = control.querySelector('[data-native-picker]');
+            const displayInput = control.querySelector('[data-date-display]') || control.querySelector('input');
+            if (pickerInput && typeof pickerInput.showPicker === 'function') {
                 try {
-                    input.showPicker();
+                    pickerInput.showPicker();
                     return;
                 } catch (err) {
                     // ignore and focus
                 }
             }
-            input.focus();
+            if (displayInput) {
+                displayInput.focus();
+            }
         });
 
         function parseDateOnlyInput(value) {
@@ -628,6 +635,85 @@
                 return null;
             }
             return dateValue;
+        }
+
+        function formatLocalDateValue(date) {
+            if (!(date instanceof Date) || isNaN(date.valueOf())) {
+                return '';
+            }
+            var year = date.getFullYear().toString().padStart(4, '0');
+            var month = (date.getMonth() + 1).toString().padStart(2, '0');
+            var day = date.getDate().toString().padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        }
+
+        function formatLocalDateTimeValue(date) {
+            var datePart = formatLocalDateValue(date);
+            if (!datePart) {
+                return '';
+            }
+            var hours = date.getHours().toString().padStart(2, '0');
+            var minutes = date.getMinutes().toString().padStart(2, '0');
+            return datePart + 'T' + hours + ':' + minutes;
+        }
+
+        function formatDisplayValueFromNative(value, kind) {
+            if (!value) {
+                return '';
+            }
+            if (kind === 'datetime') {
+                var parts = value.split('T');
+                if (parts.length === 2) {
+                    return parts[0].replace(/-/g, '/') + ' ' + parts[1].slice(0, 5);
+                }
+            }
+            return value.replace(/-/g, '/');
+        }
+
+        function normalizeDisplayValue(value, kind) {
+            if (!value) {
+                return '';
+            }
+            if (kind === 'datetime') {
+                var parsedValue = parseDateTimeInput(value);
+                if (!parsedValue) {
+                    return '';
+                }
+                return formatLocalDateTimeValue(parsedValue);
+            }
+            return parseDateOnlyInput(value) || '';
+        }
+
+        function setupDateInputControls(root) {
+            var scope = root || document;
+            var controls = scope.querySelectorAll('.date-input-control');
+            controls.forEach(function (control) {
+                if (control.dataset.dateInitialized === 'true') {
+                    return;
+                }
+                var displayInput = control.querySelector('[data-date-display]');
+                var nativeInput = control.querySelector('[data-native-picker]');
+                if (!displayInput || !nativeInput) {
+                    control.dataset.dateInitialized = 'true';
+                    return;
+                }
+                var kind = control.getAttribute('data-date-kind') || displayInput.getAttribute('data-date-kind') || 'date';
+                if (!displayInput.value && nativeInput.value) {
+                    displayInput.value = formatDisplayValueFromNative(nativeInput.value, kind);
+                } else if (displayInput.value && !nativeInput.value) {
+                    nativeInput.value = normalizeDisplayValue(displayInput.value, kind);
+                }
+                nativeInput.addEventListener('change', function () {
+                    displayInput.value = formatDisplayValueFromNative(nativeInput.value, kind);
+                    displayInput.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+                var syncNative = function () {
+                    nativeInput.value = normalizeDisplayValue(displayInput.value, kind);
+                };
+                displayInput.addEventListener('blur', syncNative);
+                displayInput.addEventListener('change', syncNative);
+                control.dataset.dateInitialized = 'true';
+            });
         }
         document.body.addEventListener('htmx:configRequest', function (event) {
             const form = event.target.closest('[data-json-form]');
@@ -721,6 +807,8 @@
             });
             event.detail.parameters = params;
         });
+
+        setupDateInputControls(document);
 
         const requiredPickerFieldLabels = {
             parent_id: 'Родитељ',

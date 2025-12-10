@@ -51,7 +51,7 @@
                 <h4>Рођење и крштење</h4>
                 <div class="form-grid">
                     <label>Датум и време рођења
-                        <div class="date-input-control">
+                        <div class="date-input-control" data-date-kind="datetime">
                             <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум и време">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
@@ -59,9 +59,20 @@
                                 </svg>
                             </button>
                             <input
-                                type="datetime-local"
+                                type="text"
                                 name="birth_date"
+                                data-date-display
+                                placeholder="нпр. 2024/05/12 14:30"
+                                inputmode="numeric"
+                                autocomplete="off"
                                 required
+                            >
+                            <input
+                                type="datetime-local"
+                                class="native-date-input"
+                                data-native-picker
+                                tabindex="-1"
+                                aria-hidden="true"
                             >
                         </div>
                         <small class="date-input-hint">Формат: YYYY/MM/DD HH:MM</small>
@@ -73,7 +84,7 @@
                         <input name="municipality_of_birthday">
                     </label>
                     <label>Датум крштења
-                        <div class="date-input-control">
+                        <div class="date-input-control" data-date-kind="date">
                             <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
@@ -81,9 +92,20 @@
                                 </svg>
                             </button>
                             <input
-                                type="date"
+                                type="text"
                                 name="baptism"
+                                data-date-display
+                                placeholder="нпр. 2024/05/12"
+                                inputmode="numeric"
+                                autocomplete="off"
                                 required
+                            >
+                            <input
+                                type="date"
+                                class="native-date-input"
+                                data-native-picker
+                                tabindex="-1"
+                                aria-hidden="true"
                             >
                         </div>
                         <small class="date-input-hint">Формат: YYYY/MM/DD</small>
@@ -188,7 +210,7 @@
                         <input name="town_of_certificate">
                     </label>
                     <label>Датум издавања сертификата
-                        <div class="date-input-control">
+                        <div class="date-input-control" data-date-kind="date">
                             <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
@@ -196,9 +218,20 @@
                                 </svg>
                             </button>
                             <input
-                                type="date"
+                                type="text"
                                 name="certificate"
+                                data-date-display
+                                placeholder="нпр. 2024/05/12"
+                                inputmode="numeric"
+                                autocomplete="off"
                                 required
+                            >
+                            <input
+                                type="date"
+                                class="native-date-input"
+                                data-native-picker
+                                tabindex="-1"
+                                aria-hidden="true"
                             >
                         </div>
                         <small class="date-input-hint">Формат: YYYY/MM/DD</small>
