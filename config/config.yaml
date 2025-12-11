@@ -4,8 +4,8 @@ db:
 
   # for starting outside of docker use second one
   # url: postgresql://admin:secret@krstenica-db:5432/krstenica?sslmode=disable
-  url: postgresql://admin:secret@localhost:5560/krstenica?sslmode=disable
-  # url: postgresql://admin:secret@krstenica_database:5432/krstenica?sslmode=disable
+  # url: postgresql://admin:secret@localhost:5560/krstenica?sslmode=disable
+  url: postgresql://admin:secret@krstenica_database:5432/krstenica?sslmode=disable
   maxidletime: 1h
   maxlifetime: 1h
   maxopenconn: 100
