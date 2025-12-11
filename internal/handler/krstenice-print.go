@@ -80,6 +80,7 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 
 		backgroundImage := resolveFile("krstenica_obrada.jpg")
 		backgroundFullBleed := true
+		fontKey := ""
 		if v, ok := filters.Filters[pkg.FilterKey{Property: "template_version", Operator: "eq"}]; ok && len(v) > 0 {
 			version := strings.TrimSpace(strings.ToLower(v[0]))
 			switch version {
@@ -87,6 +88,9 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 				backgroundImage = ""
 				backgroundFullBleed = false
 			}
+		}
+		if v, ok := filters.Filters[pkg.FilterKey{Property: "font", Operator: "eq"}]; ok && len(v) > 0 {
+			fontKey = strings.TrimSpace(v[0])
 		}
 
 		var (
@@ -98,7 +102,7 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		switch outputFormat {
 		case "pdf":
 			targetFile = filepath.Join(targetDir, "krstenica.pdf")
-			if err := fillKrstenicaPDFFile(krstenica, file, targetFile, backgroundImage, backgroundFullBleed); err != nil {
+			if err := fillKrstenicaPDFFile(krstenica, file, targetFile, backgroundImage, backgroundFullBleed, fontKey); err != nil {
 				log.Println("Error generating PDF file:", err)
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to generate PDF file: %v", err)})
 				return

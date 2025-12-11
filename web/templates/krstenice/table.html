@@ -76,29 +76,59 @@
                                 <path d="M8 7v11a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
                             </svg>
                         </button>
-                        <a class="icon-action link"
-                            href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf"
-                            target="_blank"
-                            title="Преузми као PDF"
-                            aria-label="PDF">
-                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                                <path d="M15 2v5.5H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M8 12.5h6M8 15.5h4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>
-                        </a>
-                        <a class="icon-action link"
-                            href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf&amp;template_version=2"
-                            target="_blank"
-                            title="Преузми као PDF верзија 2"
-                            aria-label="PDF верзија 2">
-                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                                <path d="M15 2v5.5H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M8 12.5h6M8 15.5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                <path d="M9 18h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                            </svg>
-                        </a>
+                        <div class="print-font-group">
+                            <span class="font-column" title="Стандардни (штампана слова)">
+                                <a class="icon-action link"
+                                    href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf"
+                                    target="_blank"
+                                    title="Преузми као PDF"
+                                    aria-label="PDF">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                        <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                        <path d="M15 2v5.5H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M8 12.5h6M8 15.5h4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </a>
+                                <a class="icon-action link"
+                                    href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf&amp;template_version=2"
+                                    target="_blank"
+                                    title="Преузми као PDF верзија 2"
+                                    aria-label="PDF верзија 2">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                        <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                        <path d="M15 2v5.5H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M8 12.5h6M8 15.5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        <path d="M9 18h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </a>
+                            </span>
+                            <span class="font-divider">|</span>
+                            <span class="font-column" title="Писана слова (BDS Miama)">
+                                <a class="icon-action link"
+                                    href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf&amp;font=bds-miama"
+                                    target="_blank"
+                                    title="Преузми као PDF (BDS Miama)"
+                                    aria-label="PDF BDS Miama">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                        <path d="M4 20l6 0 11-11-6-6L4 14z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                        <path d="M3 21h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </a>
+                                <a class="icon-action link"
+                                    href="/api/v1/adminv2/krstenice-print/{{ .ID }}?preview=true&amp;format=pdf&amp;template_version=2&amp;font=bds-miama"
+                                    target="_blank"
+                                    title="Преузми као PDF верзија 2 (BDS Miama)"
+                                    aria-label="PDF верзија 2 BDS Miama">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                        <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                        <path d="M15 2v5.5H20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M8 12.5h6M8 15.5h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        <path d="M9 18h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        <path d="M4 21h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </a>
+                            </span>
+                        </div>
                     </div>
                 </td>
             </tr>

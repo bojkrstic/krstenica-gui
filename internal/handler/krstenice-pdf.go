@@ -29,6 +29,7 @@ const (
 	defaultTextOffsetXMM = 0.0
 	defaultTextOffsetYMM = -0.9
 	pdfFontScaleFactor   = 4.0 / 3.0
+	pdfFontDefaultKey    = "default"
 )
 
 var forcedWrapCells = map[string]bool{
@@ -42,6 +43,59 @@ var boldCells = map[string]bool{
 type textOffset struct {
 	dx float64
 	dy float64
+}
+
+type pdfFontFamily struct {
+	name    string
+	regular []byte
+	bold    []byte
+}
+
+var pdfFontFamilies = map[string]pdfFontFamily{}
+
+func init() {
+	pdfFontFamilies[pdfFontDefaultKey] = pdfFontFamily{
+		name:    "DejaVuSans",
+		regular: dejavuSansFont,
+		bold:    dejavuSansFontBold,
+	}
+	pdfFontFamilies["dejavu"] = pdfFontFamilies[pdfFontDefaultKey]
+	pdfFontFamilies["bds-miama"] = pdfFontFamily{
+		name:    "BDSMiama",
+		regular: bdsMiamaFont,
+		bold:    bdsMiamaFont,
+	}
+	pdfFontFamilies["miama"] = pdfFontFamilies["bds-miama"]
+}
+
+func selectPDFFontFamily(key string) (pdfFontFamily, error) {
+	normalized := strings.ToLower(strings.TrimSpace(key))
+	if normalized == "" {
+		normalized = pdfFontDefaultKey
+	}
+	if family, ok := pdfFontFamilies[normalized]; ok && len(family.regular) > 0 {
+		return family, nil
+	}
+	if family, ok := pdfFontFamilies[pdfFontDefaultKey]; ok && len(family.regular) > 0 {
+		return family, nil
+	}
+	return pdfFontFamily{}, fmt.Errorf("pdf font configuration is missing")
+}
+
+func registerPDFFontFamily(pdf *gofpdf.Fpdf, family pdfFontFamily) error {
+	pdf.AddUTF8FontFromBytes(family.name, "", family.regular)
+	if err := pdf.Error(); err != nil {
+		return fmt.Errorf("register utf-8 font %s: %w", family.name, err)
+	}
+	boldBytes := family.bold
+	if len(boldBytes) == 0 {
+		boldBytes = family.regular
+	}
+	pdf.AddUTF8FontFromBytes(family.name, "B", boldBytes)
+	if err := pdf.Error(); err != nil {
+		return fmt.Errorf("register bold utf-8 font %s: %w", family.name, err)
+	}
+	return nil
 }
 
 var cellOffsets = map[string]textOffset{
@@ -125,7 +179,7 @@ func formatCyrillicIzCity(city string) string {
 	return fmt.Sprintf("из %s", trimmed)
 }
 
-func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, backgroundImage string, fullBleed bool) error {
+func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, backgroundImage string, fullBleed bool, fontKey string) error {
 	layout, err := loadWorksheetLayout(templatePath)
 	if err != nil {
 		return fmt.Errorf("load worksheet layout: %w", err)
@@ -244,13 +298,13 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 	pdf.AddPage()
 	pdf.SetTextColor(0, 0, 0)
 
-	pdf.AddUTF8FontFromBytes("DejaVuSans", "", dejavuSansFont)
-	if err := pdf.Error(); err != nil {
-		return fmt.Errorf("register utf-8 font: %w", err)
+	fontFamily, err := selectPDFFontFamily(fontKey)
+	if err != nil {
+		return err
 	}
-	pdf.AddUTF8FontFromBytes("DejaVuSans", "B", dejavuSansFontBold)
-	if err := pdf.Error(); err != nil {
-		return fmt.Errorf("register bold utf-8 font: %w", err)
+	pdfFontName := fontFamily.name
+	if err := registerPDFFontFamily(pdf, fontFamily); err != nil {
+		return err
 	}
 
 	if backgroundImage != "" {
@@ -298,7 +352,7 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 		if boldCells[cell] {
 			fontStyle = "B"
 		}
-		pdf.SetFont("DejaVuSans", fontStyle, fontSizeScaled)
+		pdf.SetFont(pdfFontName, fontStyle, fontSizeScaled)
 
 		wrapText := style.wrapText || forcedWrapCells[cell]
 		offset := textOffset{dx: defaultTextOffsetXMM, dy: defaultTextOffsetYMM}
