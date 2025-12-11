@@ -46,24 +46,27 @@ type textOffset struct {
 }
 
 type pdfFontFamily struct {
-	name    string
-	regular []byte
-	bold    []byte
+	name      string
+	regular   []byte
+	bold      []byte
+	sizeScale float64
 }
 
 var pdfFontFamilies = map[string]pdfFontFamily{}
 
 func init() {
 	pdfFontFamilies[pdfFontDefaultKey] = pdfFontFamily{
-		name:    "DejaVuSans",
-		regular: dejavuSansFont,
-		bold:    dejavuSansFontBold,
+		name:      "DejaVuSans",
+		regular:   dejavuSansFont,
+		bold:      dejavuSansFontBold,
+		sizeScale: 1.0,
 	}
 	pdfFontFamilies["dejavu"] = pdfFontFamilies[pdfFontDefaultKey]
 	pdfFontFamilies["bds-miama"] = pdfFontFamily{
-		name:    "BDSMiama",
-		regular: bdsMiamaFont,
-		bold:    bdsMiamaFont,
+		name:      "BDSMiama",
+		regular:   bdsMiamaFont,
+		bold:      bdsMiamaFont,
+		sizeScale: 1.8,
 	}
 	pdfFontFamilies["miama"] = pdfFontFamilies["bds-miama"]
 }
@@ -330,6 +333,11 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 	}
 	uniformFontSizePt *= pdfFontScaleFactor
 
+	fontScale := fontFamily.sizeScale
+	if fontScale <= 0 {
+		fontScale = 1.0
+	}
+
 	for _, cell := range cellOrder {
 		value, ok := values[cell]
 		if !ok || strings.TrimSpace(value) == "" {
@@ -342,7 +350,7 @@ func fillKrstenicaPDFFile(krstenica *dto.Krstenica, templatePath, targetFile, ba
 		}
 
 		style := layout.cellStyles[cell]
-		fontSize := uniformFontSizePt
+		fontSize := uniformFontSizePt * fontScale
 		fontSizeScaled := fontSize * layout.scale
 		if fontSizeScaled < 1 {
 			fontSizeScaled = fontSize
