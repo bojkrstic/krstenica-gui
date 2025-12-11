@@ -17,11 +17,12 @@ import (
 )
 
 const (
-	sessionCookieName   = "krstenica_session"
-	contextUserKey      = "krstenica_authenticated_user"
-	sessionDuration     = 30 * time.Minute
-	defaultRedirectPath = "/ui"
-	apiTokenDuration    = 30 * time.Minute
+	sessionCookieName       = "krstenica_session"
+	contextUserKey          = "krstenica_authenticated_user"
+	sessionDuration         = 30 * time.Minute
+	sessionRefreshThreshold = 5 * time.Minute
+	defaultRedirectPath     = "/ui"
+	apiTokenDuration        = 30 * time.Minute
 )
 
 func (h *httpHandler) addAuthRoutes() {
@@ -33,7 +34,7 @@ func (h *httpHandler) addAuthRoutes() {
 
 func (h *httpHandler) renderLogin() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if _, ok := h.authenticateRequest(ctx); ok {
+		if _, _, ok := h.authenticateRequest(ctx); ok {
 			target := sanitizeReturnURL(ctx.Query("return"))
 			if target == "" {
 				target = defaultRedirectPath
@@ -139,17 +140,18 @@ func (h *httpHandler) credentialsMatch(ctx *gin.Context, username, password stri
 
 func (h *httpHandler) requireUIAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if username, ok := h.authenticateRequest(ctx); ok {
+		if username, expiresAt, ok := h.authenticateRequest(ctx); ok {
+			if remaining := time.Until(expiresAt); remaining <= sessionRefreshThreshold {
+				if token, err := h.createSessionToken(username); err == nil {
+					h.issueSessionCookie(ctx, token)
+				}
+			}
 			ctx.Set(contextUserKey, username)
 			ctx.Next()
 			return
 		}
 
-		target := ctx.Request.URL.Path
-		if raw := ctx.Request.URL.RawQuery; raw != "" {
-			target += "?" + raw
-		}
-		ctx.Redirect(http.StatusSeeOther, "/ui/login?return="+url.QueryEscape(target))
+		ctx.Redirect(http.StatusSeeOther, "/ui/login?return="+url.QueryEscape(defaultRedirectPath))
 		ctx.Abort()
 	}
 }
@@ -162,7 +164,7 @@ func (h *httpHandler) requireAPIAuth() gin.HandlerFunc {
 			return
 		}
 
-		if username, ok := h.authenticateRequest(ctx); ok {
+		if username, _, ok := h.authenticateRequest(ctx); ok {
 			ctx.Set(contextUserKey, username)
 			ctx.Next()
 			return
@@ -195,16 +197,16 @@ func (h *httpHandler) authenticateAPIRequest(ctx *gin.Context) (string, bool) {
 	return username, true
 }
 
-func (h *httpHandler) authenticateRequest(ctx *gin.Context) (string, bool) {
+func (h *httpHandler) authenticateRequest(ctx *gin.Context) (string, time.Time, bool) {
 	token, err := ctx.Cookie(sessionCookieName)
 	if err != nil || token == "" {
-		return "", false
+		return "", time.Time{}, false
 	}
-	username, err := h.parseSessionToken(token)
+	username, expiresAt, err := h.parseSessionToken(token)
 	if err != nil {
-		return "", false
+		return "", time.Time{}, false
 	}
-	return username, true
+	return username, expiresAt, true
 }
 
 func (h *httpHandler) createSessionToken(username string) (string, error) {
@@ -215,27 +217,28 @@ func (h *httpHandler) createSessionToken(username string) (string, error) {
 	return base64.RawURLEncoding.EncodeToString([]byte(raw)), nil
 }
 
-func (h *httpHandler) parseSessionToken(token string) (string, error) {
+func (h *httpHandler) parseSessionToken(token string) (string, time.Time, error) {
 	decoded, err := base64.RawURLEncoding.DecodeString(token)
 	if err != nil {
-		return "", err
+		return "", time.Time{}, err
 	}
 	parts := strings.Split(string(decoded), "|")
 	if len(parts) != 3 {
-		return "", errors.New("invalid session token")
+		return "", time.Time{}, errors.New("invalid session token")
 	}
 	username := parts[0]
 	expiresUnix, err := strconv.ParseInt(parts[1], 10, 64)
 	if err != nil {
-		return "", err
+		return "", time.Time{}, err
 	}
+	expiresAt := time.Unix(expiresUnix, 0)
 	if h.signPayload(parts[0]+"|"+parts[1]) != parts[2] {
-		return "", errors.New("invalid session signature")
+		return "", time.Time{}, errors.New("invalid session signature")
 	}
-	if time.Now().Unix() > expiresUnix {
-		return "", errors.New("session expired")
+	if time.Now().After(expiresAt) {
+		return "", time.Time{}, errors.New("session expired")
 	}
-	return username, nil
+	return username, expiresAt, nil
 }
 
 func (h *httpHandler) issueSessionCookie(ctx *gin.Context, token string) {
