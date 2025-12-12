@@ -2,7 +2,7 @@
 set -e
 
 # IMAGE="bojankrlekrstic/krstenica-svc:latest"
-IMAGE="bojankrlekrstic/krstenica-svc:version1.0.2"
+IMAGE="bojankrlekrstic/krstenica-svc:version1.0.3"
 
 echo "➡️ Building Docker image: $IMAGE"
 docker build -t $IMAGE .
