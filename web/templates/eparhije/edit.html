@@ -16,21 +16,39 @@
                 <strong>{{ .Error }}</strong>
             </article>
             {{ end }}
-            <section>
-                <div class="form-grid">
-                    <label>Назив епархије
-                        <input name="name" value="{{ .Eparhija.Name }}" required>
-                    </label>
-                    <label>Град
-                        <input name="city" value="{{ .Eparhija.City }}">
-                    </label>
-                    <label>Статус
-                        <select name="status">
-                            <option value="">Одабери статус</option>
-                            <option value="active" {{ if eq .Eparhija.Status "active" }}selected{{ end }}>Активна</option>
-                            <option value="inactive" {{ if eq .Eparhija.Status "inactive" }}selected{{ end }}>Неактивна</option>
-                        </select>
-                    </label>
+            <section class="form-card">
+                <div class="form-stack">
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="eparhije-edit-name">Назив епархије</label>
+                            <input
+                                id="eparhije-edit-name"
+                                name="name"
+                                value="{{ .Eparhija.Name }}"
+                                placeholder="нпр. Шабачка епархија"
+                                required
+                            >
+                        </div>
+                        <div class="form-field">
+                            <label for="eparhije-edit-city">Град</label>
+                            <input
+                                id="eparhije-edit-city"
+                                name="city"
+                                value="{{ .Eparhija.City }}"
+                                placeholder="нпр. Шабац"
+                            >
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="eparhije-edit-status">Статус</label>
+                            <select id="eparhije-edit-status" name="status">
+                                <option value="">Одабери статус</option>
+                                <option value="active" {{ if eq .Eparhija.Status "active" }}selected{{ end }}>Активна</option>
+                                <option value="inactive" {{ if eq .Eparhija.Status "inactive" }}selected{{ end }}>Неактивна</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </section>
             <footer>

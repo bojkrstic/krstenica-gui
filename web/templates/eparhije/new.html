@@ -16,14 +16,29 @@
                 <strong>{{ .Error }}</strong>
             </article>
             {{ end }}
-            <section>
-                <div class="form-grid">
-                    <label>Назив епархије
-                        <input name="name" value="{{ if .Form }}{{ .Form.Name }}{{ end }}" required>
-                    </label>
-                    <label>Град
-                        <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
-                    </label>
+            <section class="form-card">
+                <div class="form-stack">
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="eparhije-new-name">Назив епархије</label>
+                            <input
+                                id="eparhije-new-name"
+                                name="name"
+                                value="{{ if .Form }}{{ .Form.Name }}{{ end }}"
+                                placeholder="нпр. Шабачка епархија"
+                                required
+                            >
+                        </div>
+                        <div class="form-field">
+                            <label for="eparhije-new-city">Град</label>
+                            <input
+                                id="eparhije-new-city"
+                                name="city"
+                                value="{{ if .Form }}{{ .Form.City }}{{ end }}"
+                                placeholder="нпр. Шабац"
+                            >
+                        </div>
+                    </div>
                 </div>
             </section>
             <footer>

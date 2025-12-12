@@ -420,8 +420,9 @@
             width: 0;
             height: 0;
         }
-        .input-with-action input[readonly] {
+        .input-with-action input {
             flex: 1;
+            min-width: 0;
         }
         .error-message {
             background: rgba(239, 68, 68, 0.12);
@@ -446,6 +447,135 @@
             flex-direction: column;
             gap: 1rem;
         }
+        .modal .form-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            background: #fff;
+        }
+        .modal .form-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .modal .form-stack .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            flex: 1;
+        }
+        .modal .form-stack label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .modal .form-stack input[type="text"],
+        .modal .form-stack input[type="search"],
+        .modal .form-stack input[type="number"],
+        .modal .form-stack input[type="tel"],
+        .modal .form-stack input[type="email"],
+        .modal .form-stack input[type="date"],
+        .modal .form-stack textarea,
+        .modal .form-stack select {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 0.6rem 0.75rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: #fff;
+            transition: border-color 0.2s ease;
+        }
+        .modal .form-stack input:focus,
+        .modal .form-stack select:focus,
+        .modal .form-stack textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+        }
+        .modal .form-stack .field-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        .modal .form-stack .field-row.align-top {
+            align-items: flex-start;
+        }
+        .modal .form-stack .field-row.compact .form-field {
+            min-width: 150px;
+            flex-basis: 0;
+        }
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-auto-rows: auto;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        .location-grid .location-city {
+            grid-column: 1;
+        }
+        .location-grid .location-country {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .location-grid .location-date {
+            grid-column: 1;
+            grid-row: 2;
+            width: 150%;
+            justify-self: start;
+        }
+        .field-row .form-field.form-field-sm {
+            flex: 0 0 50%;
+        }
+        .select-indicator {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .select-indicator select {
+            appearance: none;
+            width: 100%;
+            padding-right: 2rem;
+        }
+        .select-indicator span {
+            position: absolute;
+            right: 0.6rem;
+            top: 40%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #475569;
+            display: inline-flex;
+        }
+        .select-indicator svg {
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+        .field-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .field-column.field-column-tight {
+            gap: 0.2rem;
+        }
+        .modal .form-stack .field-connector {
+            display: flex;
+            align-items: flex-end;
+            font-weight: 600;
+            color: #4b5563;
+            padding-bottom: 0.35rem;
+            min-width: 40px;
+        }
+        .modal .form-stack .field-row.align-top .field-connector,
+        .modal .form-stack .field-connector.centered {
+            align-items: center;
+        }
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -454,8 +584,9 @@
         .form-field-connector {
             display: flex;
             align-items: flex-end;
-            justify-content: center;
+            justify-content: flex-start;
             font-weight: 600;
+            color: #4b5563;
             padding-bottom: 0.2rem;
         }
         .modal section {

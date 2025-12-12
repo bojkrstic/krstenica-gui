@@ -20,70 +20,96 @@
                 <strong>{{ .Error }}</strong>
             </article>
             {{ end }}
-            <section>
-                <div class="form-grid">
-                    <label>Име
-                        <input name="first_name" value="{{ if .Form }}{{ .Form.FirstName }}{{ end }}" required>
-                    </label>
-                    <label>Презиме
-                        <input name="last_name" value="{{ if .Form }}{{ .Form.LastName }}{{ end }}" required>
-                    </label>
-                    <label>Скраћено име
-                        <input name="brief_name" value="{{ if .Form }}{{ .Form.BriefName }}{{ end }}">
-                    </label>
-                    <label>Улога
-                        <select name="role" required>
-                            <option value="">Одабери улогу</option>
-                            <option value="mother" {{ if and .Form (eq .Form.Role "mother") }}selected{{ end }}>Мајка</option>
-                            <option value="father" {{ if and .Form (eq .Form.Role "father") }}selected{{ end }}>Отац</option>
-                            <option value="godfather" {{ if and .Form (eq .Form.Role "godfather") }}selected{{ end }}>Кум</option>
-                            <option value="paroh" {{ if and .Form (eq .Form.Role "paroh") }}selected{{ end }}>Парох</option>
-                        </select>
-                    </label>
-                    <label>Занимање
-                        <input name="occupation" value="{{ if .Form }}{{ .Form.Occupation }}{{ end }}">
-                    </label>
-                    <label>Вера
-                        <input name="religion" value="{{ if .Form }}{{ .Form.Religion }}{{ end }}">
-                    </label>
-                    <label>Адреса
-                        <input name="address" value="{{ if .Form }}{{ .Form.Address }}{{ end }}">
-                    </label>
-                    <div class="form-field-connector" aria-hidden="true">из</div>
-                    <label>Град
-                        <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
-                    </label>
-                    <label>Држава
-                        <input name="country" value="{{ if .Form }}{{ .Form.Country }}{{ end }}">
-                    </label>
-                    <label>Датум рођења
-                        <div class="date-input-control" data-date-kind="date">
-                            <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
-                                    <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
-                                </svg>
-                            </button>
-                            <input
-                                type="text"
-                                name="birth_date"
-                                value="{{ if .Form }}{{ .Form.BirthDate }}{{ end }}"
-                                data-date-display
-                                placeholder="нпр. 1990/04/15"
-                                inputmode="numeric"
-                                autocomplete="off"
-                            >
-                            <input
-                                type="date"
-                                class="native-date-input"
-                                data-native-picker
-                                value="{{ if .Form }}{{ .Form.BirthDate }}{{ end }}"
-                                tabindex="-1"
-                                aria-hidden="true"
-                            >
+            <section class="form-card">
+                <div class="form-stack">
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="osobe-new-first-name">Име</label>
+                            <input id="osobe-new-first-name" name="first_name" value="{{ if .Form }}{{ .Form.FirstName }}{{ end }}" placeholder="нпр. Петар" required>
                         </div>
-                        <small class="date-input-hint">Формат: YYYY/MM/DD</small>
-                    </label>
+                        <div class="form-field">
+                            <label for="osobe-new-last-name">Презиме</label>
+                            <input id="osobe-new-last-name" name="last_name" value="{{ if .Form }}{{ .Form.LastName }}{{ end }}" placeholder="нпр. Петровић" required>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="osobe-new-brief-name">Скраћено име</label>
+                            <input id="osobe-new-brief-name" name="brief_name" value="{{ if .Form }}{{ .Form.BriefName }}{{ end }}" placeholder="нпр. П. Петровић">
+                        </div>
+                        <div class="form-field">
+                            <label for="osobe-new-role">Улога</label>
+                            <div class="select-indicator">
+                                <select id="osobe-new-role" name="role" required>
+                                    <option value="">Одабери улогу</option>
+                                    <option value="mother" {{ if and .Form (eq .Form.Role "mother") }}selected{{ end }}>Мајка</option>
+                                    <option value="father" {{ if and .Form (eq .Form.Role "father") }}selected{{ end }}>Отац</option>
+                                    <option value="godfather" {{ if and .Form (eq .Form.Role "godfather") }}selected{{ end }}>Кум</option>
+                                    <option value="paroh" {{ if and .Form (eq .Form.Role "paroh") }}selected{{ end }}>Парох</option>
+                                </select>
+                                <span aria-hidden="true">
+                                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4.5 6.5L8 10l3.5-3.5" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="osobe-new-occupation">Занимање</label>
+                            <input id="osobe-new-occupation" name="occupation" value="{{ if .Form }}{{ .Form.Occupation }}{{ end }}" placeholder="нпр. Учитељ">
+                        </div>
+                        <div class="form-field">
+                            <label for="osobe-new-religion">Вера</label>
+                            <input id="osobe-new-religion" name="religion" value="{{ if .Form }}{{ .Form.Religion }}{{ end }}" placeholder="нпр. Православна">
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label for="osobe-new-address">Адреса</label>
+                        <input id="osobe-new-address" name="address" value="{{ if .Form }}{{ .Form.Address }}{{ end }}" placeholder="Улица и број">
+                    </div>
+                    <div class="form-field-connector" aria-hidden="true">из</div>
+                    <div class="location-grid">
+                        <div class="form-field location-city">
+                            <label for="osobe-new-city">Град</label>
+                            <input id="osobe-new-city" name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}" placeholder="нпр. Београд">
+                        </div>
+                        <div class="form-field location-country">
+                            <label for="osobe-new-country">Држава</label>
+                            <input id="osobe-new-country" name="country" value="{{ if .Form }}{{ .Form.Country }}{{ end }}" placeholder="нпр. Србија">
+                        </div>
+                        <div class="form-field location-date">
+                            <label for="osobe-new-birth-date">Датум рођења</label>
+                            <div class="date-input-control" data-date-kind="date">
+                                <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
+                                        <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
+                                    </svg>
+                                </button>
+                                <input
+                                    id="osobe-new-birth-date"
+                                    type="text"
+                                    name="birth_date"
+                                    value="{{ if .Form }}{{ .Form.BirthDate }}{{ end }}"
+                                    data-date-display
+                                    placeholder="нпр. 1990/04/15"
+                                    inputmode="numeric"
+                                    autocomplete="off"
+                                >
+                                <input
+                                    type="date"
+                                    class="native-date-input"
+                                    data-native-picker
+                                    value="{{ if .Form }}{{ .Form.BirthDate }}{{ end }}"
+                                    tabindex="-1"
+                                    aria-hidden="true"
+                                >
+                            </div>
+                            <small class="date-input-hint">Формат: YYYY/MM/DD</small>
+                        </div>
+                    </div>
                 </div>
             </section>
             <footer>

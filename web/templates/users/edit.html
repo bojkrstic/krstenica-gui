@@ -10,17 +10,22 @@
             hx-swap="innerHTML"
             hx-include="closest form"
             hx-on::after-request="if(event.detail.successful){const dlg=this.closest('dialog');if(dlg){dlg.close();dlg.remove();}}"
-            class="grid"
         >
             {{ if .Error }}
             <p class="error-message">{{ .Error }}</p>
             {{ end }}
-            <label>Корисничко име
-                <input name="username" value="{{ if .User}}{{ .User.Username }}{{ end }}" required>
-            </label>
-            <label>Нова лозинка
-                <input type="password" name="password" placeholder="Оставите празно ако не мењате">
-            </label>
+            <section class="form-card">
+                <div class="form-stack">
+                    <div class="form-field">
+                        <label for="users-edit-username">Корисничко име</label>
+                        <input id="users-edit-username" name="username" value="{{ if .User}}{{ .User.Username }}{{ end }}" placeholder="нпр. admin" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="users-edit-password">Нова лозинка</label>
+                        <input id="users-edit-password" type="password" name="password" placeholder="Оставите празно ако не мењате">
+                    </div>
+                </div>
+            </section>
             <footer>
                 <button type="submit" class="primary">Сачувај</button>
                 <button type="button" class="secondary" data-close-dialog>Откажи</button>

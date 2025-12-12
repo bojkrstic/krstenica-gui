@@ -20,20 +20,28 @@
                 <strong>{{ .Error }}</strong>
             </article>
             {{ end }}
-            <section>
-                <div class="form-grid">
-                    <label>Име
-                        <input name="first_name" value="{{ if .Form }}{{ .Form.FirstName }}{{ end }}" required>
-                    </label>
-                    <label>Презиме
-                        <input name="last_name" value="{{ if .Form }}{{ .Form.LastName }}{{ end }}" required>
-                    </label>
-                    <label>Град
-                        <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
-                    </label>
-                    <label>Титула
-                        <input name="title" value="{{ if .Form }}{{ .Form.Title }}{{ end }}">
-                    </label>
+            <section class="form-card">
+                <div class="form-stack">
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="svestenici-new-first-name">Име</label>
+                            <input id="svestenici-new-first-name" name="first_name" value="{{ if .Form }}{{ .Form.FirstName }}{{ end }}" placeholder="нпр. Јован" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="svestenici-new-last-name">Презиме</label>
+                            <input id="svestenici-new-last-name" name="last_name" value="{{ if .Form }}{{ .Form.LastName }}{{ end }}" placeholder="нпр. Јовановић" required>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="svestenici-new-city">Град</label>
+                            <input id="svestenici-new-city" name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}" placeholder="нпр. Нови Сад">
+                        </div>
+                        <div class="form-field">
+                            <label for="svestenici-new-title">Титула</label>
+                            <input id="svestenici-new-title" name="title" value="{{ if .Form }}{{ .Form.Title }}{{ end }}" placeholder="нпр. протојереј">
+                        </div>
+                    </div>
                 </div>
             </section>
             <footer>

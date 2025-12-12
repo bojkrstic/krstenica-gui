@@ -16,15 +16,30 @@
                 <strong>{{ .Error }}</strong>
             </article>
             {{ end }}
-            <section>
-                <div class="form-grid">
-                    <label>Назив храма
-                        <input name="name" value="{{ if .Form }}{{ .Form.Name }}{{ end }}" required>
-                    </label>
-                    <div class="form-field-connector" aria-hidden="true">у</div>
-                    <label>Град
-                        <input name="city" value="{{ if .Form }}{{ .Form.City }}{{ end }}">
-                    </label>
+            <section class="form-card">
+                <div class="form-stack">
+                    <div class="field-row compact">
+                        <div class="form-field">
+                            <label for="hramovi-new-name">Назив храма</label>
+                            <input
+                                id="hramovi-new-name"
+                                name="name"
+                                value="{{ if .Form }}{{ .Form.Name }}{{ end }}"
+                                placeholder="нпр. Храм Светог Саве"
+                                required
+                            >
+                        </div>
+                        <div class="field-connector" aria-hidden="true">у</div>
+                        <div class="form-field">
+                            <label for="hramovi-new-city">Град</label>
+                            <input
+                                id="hramovi-new-city"
+                                name="city"
+                                value="{{ if .Form }}{{ .Form.City }}{{ end }}"
+                                placeholder="нпр. Београд"
+                            >
+                        </div>
+                    </div>
                 </div>
             </section>
             <footer>

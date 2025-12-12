@@ -16,22 +16,40 @@
                 <strong>{{ .Error }}</strong>
             </article>
             {{ end }}
-            <section>
-                <div class="form-grid">
-                    <label>Назив храма
-                        <input name="name" value="{{ .Hram.Name }}" required>
-                    </label>
-                    <div class="form-field-connector" aria-hidden="true">у</div>
-                    <label>Град
-                        <input name="city" value="{{ .Hram.City }}">
-                    </label>
-                    <label>Статус
-                        <select name="status">
-                            <option value="">Одабери статус</option>
-                            <option value="active" {{ if eq .Hram.Status "active" }}selected{{ end }}>Активан</option>
-                            <option value="inactive" {{ if eq .Hram.Status "inactive" }}selected{{ end }}>Неактиван</option>
-                        </select>
-                    </label>
+            <section class="form-card">
+                <div class="form-stack">
+                    <div class="field-row compact">
+                        <div class="form-field">
+                            <label for="hramovi-edit-name">Назив храма</label>
+                            <input
+                                id="hramovi-edit-name"
+                                name="name"
+                                value="{{ .Hram.Name }}"
+                                placeholder="нпр. Храм Светог Саве"
+                                required
+                            >
+                        </div>
+                        <div class="field-connector" aria-hidden="true">у</div>
+                        <div class="form-field">
+                            <label for="hramovi-edit-city">Град</label>
+                            <input
+                                id="hramovi-edit-city"
+                                name="city"
+                                value="{{ .Hram.City }}"
+                                placeholder="нпр. Београд"
+                            >
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="hramovi-edit-status">Статус</label>
+                            <select id="hramovi-edit-status" name="status">
+                                <option value="">Одабери статус</option>
+                                <option value="active" {{ if eq .Hram.Status "active" }}selected{{ end }}>Активан</option>
+                                <option value="inactive" {{ if eq .Hram.Status "inactive" }}selected{{ end }}>Неактиван</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </section>
             <footer>

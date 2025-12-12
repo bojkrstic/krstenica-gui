@@ -16,27 +16,36 @@
                 <strong>{{ .Error }}</strong>
             </article>
             {{ end }}
-            <section>
-                <div class="form-grid">
-                    <label>Име
-                        <input name="first_name" value="{{ .Svestenik.FirstName }}" required>
-                    </label>
-                    <label>Презиме
-                        <input name="last_name" value="{{ .Svestenik.LastName }}" required>
-                    </label>
-                    <label>Град
-                        <input name="city" value="{{ .Svestenik.City }}">
-                    </label>
-                    <label>Титула
-                        <input name="title" value="{{ .Svestenik.Title }}">
-                    </label>
-                    <label>Статус
-                        <select name="status">
+            <section class="form-card">
+                <div class="form-stack">
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="svestenici-edit-first-name">Име</label>
+                            <input id="svestenici-edit-first-name" name="first_name" value="{{ .Svestenik.FirstName }}" placeholder="нпр. Јован" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="svestenici-edit-last-name">Презиме</label>
+                            <input id="svestenici-edit-last-name" name="last_name" value="{{ .Svestenik.LastName }}" placeholder="нпр. Јовановић" required>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="svestenici-edit-city">Град</label>
+                            <input id="svestenici-edit-city" name="city" value="{{ .Svestenik.City }}" placeholder="нпр. Нови Сад">
+                        </div>
+                        <div class="form-field">
+                            <label for="svestenici-edit-title">Титула</label>
+                            <input id="svestenici-edit-title" name="title" value="{{ .Svestenik.Title }}" placeholder="нпр. протојереј">
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label for="svestenici-edit-status">Статус</label>
+                        <select id="svestenici-edit-status" name="status">
                             <option value="">Одабери статус</option>
                             <option value="active" {{ if eq .Svestenik.Status "active" }}selected{{ end }}>Активан</option>
                             <option value="inactive" {{ if eq .Svestenik.Status "inactive" }}selected{{ end }}>Неактиван</option>
                         </select>
-                    </label>
+                    </div>
                 </div>
             </section>
             <footer>

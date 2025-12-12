@@ -16,239 +16,304 @@
             data-required-picker-fields="parent_id,godfather_id,priest_id"
         >
             <div class="form-errors" data-form-errors hidden role="alert"></div>
-            <section>
+
+            <section class="form-card">
                 <h4>Основни подаци</h4>
-                <div class="form-grid">
-                    <label>Књига
-                        <input name="book" required>
-                    </label>
-                    <label>Страна књиге
-                        <input type="number" name="page" min="1" required>
-                    </label>
-                    <label>Текући број
-                        <input type="number" name="current_number" min="1" required>
-                    </label>
-                    <label>Епархија
-                        <select name="eparhija_id">
-                            <option value="">Одабери епархију</option>
-                            {{ range .Eparhije }}
-                            <option value="{{ .ID }}">{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
-                            {{ end }}
-                        </select>
-                    </label>
-                    <label>Храм
-                        <select name="tample_id">
-                            <option value="">Одабери храм</option>
-                            {{ range .Hramovi }}
-                            <option value="{{ .ID }}">{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
-                            {{ end }}
-                        </select>
-                    </label>
+                <div class="form-stack">
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="krstenice-new-book">Књига</label>
+                            <input id="krstenice-new-book" name="book" placeholder="нпр. Књига I" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="krstenice-new-page">Страна књиге</label>
+                            <input id="krstenice-new-page" type="number" name="page" min="1" placeholder="1" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="krstenice-new-current-number">Текући број</label>
+                            <input id="krstenice-new-current-number" type="number" name="current_number" min="1" placeholder="1" required>
+                        </div>
+                    </div>
+                    <div class="field-column">
+                        <div class="form-field">
+                            <label for="krstenice-new-eparhija">Епархија</label>
+                            <div class="select-indicator">
+                                <select id="krstenice-new-eparhija" name="eparhija_id">
+                                    <option value="">Одабери епархију</option>
+                                    {{ range .Eparhije }}
+                                    <option value="{{ .ID }}">{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
+                                    {{ end }}
+                                </select>
+                                <span aria-hidden="true">
+                                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4.5 6.5L8 10l3.5-3.5" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label for="krstenice-new-hram">Храм</label>
+                            <div class="select-indicator">
+                                <select id="krstenice-new-hram" name="tample_id">
+                                    <option value="">Одабери храм</option>
+                                    {{ range .Hramovi }}
+                                    <option value="{{ .ID }}">{{ .Name }}{{ if .City }} - {{ .City }}{{ end }}</option>
+                                    {{ end }}
+                                </select>
+                                <span aria-hidden="true">
+                                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4.5 6.5L8 10l3.5-3.5" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section>
+            <section class="form-card">
                 <h4>Рођење и крштење</h4>
-                <div class="form-grid">
-                    <label>Датум и време рођења
-                        <div class="date-input-control" data-date-kind="datetime">
-                            <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум и време">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
-                                    <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
-                                </svg>
-                            </button>
-                            <input
-                                type="text"
-                                name="birth_date"
-                                data-date-display
-                                placeholder="нпр. 2024/05/12 14:30"
-                                inputmode="numeric"
-                                autocomplete="off"
-                                required
-                            >
-                            <input
-                                type="datetime-local"
-                                class="native-date-input"
-                                data-native-picker
-                                tabindex="-1"
-                                aria-hidden="true"
-                            >
+                <div class="form-stack">
+                    <div class="field-row align-top">
+                        <div class="form-field">
+                            <label for="krstenice-new-birth-datetime">Датум и време рођења</label>
+                            <div class="date-input-control" data-date-kind="datetime">
+                                <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум и време">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
+                                        <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
+                                    </svg>
+                                </button>
+                                <input
+                                    id="krstenice-new-birth-datetime"
+                                    type="text"
+                                    name="birth_date"
+                                    data-date-display
+                                    placeholder="нпр. 2024/05/12 14:30"
+                                    inputmode="numeric"
+                                    autocomplete="off"
+                                    required
+                                >
+                                <input
+                                    type="datetime-local"
+                                    class="native-date-input"
+                                    data-native-picker
+                                    tabindex="-1"
+                                    aria-hidden="true"
+                                >
+                            </div>
+                            <small class="date-input-hint">Формат: YYYY/MM/DD HH:MM</small>
                         </div>
-                        <small class="date-input-hint">Формат: YYYY/MM/DD HH:MM</small>
-                    </label>
-                    <label>Место рођења
-                        <input name="place_of_birthday">
-                    </label>
-                    <label>Општина рођења
-                        <input name="municipality_of_birthday">
-                    </label>
-                    <label>Датум крштења
-                        <div class="date-input-control" data-date-kind="date">
-                            <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
-                                    <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
-                                </svg>
-                            </button>
-                            <input
-                                type="text"
-                                name="baptism"
-                                data-date-display
-                                placeholder="нпр. 2024/05/12"
-                                inputmode="numeric"
-                                autocomplete="off"
-                                required
-                            >
-                            <input
-                                type="date"
-                                class="native-date-input"
-                                data-native-picker
-                                tabindex="-1"
-                                aria-hidden="true"
-                            >
+                        <div class="form-field">
+                            <label for="krstenice-new-birth-place">Место рођења</label>
+                            <input id="krstenice-new-birth-place" name="place_of_birthday" placeholder="нпр. Београд">
                         </div>
-                        <small class="date-input-hint">Формат: YYYY/MM/DD</small>
-                    </label>
+                    </div>
+                    <div class="field-row align-top">
+                        <div class="form-field">
+                            <label for="krstenice-new-birth-municipality">Општина рођења</label>
+                            <input id="krstenice-new-birth-municipality" name="municipality_of_birthday" placeholder="нпр. Врачар">
+                        </div>
+                        <div class="form-field">
+                            <label for="krstenice-new-baptism-date">Датум крштења</label>
+                            <div class="date-input-control" data-date-kind="date">
+                                <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
+                                        <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
+                                    </svg>
+                                </button>
+                                <input
+                                    id="krstenice-new-baptism-date"
+                                    type="text"
+                                    name="baptism"
+                                    data-date-display
+                                    placeholder="нпр. 2024/05/12"
+                                    inputmode="numeric"
+                                    autocomplete="off"
+                                    required
+                                >
+                                <input
+                                    type="date"
+                                    class="native-date-input"
+                                    data-native-picker
+                                    tabindex="-1"
+                                    aria-hidden="true"
+                                >
+                            </div>
+                            <small class="date-input-hint">Формат: YYYY/MM/DD</small>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section>
+            <section class="form-card">
                 <h4>Дете</h4>
-                <div class="form-grid">
-                    <label>Име детета
-                        <input name="first_name" required>
-                    </label>
-                    <label>Пол детета
-                        <input name="gender" placeholder="Мушко / Женско" required>
-                    </label>
-                    <label>Град
-                        <input name="city">
-                    </label>
-                    <label>Држава
-                        <input name="country">
-                    </label>
+                <div class="form-stack">
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="krstenice-new-first-name">Име детета</label>
+                            <input id="krstenice-new-first-name" name="first_name" placeholder="нпр. Лука" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="krstenice-new-gender">Пол детета</label>
+                            <input id="krstenice-new-gender" name="gender" placeholder="Мушко / Женско" required>
+                        </div>
+                    </div>
+                    <div class="field-row align-top">
+                        <div class="form-field">
+                            <label for="krstenice-new-city">Град</label>
+                            <input id="krstenice-new-city" name="city" placeholder="нпр. Београд">
+                        </div>
+                        <div class="form-field">
+                            <label for="krstenice-new-country">Држава</label>
+                            <input id="krstenice-new-country" name="country" placeholder="нпр. Србија">
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section>
+            <section class="form-card">
                 <h4>Родитељи и кумство</h4>
-                <div class="form-grid">
-                    <label>Родитељ
-                        <input type="hidden" name="parent_id">
-                        <div class="input-with-action">
-                            <input type="text" data-display-field="parent_id" placeholder="Није одабрано">
-                            <button class="secondary"
-                                type="button"
-                                hx-get="/ui/osobe/picker?field=parent_id"
-                                hx-target="body"
-                                hx-trigger="click"
-                                hx-swap="beforeend">
-                                Одабери
-                            </button>
+                <div class="form-stack">
+                    <div class="field-column">
+                        <div class="form-field">
+                            <label for="krstenice-new-parent">Родитељ</label>
+                            <input type="hidden" name="parent_id">
+                            <div class="input-with-action">
+                                <input id="krstenice-new-parent" type="text" data-display-field="parent_id" placeholder="Није одабрано">
+                                <button class="secondary"
+                                    type="button"
+                                    hx-get="/ui/osobe/picker?field=parent_id"
+                                    hx-target="body"
+                                    hx-trigger="click"
+                                    hx-swap="beforeend">
+                                    Одабери
+                                </button>
+                            </div>
+                            <p class="field-comment" data-comment-field="parent_id"></p>
+                            <p class="validation-error" data-error-field="parent_id" hidden></p>
                         </div>
-                        <p class="field-comment" data-comment-field="parent_id"></p>
-                        <p class="validation-error" data-error-field="parent_id" hidden></p>
-                    </label>
-                    <label>Рођење - редослед
-                        <input name="birth_order" placeholder="Примери: Прво, Близанац А">
-                    </label>
-                    <label>Је ли дете црквено брачно?
-                        <input name="is_church_married" placeholder="Да / Не">
-                    </label>
-                    <label>Дете је близанац?
-                        <input name="is_twin" placeholder="Да / Не">
-                    </label>
-                    <label>Физички недостатак?
-                        <input name="has_physical_disability" placeholder="Да / Не">
-                    </label>
-                </div>
-                <div class="form-grid">
-                    <label>Свештеник
-                        <input type="hidden" name="priest_id">
-                        <div class="input-with-action">
-                            <input type="text" data-display-field="priest_id" placeholder="Није одабрано">
-                            <button class="secondary"
-                                type="button"
-                                hx-get="/ui/svestenici/picker?field=priest_id"
-                                hx-target="body"
-                                hx-trigger="click"
-                                hx-swap="beforeend">
-                                Одабери
-                            </button>
+                        <div class="form-field">
+                            <label for="krstenice-new-birth-order">Рођење - редослед</label>
+                            <input id="krstenice-new-birth-order" name="birth_order" placeholder="Примери: Прво, Близанац А">
                         </div>
-                        <p class="field-comment" data-comment-field="priest_id"></p>
-                        <p class="validation-error" data-error-field="priest_id" hidden></p>
-                    </label>
-                    <label>Кум
-                        <input type="hidden" name="godfather_id">
-                        <div class="input-with-action">
-                            <input type="text" data-display-field="godfather_id" placeholder="Није одабрано">
-                            <button class="secondary"
-                                type="button"
-                                hx-get="/ui/osobe/picker?field=godfather_id"
-                                hx-target="body"
-                                hx-trigger="click"
-                                hx-swap="beforeend">
-                                Одабери
-                            </button>
+                    </div>
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="krstenice-new-church-married">Је ли дете црквено брачно?</label>
+                            <input id="krstenice-new-church-married" name="is_church_married" placeholder="Да / Не">
                         </div>
-                        <p class="field-comment" data-comment-field="godfather_id"></p>
-                        <p class="validation-error" data-error-field="godfather_id" hidden></p>
-                    </label>
+                        <div class="form-field">
+                            <label for="krstenice-new-twin">Дете је близанац?</label>
+                            <input id="krstenice-new-twin" name="is_twin" placeholder="Да / Не">
+                        </div>
+                        <div class="form-field">
+                            <label for="krstenice-new-physical">Физички недостатак?</label>
+                            <input id="krstenice-new-physical" name="has_physical_disability" placeholder="Да / Не">
+                        </div>
+                    </div>
+                    <div class="field-column field-column-tight">
+                        <div class="form-field">
+                            <label for="krstenice-new-priest">Свештеник</label>
+                            <input type="hidden" name="priest_id">
+                            <div class="input-with-action">
+                                <input id="krstenice-new-priest" type="text" data-display-field="priest_id" placeholder="Није одабрано">
+                                <button class="secondary"
+                                    type="button"
+                                    hx-get="/ui/svestenici/picker?field=priest_id"
+                                    hx-target="body"
+                                    hx-trigger="click"
+                                    hx-swap="beforeend">
+                                    Одабери
+                                </button>
+                            </div>
+                            <p class="field-comment" data-comment-field="priest_id"></p>
+                            <p class="validation-error" data-error-field="priest_id" hidden></p>
+                        </div>
+                        <div class="form-field">
+                            <label for="krstenice-new-godfather">Кум</label>
+                            <input type="hidden" name="godfather_id">
+                            <div class="input-with-action">
+                                <input id="krstenice-new-godfather" type="text" data-display-field="godfather_id" placeholder="Није одабрано">
+                                <button class="secondary"
+                                    type="button"
+                                    hx-get="/ui/osobe/picker?field=godfather_id"
+                                    hx-target="body"
+                                    hx-trigger="click"
+                                    hx-swap="beforeend">
+                                    Одабери
+                                </button>
+                            </div>
+                            <p class="field-comment" data-comment-field="godfather_id"></p>
+                            <p class="validation-error" data-error-field="godfather_id" hidden></p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section>
+            <section class="form-card">
                 <h4>Издавање сертификата</h4>
-                <div class="form-grid">
-                    <label>Број сертификата
-                        <input type="text" name="number_of_certificate">
-                    </label>
-                    <div class="form-field-connector" aria-hidden="true">у</div>
-                    <label>Место сертификата
-                        <input name="town_of_certificate">
-                    </label>
-                    <label>Датум издавања сертификата
-                        <div class="date-input-control" data-date-kind="date">
-                            <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
-                                    <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
-                                </svg>
-                            </button>
-                            <input
-                                type="text"
-                                name="certificate"
-                                data-date-display
-                                placeholder="нпр. 2024/05/12"
-                                inputmode="numeric"
-                                autocomplete="off"
-                                required
-                            >
-                            <input
-                                type="date"
-                                class="native-date-input"
-                                data-native-picker
-                                tabindex="-1"
-                                aria-hidden="true"
-                            >
+                <div class="form-stack">
+                    <div class="field-row compact">
+                        <div class="form-field">
+                            <label for="krstenice-new-cert-number">Број сертификата</label>
+                            <input id="krstenice-new-cert-number" type="text" name="number_of_certificate" placeholder="нпр. 15">
                         </div>
-                        <small class="date-input-hint">Формат: YYYY/MM/DD</small>
-                    </label>
+                        <div class="field-connector centered" aria-hidden="true">у</div>
+                        <div class="form-field">
+                            <label for="krstenice-new-cert-town">Место сертификата</label>
+                            <input id="krstenice-new-cert-town" name="town_of_certificate" placeholder="нпр. Нови Сад">
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="form-field form-field-sm">
+                            <label for="krstenice-new-cert-date">Датум издавања сертификата</label>
+                            <div class="date-input-control" data-date-kind="date">
+                                <button type="button" class="date-input-icon" data-open-date-picker aria-label="Одабери датум">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/>
+                                        <path d="M8 3v3M16 3v3M3.5 10.5h17"/>
+                                    </svg>
+                                </button>
+                                <input
+                                    id="krstenice-new-cert-date"
+                                    type="text"
+                                    name="certificate"
+                                    data-date-display
+                                    placeholder="нпр. 2024/05/12"
+                                    inputmode="numeric"
+                                    autocomplete="off"
+                                    required
+                                >
+                                <input
+                                    type="date"
+                                    class="native-date-input"
+                                    data-native-picker
+                                    tabindex="-1"
+                                    aria-hidden="true"
+                                >
+                            </div>
+                            <small class="date-input-hint">Формат: YYYY/MM/DD</small>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section>
+            <section class="form-card">
                 <h4>Остало</h4>
-                <div class="form-grid">
-                    <label>Страна домовника / анаграф
-                        <input name="anagrafa">
-                    </label>
+                <div class="form-stack">
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="krstenice-new-anagrafa">Страна домовника / анаграф</label>
+                            <input id="krstenice-new-anagrafa" name="anagrafa" placeholder="нпр. 12">
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label for="krstenice-new-comment">Напомена</label>
+                        <textarea id="krstenice-new-comment" name="comment" rows="3" placeholder="Додатне белешке"></textarea>
+                    </div>
                 </div>
-                <label>Напомена
-                    <textarea name="comment" rows="3"></textarea>
-                </label>
             </section>
 
             <footer>
