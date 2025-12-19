@@ -131,3 +131,8 @@ Trenutno E17 nema poseban unos u mapi cellOffsets, pa koristi podrazumevani poma
   – dx је хоризонтални помак у милиметрима (већа вредност = више удесно)
   – dy је вертикални (негативна вредност помера нагоре, позитивна надоле)
   ``
+Docker hub
+  Kada se napravi nova verzija, onda se pokrene ./build-and-push.sh samo se promeni verzija v1.0.4 recimo
+  na taj nacin se formira izvrsna verzija i prebaci u dockerhub, na lokaciji https://app.docker.com/accounts/bojankrlekrstic
+  user: bojankrlekrstic
+  pass: Bokana1974!
