@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -14,6 +15,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+
+	"krstenica/internal/requestctx"
 )
 
 const (
@@ -23,6 +26,7 @@ const (
 	sessionRefreshThreshold = 5 * time.Minute
 	defaultRedirectPath     = "/ui"
 	apiTokenDuration        = 30 * time.Minute
+	adminRoleDefault        = "admin"
 )
 
 func (h *httpHandler) addAuthRoutes() {
@@ -43,7 +47,7 @@ func (h *httpHandler) renderLogin() gin.HandlerFunc {
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "auth/login.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "auth/login.html", gin.H{
 			"Title":     "Пријава",
 			"ReturnURL": sanitizeReturnURL(ctx.Query("return")),
 		})
@@ -58,7 +62,7 @@ func (h *httpHandler) handleLogin() gin.HandlerFunc {
 
 		ok, err := h.credentialsMatch(ctx, username, password)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "auth/login.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "auth/login.html", gin.H{
 				"Title":     "Пријава",
 				"Error":     "Грешка при провери корисника.",
 				"ReturnURL": returnURL,
@@ -66,7 +70,7 @@ func (h *httpHandler) handleLogin() gin.HandlerFunc {
 			return
 		}
 		if !ok {
-			ctx.HTML(http.StatusUnauthorized, "auth/login.html", gin.H{
+			h.renderHTML(ctx, http.StatusUnauthorized, "auth/login.html", gin.H{
 				"Title":     "Пријава",
 				"Error":     "Погрешно корисничко име или лозинка.",
 				"ReturnURL": returnURL,
@@ -76,7 +80,7 @@ func (h *httpHandler) handleLogin() gin.HandlerFunc {
 
 		token, err := h.createSessionToken(username)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "auth/login.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "auth/login.html", gin.H{
 				"Title": "Пријава",
 				"Error": "Грешка при креирању сесије. Покушајте поново.",
 			})
@@ -140,13 +144,13 @@ func (h *httpHandler) credentialsMatch(ctx *gin.Context, username, password stri
 
 func (h *httpHandler) requireUIAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if username, expiresAt, ok := h.authenticateRequest(ctx); ok {
+		if user, expiresAt, ok := h.authenticateRequest(ctx); ok {
 			if remaining := time.Until(expiresAt); remaining <= sessionRefreshThreshold {
-				if token, err := h.createSessionToken(username); err == nil {
+				if token, err := h.createSessionToken(user.Username); err == nil {
 					h.issueSessionCookie(ctx, token)
 				}
 			}
-			ctx.Set(contextUserKey, username)
+			h.attachAuthenticatedUser(ctx, user)
 			ctx.Next()
 			return
 		}
@@ -158,14 +162,14 @@ func (h *httpHandler) requireUIAuth() gin.HandlerFunc {
 
 func (h *httpHandler) requireAPIAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if username, ok := h.authenticateAPIRequest(ctx); ok {
-			ctx.Set(contextUserKey, username)
+		if user, ok := h.authenticateAPIRequest(ctx); ok {
+			h.attachAuthenticatedUser(ctx, user)
 			ctx.Next()
 			return
 		}
 
-		if username, _, ok := h.authenticateRequest(ctx); ok {
-			ctx.Set(contextUserKey, username)
+		if user, _, ok := h.authenticateRequest(ctx); ok {
+			h.attachAuthenticatedUser(ctx, user)
 			ctx.Next()
 			return
 		}
@@ -174,39 +178,47 @@ func (h *httpHandler) requireAPIAuth() gin.HandlerFunc {
 	}
 }
 
-func (h *httpHandler) authenticateAPIRequest(ctx *gin.Context) (string, bool) {
+func (h *httpHandler) authenticateAPIRequest(ctx *gin.Context) (*requestctx.User, bool) {
 	authHeader := strings.TrimSpace(ctx.GetHeader("Authorization"))
 	if authHeader == "" {
-		return "", false
+		return nil, false
 	}
 
 	const bearerPrefix = "Bearer "
 	if len(authHeader) <= len(bearerPrefix) || !strings.EqualFold(authHeader[:len(bearerPrefix)], bearerPrefix) {
-		return "", false
+		return nil, false
 	}
 
 	token := strings.TrimSpace(authHeader[len(bearerPrefix):])
 	if token == "" {
-		return "", false
+		return nil, false
 	}
 
 	username, err := h.parseJWTToken(token)
 	if err != nil {
-		return "", false
+		return nil, false
 	}
-	return username, true
+	user, err := h.loadAuthenticatedUser(ctx.Request.Context(), username)
+	if err != nil {
+		return nil, false
+	}
+	return user, true
 }
 
-func (h *httpHandler) authenticateRequest(ctx *gin.Context) (string, time.Time, bool) {
+func (h *httpHandler) authenticateRequest(ctx *gin.Context) (*requestctx.User, time.Time, bool) {
 	token, err := ctx.Cookie(sessionCookieName)
 	if err != nil || token == "" {
-		return "", time.Time{}, false
+		return nil, time.Time{}, false
 	}
 	username, expiresAt, err := h.parseSessionToken(token)
 	if err != nil {
-		return "", time.Time{}, false
+		return nil, time.Time{}, false
 	}
-	return username, expiresAt, true
+	user, err := h.loadAuthenticatedUser(ctx.Request.Context(), username)
+	if err != nil {
+		return nil, time.Time{}, false
+	}
+	return user, expiresAt, true
 }
 
 func (h *httpHandler) createSessionToken(username string) (string, error) {
@@ -400,6 +412,70 @@ func (h *httpHandler) jwtSecret() string {
 		secret = strings.TrimSpace(h.conf.JWTSecret)
 	}
 	return secret
+}
+
+func (h *httpHandler) attachAuthenticatedUser(ctx *gin.Context, user *requestctx.User) {
+	if ctx == nil || user == nil {
+		return
+	}
+	ctx.Set(contextUserKey, user)
+	ctx.Request = ctx.Request.WithContext(requestctx.WithUser(ctx.Request.Context(), user))
+}
+
+func (h *httpHandler) loadAuthenticatedUser(ctx context.Context, username string) (*requestctx.User, error) {
+	username = strings.TrimSpace(username)
+	if username == "" {
+		return nil, errors.New("username is required")
+	}
+	modelUser, err := h.repo.GetUserByUsername(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	role := strings.TrimSpace(modelUser.Role)
+	if role == "" {
+		role = adminRoleDefault
+	}
+	return &requestctx.User{
+		ID:       modelUser.ID,
+		Username: modelUser.Username,
+		Role:     role,
+		City:     strings.TrimSpace(modelUser.City),
+	}, nil
+}
+
+func (h *httpHandler) currentUser(ctx *gin.Context) (*requestctx.User, bool) {
+	if ctx == nil {
+		return nil, false
+	}
+	value, ok := ctx.Get(contextUserKey)
+	if !ok {
+		return nil, false
+	}
+	user, ok := value.(*requestctx.User)
+	return user, ok
+}
+
+func (h *httpHandler) requireRole(role string) gin.HandlerFunc {
+	normalized := strings.ToLower(strings.TrimSpace(role))
+	return func(ctx *gin.Context) {
+		if user, ok := h.currentUser(ctx); ok && strings.ToLower(strings.TrimSpace(user.Role)) == normalized {
+			ctx.Next()
+			return
+		}
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+	}
+}
+
+func (h *httpHandler) requireUIRole(role string) gin.HandlerFunc {
+	normalized := strings.ToLower(strings.TrimSpace(role))
+	return func(ctx *gin.Context) {
+		if user, ok := h.currentUser(ctx); ok && strings.ToLower(strings.TrimSpace(user.Role)) == normalized {
+			ctx.Next()
+			return
+		}
+		h.renderHTML(ctx, http.StatusForbidden, "partials/error.html", gin.H{"Message": "Забрањен приступ"})
+		ctx.Abort()
+	}
 }
 
 func (h *httpHandler) signJWT(input, secret string) []byte {

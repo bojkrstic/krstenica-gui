@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"krstenica/internal/dto"
@@ -36,7 +35,7 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		filters := pkg.ParseUrlQuery(ctx)
 		log.Println("filters", filters)
 

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
@@ -23,7 +22,7 @@ func (h *httpHandler) createPersons() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		person, err := h.service.CreatePerson(cx, req)
 		if err != nil {
@@ -44,7 +43,7 @@ func (h *httpHandler) getPersons() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		person, err := h.service.GetPersonByID(cx, int64(id))
 		if err != nil {
@@ -62,7 +61,7 @@ func (h *httpHandler) getPersons() gin.HandlerFunc {
 
 func (h *httpHandler) listPersons() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		filters := pkg.ParseUrlQuery(ctx)
 
@@ -100,7 +99,7 @@ func (h *httpHandler) updatePersons() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		person, err := h.service.UpdatePerson(cx, int64(id), req)
 		if err != nil {

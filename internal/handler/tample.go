@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
@@ -23,7 +22,7 @@ func (h *httpHandler) createTample() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		tample, err := h.service.CreateTample(cx, req)
 		if err != nil {
@@ -44,7 +43,7 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		tample, err := h.service.GetTampleByID(cx, int64(id))
 		if err != nil {
@@ -62,7 +61,7 @@ func (h *httpHandler) getTample() gin.HandlerFunc {
 
 func (h *httpHandler) listTample() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		filters := pkg.ParseUrlQuery(ctx)
 
@@ -96,7 +95,7 @@ func (h *httpHandler) updateTample() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		tample, err := h.service.UpdateTample(cx, int64(id), req)
 		if err != nil {

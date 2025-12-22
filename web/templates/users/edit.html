@@ -24,6 +24,18 @@
                         <label for="users-edit-password">Нова лозинка</label>
                         <input id="users-edit-password" type="password" name="password" placeholder="Оставите празно ако не мењате">
                     </div>
+                    <div class="form-field">
+                        <label for="users-edit-role">Улога</label>
+                        <select id="users-edit-role" name="role">
+                            <option value="user" {{ if .User}}{{ if or (eq .User.Role "user") (eq .User.Role "") }}selected{{ end }}{{ else }}selected{{ end }}>Корисник</option>
+                            <option value="admin" {{ if .User}}{{ if eq .User.Role "admin" }}selected{{ end }}{{ end }}>Администратор</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="users-edit-city">Град</label>
+                        <input id="users-edit-city" name="city" value="{{ if .User}}{{ .User.City }}{{ end }}" placeholder="нпр. Пирот">
+                        <small class="muted">За обичне кориснике град је обавезан.</small>
+                    </div>
                 </div>
             </section>
             <footer>

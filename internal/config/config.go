@@ -1,6 +1,8 @@
 package config
 
 import (
+	"net"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -9,6 +11,7 @@ import (
 
 type DBConfig struct {
 	URL         string        `mapstructure:"url"`
+	LocalURL    string        `mapstructure:"local_url"`
 	MaxIdleTime time.Duration `mapstructure:"maxidletime"`
 	MaxLifetime time.Duration `mapstructure:"maxlifetime"`
 	MaxOpenConn int           `mapstructure:"maxopenconn"`
@@ -54,5 +57,50 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
+	config.applyDefaults()
+
 	return &config, nil
+}
+
+func (c *Config) applyDefaults() {
+	c.DB.URL = strings.TrimSpace(c.DB.URL)
+	c.DB.LocalURL = strings.TrimSpace(c.DB.LocalURL)
+
+	if c.DB.URL == "" && c.DB.LocalURL != "" {
+		c.DB.URL = c.DB.LocalURL
+		return
+	}
+
+	if c.shouldUseLocalDBURL() && c.DB.LocalURL != "" {
+		c.DB.URL = c.DB.LocalURL
+	}
+}
+
+func (c *Config) shouldUseLocalDBURL() bool {
+	env := strings.ToLower(strings.TrimSpace(c.ENV))
+	switch env {
+	case "local", "dev", "development":
+		return true
+	}
+
+	host := extractDBHost(c.DB.URL)
+	if host == "" {
+		return false
+	}
+	if _, err := net.LookupHost(host); err != nil {
+		return true
+	}
+	return false
+}
+
+func extractDBHost(dsn string) string {
+	dsn = strings.TrimSpace(dsn)
+	if dsn == "" {
+		return ""
+	}
+	parsed, err := neturl.Parse(dsn)
+	if err != nil {
+		return ""
+	}
+	return parsed.Hostname()
 }

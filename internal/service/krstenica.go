@@ -3,21 +3,31 @@ package service
 import (
 	"context"
 	"database/sql"
-	"krstenica/internal/dto"
-	"krstenica/internal/errorx"
-	"krstenica/internal/model"
-	"krstenica/pkg"
+	"errors"
 	"log"
 	"strings"
 	"time"
+
+	"krstenica/internal/dto"
+	"krstenica/internal/errorx"
+	"krstenica/internal/model"
+	"krstenica/internal/requestctx"
+	"krstenica/pkg"
 )
 
 func (s *service) DeleteKrstenica(ctx context.Context, id int64) error {
+	current, err := s.repo.GetKrstenicaByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	if err := enforceCityPermission(ctx, current.City); err != nil {
+		return err
+	}
 
 	updates := map[string]interface{}{}
 	updates["status"] = model.PersonStatusDeleted
 
-	err := s.repo.UpdateKrstenica(ctx, id, updates)
+	err = s.repo.UpdateKrstenica(ctx, id, updates)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -27,10 +37,26 @@ func (s *service) DeleteKrstenica(ctx context.Context, id int64) error {
 }
 
 func (s *service) UpdateKrstenica(ctx context.Context, id int64, krstenicaReq *dto.KrstenicaUpdateReq) (*dto.Krstenica, error) {
+	current, err := s.repo.GetKrstenicaByID(ctx, id)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	if err := enforceCityPermission(ctx, current.City); err != nil {
+		return nil, err
+	}
+
 	updates, err := validateKrstenicaUpdateRequest(krstenicaReq)
 	if err != nil {
 		log.Println(err)
 		return nil, err
+	}
+	if user, ok := requestctx.UserFromContext(ctx); ok && !user.IsAdmin() {
+		city := strings.TrimSpace(user.City)
+		if city == "" {
+			return nil, errors.New("корисник нема додељен град")
+		}
+		updates["city"] = city
 	}
 
 	err = s.repo.UpdateKrstenica(ctx, id, updates)
@@ -50,6 +76,13 @@ func (s *service) UpdateKrstenica(ctx context.Context, id int64, krstenicaReq *d
 }
 
 func (s *service) CreateKrstenica(ctx context.Context, krstenicaReq *dto.KrstenicaCreateReq) (*dto.Krstenica, error) {
+	if user, ok := requestctx.UserFromContext(ctx); ok && !user.IsAdmin() {
+		city := strings.TrimSpace(user.City)
+		if city == "" {
+			return nil, errors.New("корисник нема додељен град")
+		}
+		krstenicaReq.City = city
+	}
 	err := validateKrstenicaCreaterequest(krstenicaReq)
 	if err != nil {
 		log.Println(err)
@@ -120,11 +153,22 @@ func (s *service) GetKrstenicaByID(ctx context.Context, id int64) (*dto.Krstenic
 		log.Println(err)
 		return nil, err
 	}
+	if err := enforceCityPermission(ctx, krstenica.City); err != nil {
+		return nil, err
+	}
 
 	return makeKrstenicaResponse(krstenica), nil
 }
 
 func (s *service) ListKrstenice(ctx context.Context, filterAndSort *pkg.FilterAndSort) ([]*dto.Krstenica, int64, error) {
+	if user, ok := requestctx.UserFromContext(ctx); ok && !user.IsAdmin() {
+		city := strings.TrimSpace(user.City)
+		if city == "" {
+			return nil, 0, errors.New("корисник нема додељен град")
+		}
+		filterAndSort = ensureFilterAndSort(filterAndSort)
+		applyCityFilter(filterAndSort, city)
+	}
 	krstenica, totalCount, err := s.repo.ListKrstenice(ctx, filterAndSort)
 	if err != nil {
 		log.Println(err)
@@ -418,4 +462,40 @@ func validateKrstenicaUpdateRequest(krstenicaReq *dto.KrstenicaUpdateReq) (map[s
 	}
 
 	return updates, nil
+}
+
+func ensureFilterAndSort(filterAndSort *pkg.FilterAndSort) *pkg.FilterAndSort {
+	if filterAndSort == nil {
+		filterAndSort = &pkg.FilterAndSort{
+			Filters: map[pkg.FilterKey][]string{},
+			Sort:    []*pkg.SortOptions{},
+			Paging:  &pkg.Paging{},
+		}
+	}
+	if filterAndSort.Filters == nil {
+		filterAndSort.Filters = map[pkg.FilterKey][]string{}
+	}
+	if filterAndSort.Paging == nil {
+		filterAndSort.Paging = &pkg.Paging{}
+	}
+	return filterAndSort
+}
+
+func applyCityFilter(filterAndSort *pkg.FilterAndSort, city string) {
+	city = strings.TrimSpace(city)
+	if city == "" {
+		return
+	}
+	filterAndSort.Filters[pkg.FilterKey{Property: "city", Operator: "eq"}] = []string{city}
+}
+
+func enforceCityPermission(ctx context.Context, recordCity string) error {
+	user, ok := requestctx.UserFromContext(ctx)
+	if !ok || user.IsAdmin() {
+		return nil
+	}
+	if strings.EqualFold(strings.TrimSpace(user.City), strings.TrimSpace(recordCity)) {
+		return nil
+	}
+	return errors.New("немате дозволу за овај град")
 }

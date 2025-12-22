@@ -24,6 +24,18 @@
                         <label for="users-new-password">Лозинка</label>
                         <input id="users-new-password" type="password" name="password" placeholder="Минимум 8 карактера" required>
                     </div>
+                    <div class="form-field">
+                        <label for="users-new-role">Улога</label>
+                        <select id="users-new-role" name="role">
+                            <option value="user" selected>Корисник</option>
+                            <option value="admin">Администратор</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="users-new-city">Град</label>
+                        <input id="users-new-city" name="city" placeholder="нпр. Пирот">
+                        <small class="muted">За обичне кориснике град је обавезан.</small>
+                    </div>
                 </div>
             </section>
             <footer>
