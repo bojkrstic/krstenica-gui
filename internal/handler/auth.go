@@ -87,6 +87,7 @@ func (h *httpHandler) handleLogin() gin.HandlerFunc {
 		if returnURL == "" {
 			returnURL = defaultRedirectPath
 		}
+
 		ctx.Redirect(http.StatusSeeOther, returnURL)
 	}
 }
@@ -287,11 +288,14 @@ func (h *httpHandler) signPayload(payload string) string {
 	if secret == "" {
 		secret = strings.TrimSpace(h.conf.AdminJWTSecret)
 	}
+
 	if secret == "" {
 		secret = "krstenica-session-secret"
 	}
+
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write([]byte(payload))
+
 	return hex.EncodeToString(mac.Sum(nil))
 }
 
@@ -300,6 +304,7 @@ func (h *httpHandler) createJWTToken(username string) (string, time.Time, error)
 	if username == "" {
 		return "", time.Time{}, errors.New("username is required")
 	}
+
 	secret := strings.TrimSpace(h.jwtSecret())
 	if secret == "" {
 		return "", time.Time{}, errors.New("jwt secret is not configured")
@@ -324,6 +329,7 @@ func (h *httpHandler) createJWTToken(username string) (string, time.Time, error)
 	if err != nil {
 		return "", time.Time{}, err
 	}
+
 	claimsJSON, err := json.Marshal(claims)
 	if err != nil {
 		return "", time.Time{}, err
@@ -338,6 +344,7 @@ func (h *httpHandler) createJWTToken(username string) (string, time.Time, error)
 	signature := base64.RawURLEncoding.EncodeToString(h.signJWT(signingInput, secret))
 
 	token := signingInput + "." + signature
+
 	return token, expiresAt, nil
 }
 

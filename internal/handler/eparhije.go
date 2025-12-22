@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"krstenica/internal/dto"
 	"krstenica/internal/errorx"
@@ -23,7 +22,7 @@ func (h *httpHandler) createEparhije() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		eparhija, err := h.service.CreateEparhije(cx, req)
 		if err != nil {
@@ -44,7 +43,7 @@ func (h *httpHandler) getEparhije() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		eparhija, err := h.service.GetEparhijeByID(cx, int64(id))
 		if err != nil {
@@ -62,7 +61,8 @@ func (h *httpHandler) getEparhije() gin.HandlerFunc {
 
 func (h *httpHandler) listEparhije() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		cx := context.Background()
+		cx := ctx.Request.Context()
+
 		filters := pkg.ParseUrlQuery(ctx)
 		eparhija, totalCount, err := h.service.ListEparhije(cx, filters)
 		if err != nil {
@@ -98,7 +98,7 @@ func (h *httpHandler) updateEparhije() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		eparhija, err := h.service.UpdateEparhije(cx, int64(id), req)
 		if err != nil {
@@ -119,7 +119,9 @@ func (h *httpHandler) deleteEparhije() gin.HandlerFunc {
 			return
 		}
 
-		err = h.service.DeleteEparhije(ctx, int64(id))
+		cx := ctx.Request.Context()
+
+		err = h.service.DeleteEparhije(cx, int64(id))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
