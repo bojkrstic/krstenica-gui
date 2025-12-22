@@ -20,10 +20,10 @@ func (h *httpHandler) renderUsersPage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		users, err := h.service.ListUsers(ctx.Request.Context())
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{"Message": err.Error()})
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{"Message": err.Error()})
 			return
 		}
-		ctx.HTML(http.StatusOK, "users/index.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "users/index.html", gin.H{
 			"Title":           "Корисници",
 			"ContentTemplate": "users/content",
 			"Users":           users,
@@ -39,7 +39,7 @@ func (h *httpHandler) renderUsersTable() gin.HandlerFunc {
 
 func (h *httpHandler) renderUsersNew() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "users/new.html", nil)
+		h.renderHTML(ctx, http.StatusOK, "users/new.html", nil)
 	}
 }
 
@@ -48,13 +48,13 @@ func (h *httpHandler) handleUsersCreate() gin.HandlerFunc {
 		var req dto.UserCreateReq
 		if err := ctx.ShouldBind(&req); err != nil {
 			ctx.Header("HX-Retarget", "closest dialog")
-			ctx.HTML(http.StatusBadRequest, "users/new.html", gin.H{"Error": "Неисправан унос"})
+			h.renderHTML(ctx, http.StatusBadRequest, "users/new.html", gin.H{"Error": "Неисправан унос"})
 			return
 		}
 		created, err := h.service.CreateUser(ctx.Request.Context(), &req)
 		if err != nil {
 			ctx.Header("HX-Retarget", "closest dialog")
-			ctx.HTML(http.StatusBadRequest, "users/new.html", gin.H{"Error": err.Error()})
+			h.renderHTML(ctx, http.StatusBadRequest, "users/new.html", gin.H{"Error": err.Error()})
 			return
 		}
 		h.usersTableResponse(ctx, "Корисник '"+created.Username+"' је додат.", "")
@@ -65,15 +65,15 @@ func (h *httpHandler) renderUsersEdit() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{"Message": "Непознат корисник"})
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{"Message": "Непознат корисник"})
 			return
 		}
 		user, err := h.service.GetUser(ctx.Request.Context(), id)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{"Message": err.Error()})
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{"Message": err.Error()})
 			return
 		}
-		ctx.HTML(http.StatusOK, "users/edit.html", gin.H{"User": user})
+		h.renderHTML(ctx, http.StatusOK, "users/edit.html", gin.H{"User": user})
 	}
 }
 
@@ -81,32 +81,32 @@ func (h *httpHandler) handleUsersUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{"Message": "Непознат корисник"})
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{"Message": "Непознат корисник"})
 			return
 		}
 		existing, err := h.service.GetUser(ctx.Request.Context(), id)
 		if err != nil {
 			ctx.Header("HX-Retarget", "closest dialog")
-			ctx.HTML(http.StatusInternalServerError, "users/edit.html", gin.H{"Error": err.Error()})
+			h.renderHTML(ctx, http.StatusInternalServerError, "users/edit.html", gin.H{"Error": err.Error()})
 			return
 		}
 
 		var req dto.UserUpdateReq
 		if err := ctx.ShouldBind(&req); err != nil {
 			ctx.Header("HX-Retarget", "closest dialog")
-			ctx.HTML(http.StatusBadRequest, "users/edit.html", gin.H{"Error": "Неисправан унос", "User": existing})
+			h.renderHTML(ctx, http.StatusBadRequest, "users/edit.html", gin.H{"Error": "Неисправан унос", "User": existing})
 			return
 		}
 		if strings.TrimSpace(req.Username) == "" {
 			ctx.Header("HX-Retarget", "closest dialog")
-			ctx.HTML(http.StatusBadRequest, "users/edit.html", gin.H{"Error": "Корисничко име је обавезно", "User": existing})
+			h.renderHTML(ctx, http.StatusBadRequest, "users/edit.html", gin.H{"Error": "Корисничко име је обавезно", "User": existing})
 			return
 		}
 
 		updated, err := h.service.UpdateUser(ctx.Request.Context(), id, &req)
 		if err != nil {
 			ctx.Header("HX-Retarget", "closest dialog")
-			ctx.HTML(http.StatusBadRequest, "users/edit.html", gin.H{"Error": err.Error(), "User": existing})
+			h.renderHTML(ctx, http.StatusBadRequest, "users/edit.html", gin.H{"Error": err.Error(), "User": existing})
 			return
 		}
 		h.usersTableResponse(ctx, "Корисник '"+updated.Username+"' је измењен.", "")
@@ -117,7 +117,7 @@ func (h *httpHandler) handleUsersDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{"Message": "Непознат корисник"})
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{"Message": "Непознат корисник"})
 			return
 		}
 		user, err := h.service.GetUser(ctx.Request.Context(), id)
@@ -216,11 +216,10 @@ func (h *httpHandler) usersTableResponse(ctx *gin.Context, successMsg, errorMsg 
 
 	users, err := h.service.ListUsers(cx)
 	if err != nil {
-		ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{"Message": err.Error()})
+		h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{"Message": err.Error()})
 		return
 	}
-
-	ctx.HTML(http.StatusOK, "users/table.html", usersTableData{
+	h.renderHTML(ctx, http.StatusOK, "users/table.html", usersTableData{
 		Items:   users,
 		Success: successMsg,
 		Error:   errorMsg,

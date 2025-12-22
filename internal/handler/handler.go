@@ -39,14 +39,14 @@ func (h *httpHandler) Init() {
 
 	staticDir := resolveDir("web/static")
 	h.router.Static("/static", staticDir)
-		h.router.SetFuncMap(template.FuncMap{
-			"formatDate": func(t time.Time) string {
-				formatted := formatSerbianDate(t)
-				if formatted == "" {
-					return "-"
-				}
-				return formatted
-			},
+	h.router.SetFuncMap(template.FuncMap{
+		"formatDate": func(t time.Time) string {
+			formatted := formatSerbianDate(t)
+			if formatted == "" {
+				return "-"
+			}
+			return formatted
+		},
 		"int64Value": func(v *int64) string {
 			if v == nil {
 				return ""
@@ -152,4 +152,23 @@ func (h *httpHandler) mustLoadTemplates(root string) {
 	sort.Strings(paths)
 
 	h.router.LoadHTMLFiles(paths...)
+}
+
+func (h *httpHandler) renderHTML(ctx *gin.Context, status int, tmpl string, data interface{}) {
+	if ctx == nil {
+		return
+	}
+	if data == nil {
+		data = gin.H{}
+	}
+	if user, ok := ctx.Get(contextUserKey); ok {
+		if m, ok := data.(gin.H); ok {
+			if _, exists := m["CurrentUser"]; !exists {
+				m["CurrentUser"] = user
+			}
+			ctx.HTML(status, tmpl, m)
+			return
+		}
+	}
+	ctx.HTML(status, tmpl, data)
 }

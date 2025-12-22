@@ -657,7 +657,9 @@
                     <li><a href="/ui/hramovi">Храмови</a></li>
                     <li><a href="/ui/svestenici">Свештеници</a></li>
                     <li><a href="/ui/osobe">Особе</a></li>
+                    {{ if and .CurrentUser (eq .CurrentUser.Role "admin") }}
                     <li><a href="/ui/users">Корисници</a></li>
+                    {{ end }}
                     <li>
                         <form class="logout-form" method="post" action="/ui/logout">
                             <button type="submit" class="secondary outline">Одјава</button>

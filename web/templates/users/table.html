@@ -10,6 +10,8 @@
     <thead>
         <tr>
             <th>Корисничко име</th>
+            <th>Улога</th>
+            <th>Град</th>
             <th>Креиран</th>
             <th>Акције</th>
         </tr>
@@ -19,6 +21,8 @@
             {{ range .Items }}
             <tr>
                 <td>{{ .Username }}</td>
+                <td>{{ if eq .Role "admin" }}Администратор{{ else }}Корисник{{ end }}</td>
+                <td>{{ if .City }}{{ .City }}{{ else }}-{{ end }}</td>
                 <td>{{ .CreatedAt.Format "02.01.2006. 15:04" }}</td>
                 <td>
                     <button class="secondary outline"
@@ -40,7 +44,7 @@
             {{ end }}
         {{ else }}
             <tr>
-                <td colspan="3">Нема корисника.</td>
+                <td colspan="5">Нема корисника.</td>
             </tr>
         {{ end }}
     </tbody>

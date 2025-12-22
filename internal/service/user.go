@@ -12,6 +12,16 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	userRoleAdmin = "admin"
+	userRoleBasic = "user"
+)
+
+var allowedUserRoles = map[string]bool{
+	userRoleAdmin: true,
+	userRoleBasic: true,
+}
+
 func (s *service) EnsureDefaultUser(ctx context.Context) error {
 	username := strings.TrimSpace(s.conf.Auth.Username)
 	if username == "" {
@@ -25,16 +35,23 @@ func (s *service) EnsureDefaultUser(ctx context.Context) error {
 	user, err := s.repo.GetUserByUsername(ctx, username)
 	switch {
 	case err == nil:
-		if password == "" {
+		updates := map[string]interface{}{}
+		if password != "" {
+			hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+			if err != nil {
+				return err
+			}
+			updates["password_hash"] = string(hash)
+		}
+		if !strings.EqualFold(strings.TrimSpace(user.Role), userRoleAdmin) {
+			updates["role"] = userRoleAdmin
+		}
+		if len(updates) == 0 {
 			return nil
 		}
-		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		if err != nil {
-			return err
-		}
-		return s.repo.UpdateUser(ctx, user.ID, map[string]interface{}{"password_hash": string(hash)})
+		return s.repo.UpdateUser(ctx, user.ID, updates)
 	case errors.Is(err, gorm.ErrRecordNotFound):
-		return s.createUserInternal(ctx, username, password)
+		return s.createUserInternal(ctx, username, password, userRoleAdmin, "")
 	default:
 		return err
 	}
@@ -70,6 +87,8 @@ func (s *service) ListUsers(ctx context.Context) ([]*dto.User, error) {
 		res = append(res, &dto.User{
 			ID:        user.ID,
 			Username:  user.Username,
+			Role:      user.Role,
+			City:      user.City,
 			CreatedAt: user.CreatedAt,
 		})
 	}
@@ -96,7 +115,19 @@ func (s *service) CreateUser(ctx context.Context, req *dto.UserCreateReq) (*dto.
 		return nil, err
 	}
 
-	if err := s.createUserInternal(ctx, username, req.Password); err != nil {
+	role := normalizeRole(req.Role)
+	if role == "" {
+		role = userRoleBasic
+	}
+	if !allowedUserRoles[role] {
+		return nil, errors.New("unsupported role")
+	}
+	city := strings.TrimSpace(req.City)
+	if role != userRoleAdmin && city == "" {
+		return nil, errors.New("city is required for non-admin users")
+	}
+
+	if err := s.createUserInternal(ctx, username, req.Password, role, city); err != nil {
 		return nil, err
 	}
 
@@ -108,6 +139,8 @@ func (s *service) CreateUser(ctx context.Context, req *dto.UserCreateReq) (*dto.
 	return &dto.User{
 		ID:        created.ID,
 		Username:  created.Username,
+		Role:      created.Role,
+		City:      created.City,
 		CreatedAt: created.CreatedAt,
 	}, nil
 }
@@ -120,6 +153,8 @@ func (s *service) GetUser(ctx context.Context, id int64) (*dto.User, error) {
 	return &dto.User{
 		ID:        user.ID,
 		Username:  user.Username,
+		Role:      user.Role,
+		City:      user.City,
 		CreatedAt: user.CreatedAt,
 	}, nil
 }
@@ -158,10 +193,24 @@ func (s *service) UpdateUser(ctx context.Context, id int64, req *dto.UserUpdateR
 		updates["password_hash"] = string(hash)
 	}
 
+	role := normalizeRole(req.Role)
+	if role != "" && role != strings.TrimSpace(current.Role) {
+		if !allowedUserRoles[role] {
+			return nil, errors.New("unsupported role")
+		}
+		updates["role"] = role
+	}
+	city := strings.TrimSpace(req.City)
+	if city != "" && city != strings.TrimSpace(current.City) {
+		updates["city"] = city
+	}
+
 	if len(updates) == 0 {
 		return &dto.User{
 			ID:        current.ID,
 			Username:  current.Username,
+			Role:      current.Role,
+			City:      current.City,
 			CreatedAt: current.CreatedAt,
 		}, nil
 	}
@@ -189,7 +238,7 @@ func (s *service) DeleteUser(ctx context.Context, id int64) error {
 	return s.repo.DeleteUser(ctx, id)
 }
 
-func (s *service) createUserInternal(ctx context.Context, username, password string) error {
+func (s *service) createUserInternal(ctx context.Context, username, password, role, city string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -197,7 +246,17 @@ func (s *service) createUserInternal(ctx context.Context, username, password str
 	user := &model.User{
 		Username:     username,
 		PasswordHash: string(hash),
+		Role:         role,
+		City:         city,
 	}
 	_, err = s.repo.CreateUser(ctx, user)
 	return err
+}
+
+func normalizeRole(role string) string {
+	role = strings.TrimSpace(strings.ToLower(role))
+	if role == "" {
+		return ""
+	}
+	return role
 }

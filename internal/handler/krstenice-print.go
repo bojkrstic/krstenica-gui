@@ -36,7 +36,6 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		}
 
 		cx := ctx.Request.Context()
-
 		filters := pkg.ParseUrlQuery(ctx)
 		log.Println("filters", filters)
 

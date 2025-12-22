@@ -73,18 +73,19 @@ func (h *httpHandler) addGuiRoutes() {
 	protected.GET("/ui/osobe/picker/table", h.renderOsobePickerTable())
 	protected.GET("/ui/osobe/picker/select/:id", h.handleOsobePickerSelect())
 
-	protected.GET("/ui/users", h.renderUsersPage())
-	protected.GET("/ui/users/table", h.renderUsersTable())
-	protected.GET("/ui/users/new", h.renderUsersNew())
-	protected.GET("/ui/users/:id/edit", h.renderUsersEdit())
-	protected.POST("/ui/users", h.handleUsersCreate())
-	protected.PUT("/ui/users/:id", h.handleUsersUpdate())
-	protected.DELETE("/ui/users/:id", h.handleUsersDelete())
+	adminUI := protected.Group("", h.requireUIRole(adminRoleDefault))
+	adminUI.GET("/ui/users", h.renderUsersPage())
+	adminUI.GET("/ui/users/table", h.renderUsersTable())
+	adminUI.GET("/ui/users/new", h.renderUsersNew())
+	adminUI.GET("/ui/users/:id/edit", h.renderUsersEdit())
+	adminUI.POST("/ui/users", h.handleUsersCreate())
+	adminUI.PUT("/ui/users/:id", h.handleUsersUpdate())
+	adminUI.DELETE("/ui/users/:id", h.handleUsersDelete())
 }
 
 func (h *httpHandler) renderDashboard() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "dashboard/index.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "dashboard/index.html", gin.H{
 			"Title":           "Kontrolna tabla",
 			"ContentTemplate": "dashboard/content",
 		})
@@ -142,7 +143,7 @@ type paginationData struct {
 
 func (h *httpHandler) renderKrstenicePage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "krstenice/index.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "krstenice/index.html", gin.H{
 			"Title":           "Krstenice",
 			"ContentTemplate": "krstenice/content",
 		})
@@ -155,11 +156,11 @@ func (h *httpHandler) renderKrsteniceTable() gin.HandlerFunc {
 		pageSize := parsePositiveInt(filters.Paging.PageSize, 10)
 		pageNumber := parsePositiveInt(filters.Paging.PageNumber, 1)
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		items, total, err := h.service.ListKrstenice(cx, filters)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -187,17 +188,17 @@ func (h *httpHandler) renderKrsteniceTable() gin.HandlerFunc {
 		data.Pagination.PrevLink = buildPageLink(ctx.Request.URL.Path, queryValues, data.Pagination.PrevPage, pageSize)
 		data.Pagination.NextLink = buildPageLink(ctx.Request.URL.Path, queryValues, data.Pagination.NextPage, pageSize)
 
-		ctx.HTML(http.StatusOK, "krstenice/table.html", data)
+		h.renderHTML(ctx, http.StatusOK, "krstenice/table.html", data)
 	}
 }
 
 func (h *httpHandler) renderKrsteniceNew() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		eparhije, err := h.listActiveEparhijeForForm(cx)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -205,13 +206,13 @@ func (h *httpHandler) renderKrsteniceNew() gin.HandlerFunc {
 
 		hramovi, err := h.listActiveHramoviForForm(cx)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "krstenice/new.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "krstenice/new.html", gin.H{
 			"Eparhije": eparhije,
 			"Hramovi":  hramovi,
 		})
@@ -222,17 +223,17 @@ func (h *httpHandler) renderKrsteniceEdit() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator krstenice",
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 
 		krstenica, err := h.service.GetKrstenicaByID(cx, int64(id))
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -240,7 +241,7 @@ func (h *httpHandler) renderKrsteniceEdit() gin.HandlerFunc {
 
 		eparhije, err := h.listActiveEparhijeForForm(cx)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -248,13 +249,13 @@ func (h *httpHandler) renderKrsteniceEdit() gin.HandlerFunc {
 
 		hramovi, err := h.listActiveHramoviForForm(cx)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "krstenice/edit.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "krstenice/edit.html", gin.H{
 			"Krstenica": krstenica,
 			"Eparhije":  eparhije,
 			"Hramovi":   hramovi,
@@ -264,7 +265,7 @@ func (h *httpHandler) renderKrsteniceEdit() gin.HandlerFunc {
 
 func (h *httpHandler) renderEparhijePage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "eparhije/index.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "eparhije/index.html", gin.H{
 			"Title":           "Eparhije",
 			"ContentTemplate": "eparhije/content",
 		})
@@ -273,21 +274,21 @@ func (h *httpHandler) renderEparhijePage() gin.HandlerFunc {
 
 func (h *httpHandler) renderEparhijeTable() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		data, err := h.buildEparhijeTable(ctx.Request.URL.Query(), ctx.Request.URL.Path)
+		data, err := h.buildEparhijeTable(ctx.Request.Context(), ctx.Request.URL.Query(), ctx.Request.URL.Path)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "eparhije/table.html", data)
+		h.renderHTML(ctx, http.StatusOK, "eparhije/table.html", data)
 	}
 }
 
 func (h *httpHandler) renderEparhijeNew() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "eparhije/new.html", gin.H{})
+		h.renderHTML(ctx, http.StatusOK, "eparhije/new.html", gin.H{})
 	}
 }
 
@@ -295,22 +296,22 @@ func (h *httpHandler) renderEparhijeEdit() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator eparhije",
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		eparhija, err := h.service.GetEparhijeByID(cx, int64(id))
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "eparhije/edit.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "eparhije/edit.html", gin.H{
 			"Eparhija": eparhija,
 		})
 	}
@@ -319,7 +320,7 @@ func (h *httpHandler) renderEparhijeEdit() gin.HandlerFunc {
 func (h *httpHandler) handleEparhijeCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if err := ctx.Request.ParseForm(); err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Neuspesno parsiranje forme",
 			})
 			return
@@ -333,20 +334,20 @@ func (h *httpHandler) handleEparhijeCreate() gin.HandlerFunc {
 		}
 
 		if name == "" {
-			ctx.HTML(http.StatusBadRequest, "eparhije/new.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "eparhije/new.html", gin.H{
 				"Error": "Naziv eparhije je obavezan",
 				"Form":  formState,
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		_, err := h.service.CreateEparhije(cx, &dto.EparhijeCreateReq{
 			Name: name,
 			City: city,
 		})
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "eparhije/new.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "eparhije/new.html", gin.H{
 				"Error": err.Error(),
 				"Form":  formState,
 			})
@@ -362,14 +363,14 @@ func (h *httpHandler) handleEparhijeUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator eparhije",
 			})
 			return
 		}
 
 		if err := ctx.Request.ParseForm(); err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Neuspesno parsiranje forme",
 			})
 			return
@@ -392,9 +393,9 @@ func (h *httpHandler) handleEparhijeUpdate() gin.HandlerFunc {
 			req.Status = &status
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		if _, err := h.service.UpdateEparhije(cx, int64(id), req); err != nil {
-			ctx.HTML(http.StatusBadRequest, "eparhije/edit.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "eparhije/edit.html", gin.H{
 				"Error": err.Error(),
 				"Eparhija": &dto.Eparhije{
 					ID:     int64(id),
@@ -415,15 +416,15 @@ func (h *httpHandler) handleEparhijeDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator eparhije",
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		if err := h.service.DeleteEparhije(cx, int64(id)); err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -434,7 +435,7 @@ func (h *httpHandler) handleEparhijeDelete() gin.HandlerFunc {
 	}
 }
 
-func (h *httpHandler) buildEparhijeTable(values url.Values, basePath string) (*eparhijeTableData, error) {
+func (h *httpHandler) buildEparhijeTable(ctx context.Context, values url.Values, basePath string) (*eparhijeTableData, error) {
 	filters := &pkg.FilterAndSort{
 		Filters: map[pkg.FilterKey][]string{},
 		Sort:    []*pkg.SortOptions{},
@@ -464,7 +465,7 @@ func (h *httpHandler) buildEparhijeTable(values url.Values, basePath string) (*e
 		filters.Filters[pkg.FilterKey{Property: key, Operator: "eq"}] = trimmed
 	}
 
-	items, total, err := h.service.ListEparhije(context.Background(), filters)
+	items, total, err := h.service.ListEparhije(ctx, filters)
 	if err != nil {
 		return nil, err
 	}
@@ -501,7 +502,7 @@ func (h *httpHandler) renderSvesteniciPicker() gin.HandlerFunc {
 			field = "priest_id"
 		}
 
-		ctx.HTML(http.StatusOK, "svestenici/picker.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "svestenici/picker.html", gin.H{
 			"Field": field,
 		})
 	}
@@ -517,15 +518,15 @@ func (h *httpHandler) renderSvesteniciPickerTable() gin.HandlerFunc {
 		values := cloneValues(ctx.Request.URL.Query())
 		values.Del("field")
 
-		data, err := h.buildSvesteniciTable(values, ctx.Request.URL.Path)
+		data, err := h.buildSvesteniciTable(ctx.Request.Context(), values, ctx.Request.URL.Path)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "svestenici/picker-table.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "svestenici/picker-table.html", gin.H{
 			"Field": field,
 			"Data":  data,
 		})
@@ -536,7 +537,7 @@ func (h *httpHandler) handleSvesteniciPickerSelect() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator svestenika",
 			})
 			return
@@ -547,9 +548,9 @@ func (h *httpHandler) handleSvesteniciPickerSelect() gin.HandlerFunc {
 			field = "priest_id"
 		}
 
-		priest, err := h.service.GetPriestByID(context.Background(), int64(id))
+		priest, err := h.service.GetPriestByID(ctx.Request.Context(), int64(id))
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -571,7 +572,7 @@ func (h *httpHandler) handleSvesteniciPickerSelect() gin.HandlerFunc {
 
 		bytes, err := json.Marshal(payload)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -584,7 +585,7 @@ func (h *httpHandler) handleSvesteniciPickerSelect() gin.HandlerFunc {
 
 func (h *httpHandler) renderHramoviPage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "hramovi/index.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "hramovi/index.html", gin.H{
 			"Title":           "Hramovi",
 			"ContentTemplate": "hramovi/content",
 		})
@@ -593,21 +594,21 @@ func (h *httpHandler) renderHramoviPage() gin.HandlerFunc {
 
 func (h *httpHandler) renderHramoviTable() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		data, err := h.buildHramoviTable(ctx.Request.URL.Query(), ctx.Request.URL.Path)
+		data, err := h.buildHramoviTable(ctx.Request.Context(), ctx.Request.URL.Query(), ctx.Request.URL.Path)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "hramovi/table.html", data)
+		h.renderHTML(ctx, http.StatusOK, "hramovi/table.html", data)
 	}
 }
 
 func (h *httpHandler) renderHramoviNew() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "hramovi/new.html", gin.H{})
+		h.renderHTML(ctx, http.StatusOK, "hramovi/new.html", gin.H{})
 	}
 }
 
@@ -615,22 +616,22 @@ func (h *httpHandler) renderHramoviEdit() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator hrama",
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		hram, err := h.service.GetTampleByID(cx, int64(id))
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "hramovi/edit.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "hramovi/edit.html", gin.H{
 			"Hram": hram,
 		})
 	}
@@ -639,7 +640,7 @@ func (h *httpHandler) renderHramoviEdit() gin.HandlerFunc {
 func (h *httpHandler) handleHramoviCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if err := ctx.Request.ParseForm(); err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Neuspesno parsiranje forme",
 			})
 			return
@@ -653,20 +654,20 @@ func (h *httpHandler) handleHramoviCreate() gin.HandlerFunc {
 		}
 
 		if name == "" {
-			ctx.HTML(http.StatusBadRequest, "hramovi/new.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "hramovi/new.html", gin.H{
 				"Error": "Naziv hrama je obavezan",
 				"Form":  formState,
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		_, err := h.service.CreateTample(cx, &dto.TampleCreateReq{
 			Name: name,
 			City: city,
 		})
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "hramovi/new.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "hramovi/new.html", gin.H{
 				"Error": err.Error(),
 				"Form":  formState,
 			})
@@ -682,14 +683,14 @@ func (h *httpHandler) handleHramoviUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator hrama",
 			})
 			return
 		}
 
 		if err := ctx.Request.ParseForm(); err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Neuspesno parsiranje forme",
 			})
 			return
@@ -700,7 +701,7 @@ func (h *httpHandler) handleHramoviUpdate() gin.HandlerFunc {
 		rawStatus := strings.TrimSpace(ctx.PostForm("status"))
 
 		if rawName == "" {
-			ctx.HTML(http.StatusBadRequest, "hramovi/edit.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "hramovi/edit.html", gin.H{
 				"Error": "Naziv hrama je obavezan",
 				"Hram": &dto.Tample{
 					ID:     int64(id),
@@ -721,9 +722,9 @@ func (h *httpHandler) handleHramoviUpdate() gin.HandlerFunc {
 			req.Status = &statusCopy
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		if _, err := h.service.UpdateTample(cx, int64(id), req); err != nil {
-			ctx.HTML(http.StatusBadRequest, "hramovi/edit.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "hramovi/edit.html", gin.H{
 				"Error": err.Error(),
 				"Hram": &dto.Tample{
 					ID:     int64(id),
@@ -744,15 +745,15 @@ func (h *httpHandler) handleHramoviDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator hrama",
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		if err := h.service.DeleteTample(cx, int64(id)); err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -763,7 +764,7 @@ func (h *httpHandler) handleHramoviDelete() gin.HandlerFunc {
 	}
 }
 
-func (h *httpHandler) buildHramoviTable(values url.Values, basePath string) (*hramoviTableData, error) {
+func (h *httpHandler) buildHramoviTable(ctx context.Context, values url.Values, basePath string) (*hramoviTableData, error) {
 	filters := &pkg.FilterAndSort{
 		Filters: map[pkg.FilterKey][]string{},
 		Sort:    []*pkg.SortOptions{},
@@ -793,7 +794,7 @@ func (h *httpHandler) buildHramoviTable(values url.Values, basePath string) (*hr
 		filters.Filters[pkg.FilterKey{Property: key, Operator: "eq"}] = trimmed
 	}
 
-	items, total, err := h.service.ListTamples(context.Background(), filters)
+	items, total, err := h.service.ListTamples(ctx, filters)
 	if err != nil {
 		return nil, err
 	}
@@ -825,7 +826,7 @@ func (h *httpHandler) buildHramoviTable(values url.Values, basePath string) (*hr
 
 func (h *httpHandler) renderSvesteniciPage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "svestenici/index.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "svestenici/index.html", gin.H{
 			"Title":           "Svestenici",
 			"ContentTemplate": "svestenici/content",
 		})
@@ -834,15 +835,15 @@ func (h *httpHandler) renderSvesteniciPage() gin.HandlerFunc {
 
 func (h *httpHandler) renderSvesteniciTable() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		data, err := h.buildSvesteniciTable(ctx.Request.URL.Query(), ctx.Request.URL.Path)
+		data, err := h.buildSvesteniciTable(ctx.Request.Context(), ctx.Request.URL.Query(), ctx.Request.URL.Path)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "svestenici/table.html", data)
+		h.renderHTML(ctx, http.StatusOK, "svestenici/table.html", data)
 	}
 }
 
@@ -851,7 +852,7 @@ func (h *httpHandler) renderSvesteniciNew() gin.HandlerFunc {
 		contextValue := strings.TrimSpace(ctx.Query("context"))
 		field := strings.TrimSpace(ctx.Query("field"))
 
-		ctx.HTML(http.StatusOK, "svestenici/new.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "svestenici/new.html", gin.H{
 			"Context": contextValue,
 			"Field":   field,
 		})
@@ -862,22 +863,22 @@ func (h *httpHandler) renderSvesteniciEdit() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator svestenika",
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		svestenik, err := h.service.GetPriestByID(cx, int64(id))
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "svestenici/edit.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "svestenici/edit.html", gin.H{
 			"Svestenik": svestenik,
 		})
 	}
@@ -886,7 +887,7 @@ func (h *httpHandler) renderSvesteniciEdit() gin.HandlerFunc {
 func (h *httpHandler) handleSvesteniciCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if err := ctx.Request.ParseForm(); err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Neuspesno parsiranje forme",
 			})
 			return
@@ -909,7 +910,7 @@ func (h *httpHandler) handleSvesteniciCreate() gin.HandlerFunc {
 		}
 
 		if firstName == "" || lastName == "" {
-			ctx.HTML(http.StatusBadRequest, "svestenici/new.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "svestenici/new.html", gin.H{
 				"Error":   "Ime i prezime su obavezni",
 				"Form":    formState,
 				"Context": contextValue,
@@ -918,7 +919,7 @@ func (h *httpHandler) handleSvesteniciCreate() gin.HandlerFunc {
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		_, err := h.service.CreatePriest(cx, &dto.PriestCreateReq{
 			FirstName: firstName,
 			LastName:  lastName,
@@ -926,7 +927,7 @@ func (h *httpHandler) handleSvesteniciCreate() gin.HandlerFunc {
 			Title:     title,
 		})
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "svestenici/new.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "svestenici/new.html", gin.H{
 				"Error":   err.Error(),
 				"Form":    formState,
 				"Context": contextValue,
@@ -944,14 +945,14 @@ func (h *httpHandler) handleSvesteniciUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator svestenika",
 			})
 			return
 		}
 
 		if err := ctx.Request.ParseForm(); err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Neuspesno parsiranje forme",
 			})
 			return
@@ -964,7 +965,7 @@ func (h *httpHandler) handleSvesteniciUpdate() gin.HandlerFunc {
 		status := strings.TrimSpace(ctx.PostForm("status"))
 
 		if firstName == "" || lastName == "" {
-			ctx.HTML(http.StatusBadRequest, "svestenici/edit.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "svestenici/edit.html", gin.H{
 				"Error": "Ime i prezime su obavezni",
 				"Svestenik": &dto.Priest{
 					ID:        int64(id),
@@ -992,9 +993,9 @@ func (h *httpHandler) handleSvesteniciUpdate() gin.HandlerFunc {
 			req.Status = &statusCopy
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		if _, err := h.service.UpdatePriest(cx, int64(id), req); err != nil {
-			ctx.HTML(http.StatusBadRequest, "svestenici/edit.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "svestenici/edit.html", gin.H{
 				"Error": err.Error(),
 				"Svestenik": &dto.Priest{
 					ID:        int64(id),
@@ -1017,15 +1018,15 @@ func (h *httpHandler) handleSvesteniciDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator svestenika",
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		if err := h.service.DeletePriest(cx, int64(id)); err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -1036,7 +1037,7 @@ func (h *httpHandler) handleSvesteniciDelete() gin.HandlerFunc {
 	}
 }
 
-func (h *httpHandler) buildSvesteniciTable(values url.Values, basePath string) (*svesteniciTableData, error) {
+func (h *httpHandler) buildSvesteniciTable(ctx context.Context, values url.Values, basePath string) (*svesteniciTableData, error) {
 	filters := &pkg.FilterAndSort{
 		Filters: map[pkg.FilterKey][]string{},
 		Sort:    []*pkg.SortOptions{},
@@ -1072,7 +1073,7 @@ func (h *httpHandler) buildSvesteniciTable(values url.Values, basePath string) (
 		filters.Filters[pkg.FilterKey{Property: key, Operator: operator}] = trimmed
 	}
 
-	items, total, err := h.service.ListPriests(context.Background(), filters)
+	items, total, err := h.service.ListPriests(ctx, filters)
 	if err != nil {
 		return nil, err
 	}
@@ -1104,7 +1105,7 @@ func (h *httpHandler) buildSvesteniciTable(values url.Values, basePath string) (
 
 func (h *httpHandler) renderOsobePage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "osobe/index.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "osobe/index.html", gin.H{
 			"Title":           "Особе из евиденције",
 			"ContentTemplate": "osobe/content",
 		})
@@ -1113,15 +1114,15 @@ func (h *httpHandler) renderOsobePage() gin.HandlerFunc {
 
 func (h *httpHandler) renderOsobeTable() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		data, err := h.buildOsobeTable(ctx.Request.URL.Query(), ctx.Request.URL.Path)
+		data, err := h.buildOsobeTable(ctx.Request.Context(), ctx.Request.URL.Query(), ctx.Request.URL.Path)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "osobe/table.html", data)
+		h.renderHTML(ctx, http.StatusOK, "osobe/table.html", data)
 	}
 }
 
@@ -1130,7 +1131,7 @@ func (h *httpHandler) renderOsobeNew() gin.HandlerFunc {
 		contextValue := strings.TrimSpace(ctx.Query("context"))
 		field := strings.TrimSpace(ctx.Query("field"))
 
-		ctx.HTML(http.StatusOK, "osobe/new.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "osobe/new.html", gin.H{
 			"Context": contextValue,
 			"Field":   field,
 		})
@@ -1141,22 +1142,22 @@ func (h *httpHandler) renderOsobeEdit() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator osobe",
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		osoba, err := h.service.GetPersonByID(cx, int64(id))
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "osobe/edit.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "osobe/edit.html", gin.H{
 			"Osoba": osoba,
 		})
 	}
@@ -1169,7 +1170,7 @@ func (h *httpHandler) renderOsobePicker() gin.HandlerFunc {
 			field = "parent_id"
 		}
 
-		ctx.HTML(http.StatusOK, "osobe/picker.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "osobe/picker.html", gin.H{
 			"Field": field,
 		})
 	}
@@ -1185,15 +1186,15 @@ func (h *httpHandler) renderOsobePickerTable() gin.HandlerFunc {
 		values := cloneValues(ctx.Request.URL.Query())
 		values.Del("field")
 
-		data, err := h.buildOsobeTable(values, ctx.Request.URL.Path)
+		data, err := h.buildOsobeTable(ctx.Request.Context(), values, ctx.Request.URL.Path)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "osobe/picker-table.html", gin.H{
+		h.renderHTML(ctx, http.StatusOK, "osobe/picker-table.html", gin.H{
 			"Field": field,
 			"Data":  data,
 		})
@@ -1204,7 +1205,7 @@ func (h *httpHandler) handleOsobePickerSelect() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator osobe",
 			})
 			return
@@ -1215,9 +1216,9 @@ func (h *httpHandler) handleOsobePickerSelect() gin.HandlerFunc {
 			field = "parent_id"
 		}
 
-		person, err := h.service.GetPersonByID(context.Background(), int64(id))
+		person, err := h.service.GetPersonByID(ctx.Request.Context(), int64(id))
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -1239,7 +1240,7 @@ func (h *httpHandler) handleOsobePickerSelect() gin.HandlerFunc {
 
 		bytes, err := json.Marshal(payload)
 		if err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -1253,7 +1254,7 @@ func (h *httpHandler) handleOsobePickerSelect() gin.HandlerFunc {
 func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if err := ctx.Request.ParseForm(); err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Neuspesno parsiranje forme",
 			})
 			return
@@ -1292,7 +1293,7 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 		}
 
 		if firstName == "" || lastName == "" || role == "" {
-			ctx.HTML(http.StatusBadRequest, "osobe/new.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "osobe/new.html", gin.H{
 				"Error":   "Ime, prezime i uloga su obavezni",
 				"Form":    formState,
 				"Context": contextValue,
@@ -1305,7 +1306,7 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 		if normalizedBirthDate != "" {
 			parsed, err := time.Parse("2006-01-02", normalizedBirthDate)
 			if err != nil {
-				ctx.HTML(http.StatusBadRequest, "osobe/new.html", gin.H{
+				h.renderHTML(ctx, http.StatusBadRequest, "osobe/new.html", gin.H{
 					"Error":   "Neispravan format datuma. Koristite YYYY/MM/DD.",
 					"Form":    formState,
 					"Context": contextValue,
@@ -1316,7 +1317,7 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 			birthDate = parsed
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		_, err := h.service.CreatePerson(cx, &dto.PersonCreateReq{
 			FirstName:  firstName,
 			LastName:   lastName,
@@ -1330,7 +1331,7 @@ func (h *httpHandler) handleOsobeCreate() gin.HandlerFunc {
 			City:       city,
 		})
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "osobe/new.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "osobe/new.html", gin.H{
 				"Error":   err.Error(),
 				"Form":    formState,
 				"Context": contextValue,
@@ -1348,14 +1349,14 @@ func (h *httpHandler) handleOsobeUpdate() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator osobe",
 			})
 			return
 		}
 
 		if err := ctx.Request.ParseForm(); err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Neuspesno parsiranje forme",
 			})
 			return
@@ -1382,7 +1383,7 @@ func (h *httpHandler) handleOsobeUpdate() gin.HandlerFunc {
 		}
 
 		if firstName == "" || lastName == "" || role == "" {
-			ctx.HTML(http.StatusBadRequest, "osobe/edit.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "osobe/edit.html", gin.H{
 				"Error": "Ime, prezime i uloga su obavezni",
 				"Osoba": &dto.Person{
 					ID:         int64(id),
@@ -1405,7 +1406,7 @@ func (h *httpHandler) handleOsobeUpdate() gin.HandlerFunc {
 		var birthDatePtr *time.Time
 		if birthDateWasProvided {
 			if birthDateParseErr != nil {
-				ctx.HTML(http.StatusBadRequest, "osobe/edit.html", gin.H{
+				h.renderHTML(ctx, http.StatusBadRequest, "osobe/edit.html", gin.H{
 					"Error": "Neispravan format datuma. Koristite YYYY/MM/DD.",
 					"Osoba": &dto.Person{
 						ID:         int64(id),
@@ -1453,7 +1454,7 @@ func (h *httpHandler) handleOsobeUpdate() gin.HandlerFunc {
 			req.Status = &statusCopy
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		if _, err := h.service.UpdatePerson(cx, int64(id), req); err != nil {
 			osoba := &dto.Person{
 				ID:         int64(id),
@@ -1471,7 +1472,7 @@ func (h *httpHandler) handleOsobeUpdate() gin.HandlerFunc {
 			if birthDatePtr != nil {
 				osoba.BirthDate = *birthDatePtr
 			}
-			ctx.HTML(http.StatusBadRequest, "osobe/edit.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "osobe/edit.html", gin.H{
 				"Error": err.Error(),
 				"Osoba": osoba,
 			})
@@ -1487,15 +1488,15 @@ func (h *httpHandler) handleOsobeDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.HTML(http.StatusBadRequest, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusBadRequest, "partials/error.html", gin.H{
 				"Message": "Nepostojeci identifikator osobe",
 			})
 			return
 		}
 
-		cx := context.Background()
+		cx := ctx.Request.Context()
 		if err := h.service.DeletePerson(cx, int64(id)); err != nil {
-			ctx.HTML(http.StatusInternalServerError, "partials/error.html", gin.H{
+			h.renderHTML(ctx, http.StatusInternalServerError, "partials/error.html", gin.H{
 				"Message": err.Error(),
 			})
 			return
@@ -1506,7 +1507,7 @@ func (h *httpHandler) handleOsobeDelete() gin.HandlerFunc {
 	}
 }
 
-func (h *httpHandler) buildOsobeTable(values url.Values, basePath string) (*osobeTableData, error) {
+func (h *httpHandler) buildOsobeTable(ctx context.Context, values url.Values, basePath string) (*osobeTableData, error) {
 	filters := &pkg.FilterAndSort{
 		Filters: map[pkg.FilterKey][]string{},
 		Sort:    []*pkg.SortOptions{},
@@ -1542,7 +1543,7 @@ func (h *httpHandler) buildOsobeTable(values url.Values, basePath string) (*osob
 		filters.Filters[pkg.FilterKey{Property: key, Operator: operator}] = trimmed
 	}
 
-	items, total, err := h.service.ListPersons(context.Background(), filters)
+	items, total, err := h.service.ListPersons(ctx, filters)
 	if err != nil {
 		return nil, err
 	}

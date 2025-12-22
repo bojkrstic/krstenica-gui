@@ -62,7 +62,6 @@ func (h *httpHandler) getEparhije() gin.HandlerFunc {
 func (h *httpHandler) listEparhije() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		cx := ctx.Request.Context()
-
 		filters := pkg.ParseUrlQuery(ctx)
 		eparhija, totalCount, err := h.service.ListEparhije(cx, filters)
 		if err != nil {

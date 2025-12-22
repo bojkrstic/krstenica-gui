@@ -1,0 +1,10 @@
+BEGIN;
+
+ALTER TABLE app_users ADD COLUMN role VARCHAR(32);
+UPDATE app_users SET role = 'admin' WHERE role IS NULL;
+ALTER TABLE app_users ALTER COLUMN role SET DEFAULT 'user';
+ALTER TABLE app_users ALTER COLUMN role SET NOT NULL;
+
+ALTER TABLE app_users ADD COLUMN city VARCHAR(255);
+
+COMMIT;

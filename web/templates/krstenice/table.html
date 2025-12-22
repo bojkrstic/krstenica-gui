@@ -13,7 +13,7 @@
         <thead>
             <tr>
                 <th>Број књиге</th>
-                <th>Страна</th>
+                <th>Град</th>
                 <th>Беба</th>
                 <th>Родитељи</th>
                 <th>Храм</th>
@@ -28,7 +28,7 @@
             {{ range .Items }}
             <tr>
                 <td>{{ .Book }}</td>
-                <td>{{ .Page }}</td>
+                <td>{{ if .City }}{{ .City }}{{ else }}-{{ end }}</td>
                 <td>
                     <strong>{{ .FirstName }}</strong>
                 </td>
