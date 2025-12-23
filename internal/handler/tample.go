@@ -116,7 +116,9 @@ func (h *httpHandler) deleteTample() gin.HandlerFunc {
 			return
 		}
 
-		err = h.service.DeleteTample(ctx, int64(id))
+		cx := ctx.Request.Context()
+
+		err = h.service.DeleteTample(cx, int64(id))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

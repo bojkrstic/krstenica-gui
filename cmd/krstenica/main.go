@@ -48,13 +48,10 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGQUIT, syscall.SIGTERM)
 
-	for {
-		select {
-		case <-sigChan:
-			log.Println("closing the service shortly...")
-			cancelFunc()
-			return
-		}
+	for range sigChan {
+		log.Println("closing the service shortly...")
+		cancelFunc()
+		return
 	}
 
 }

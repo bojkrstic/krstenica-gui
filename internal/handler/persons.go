@@ -120,7 +120,9 @@ func (h *httpHandler) deletePersons() gin.HandlerFunc {
 			return
 		}
 
-		err = h.service.DeletePerson(ctx, int64(id))
+		cx := ctx.Request.Context()
+
+		err = h.service.DeletePerson(cx, int64(id))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

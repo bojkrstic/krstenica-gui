@@ -118,7 +118,9 @@ func (h *httpHandler) deleteEparhije() gin.HandlerFunc {
 			return
 		}
 
-		err = h.service.DeleteEparhije(ctx, int64(id))
+		cx := ctx.Request.Context()
+
+		err = h.service.DeleteEparhije(cx, int64(id))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

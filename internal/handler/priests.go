@@ -121,7 +121,9 @@ func (h *httpHandler) deletePriest() gin.HandlerFunc {
 			return
 		}
 
-		err = h.service.DeletePriest(ctx, int64(id))
+		cx := ctx.Request.Context()
+
+		err = h.service.DeletePriest(cx, int64(id))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
