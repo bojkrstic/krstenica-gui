@@ -124,7 +124,13 @@ func (h *httpHandler) handleAPILogin() gin.HandlerFunc {
 			return
 		}
 
-		token, expiresAt, err := h.createJWTToken(req.Username)
+		user, err := h.loadAuthenticatedUser(ctx.Request.Context(), req.Username)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "greska pri ucitavanju korisnika"})
+			return
+		}
+
+		token, expiresAt, err := h.createJWTToken(user)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "greska pri generisanju tokena"})
 			return
@@ -194,11 +200,7 @@ func (h *httpHandler) authenticateAPIRequest(ctx *gin.Context) (*requestctx.User
 		return nil, false
 	}
 
-	username, err := h.parseJWTToken(token)
-	if err != nil {
-		return nil, false
-	}
-	user, err := h.loadAuthenticatedUser(ctx.Request.Context(), username)
+	user, err := h.parseJWTToken(token)
 	if err != nil {
 		return nil, false
 	}
@@ -307,11 +309,19 @@ func (h *httpHandler) signPayload(payload string) string {
 	return hex.EncodeToString(mac.Sum(nil))
 }
 
-func (h *httpHandler) createJWTToken(username string) (string, time.Time, error) {
-	username = strings.TrimSpace(username)
+func (h *httpHandler) createJWTToken(user *requestctx.User) (string, time.Time, error) {
+	if user == nil {
+		return "", time.Time{}, errors.New("user is required")
+	}
+	username := strings.TrimSpace(user.Username)
 	if username == "" {
 		return "", time.Time{}, errors.New("username is required")
 	}
+	role := strings.TrimSpace(user.Role)
+	if role == "" {
+		role = adminRoleDefault
+	}
+	city := strings.TrimSpace(user.City)
 	secret := strings.TrimSpace(h.jwtSecret())
 	if secret == "" {
 		return "", time.Time{}, errors.New("jwt secret is not configured")
@@ -326,10 +336,13 @@ func (h *httpHandler) createJWTToken(username string) (string, time.Time, error)
 	}
 
 	claims := map[string]interface{}{
-		"sub": username,
-		"iat": now.Unix(),
-		"nbf": now.Unix(),
-		"exp": expiresAt.Unix(),
+		"sub":  username,
+		"iat":  now.Unix(),
+		"nbf":  now.Unix(),
+		"exp":  expiresAt.Unix(),
+		"role": role,
+		"city": city,
+		"uid":  user.ID,
 	}
 
 	headerJSON, err := json.Marshal(header)
@@ -353,54 +366,66 @@ func (h *httpHandler) createJWTToken(username string) (string, time.Time, error)
 	return token, expiresAt, nil
 }
 
-func (h *httpHandler) parseJWTToken(token string) (string, error) {
+func (h *httpHandler) parseJWTToken(token string) (*requestctx.User, error) {
 	token = strings.TrimSpace(token)
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
-		return "", errors.New("invalid token")
+		return nil, errors.New("invalid token")
 	}
 
 	secret := strings.TrimSpace(h.jwtSecret())
 	if secret == "" {
-		return "", errors.New("jwt secret is not configured")
+		return nil, errors.New("jwt secret is not configured")
 	}
 
 	signingInput := strings.Join(parts[:2], ".")
 	expectedSignature := h.signJWT(signingInput, secret)
 	actualSignature, err := base64.RawURLEncoding.DecodeString(parts[2])
 	if err != nil {
-		return "", errors.New("invalid token signature")
+		return nil, errors.New("invalid token signature")
 	}
 	if !hmac.Equal(actualSignature, expectedSignature) {
-		return "", errors.New("invalid token signature")
+		return nil, errors.New("invalid token signature")
 	}
 
 	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
 	if err != nil {
-		return "", errors.New("invalid token payload")
+		return nil, errors.New("invalid token payload")
 	}
 
 	var claims struct {
 		Subject   string `json:"sub"`
 		ExpiresAt int64  `json:"exp"`
 		NotBefore int64  `json:"nbf"`
+		Role      string `json:"role"`
+		City      string `json:"city"`
+		UserID    int64  `json:"uid"`
 	}
 	if err := json.Unmarshal(payload, &claims); err != nil {
-		return "", errors.New("invalid token payload")
+		return nil, errors.New("invalid token payload")
 	}
 	if strings.TrimSpace(claims.Subject) == "" {
-		return "", errors.New("invalid token subject")
+		return nil, errors.New("invalid token subject")
 	}
 
 	now := time.Now().UTC().Unix()
 	if claims.NotBefore != 0 && now < claims.NotBefore {
-		return "", errors.New("token not yet valid")
+		return nil, errors.New("token not yet valid")
 	}
 	if claims.ExpiresAt != 0 && now >= claims.ExpiresAt {
-		return "", errors.New("token expired")
+		return nil, errors.New("token expired")
 	}
 
-	return claims.Subject, nil
+	role := strings.TrimSpace(claims.Role)
+	if role == "" {
+		role = adminRoleDefault
+	}
+	return &requestctx.User{
+		ID:       claims.UserID,
+		Username: strings.TrimSpace(claims.Subject),
+		Role:     role,
+		City:     strings.TrimSpace(claims.City),
+	}, nil
 }
 
 func (h *httpHandler) jwtSecret() string {
