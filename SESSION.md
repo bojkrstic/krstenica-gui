@@ -20,6 +20,7 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 - Added a PDF download link for the visual guide at `/static/guide/VIZUELNO_UPUTSTVO.pdf`.
 - Created `AGENTS.md` with project rules, coding style, documentation requirements, and the rule to always maintain `SESSION.md`.
 - Committed the in-app guide, visual guide assets, and documentation updates into `ce658e8`.
+- Updated `build-and-push.sh` to point at `version1.1.3`.
 - Applied a small UI polish pass:
   - larger page titles and stronger card hierarchy
   - more prominent primary buttons
@@ -70,6 +71,7 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 - `web/static/guide/12-osobe-izmena.png`
 - `web/static/guide/13-osoba-nova.png`
 - `web/static/guide/VIZUELNO_UPUTSTVO.pdf`
+- `build-and-push.sh`
 
 ## Pending Tasks
 
