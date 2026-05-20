@@ -6,7 +6,7 @@ Date: `2026-05-20`
 
 Branch: `develop`
 
-Last commit: `0e622a9` (`Make config server-safe`)
+Last commit: `ce658e8` (`Add in-app user guide`)
 
 Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 
@@ -19,6 +19,7 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 - Tightened the in-app guide copy and added mobile-friendly layout rules so the page reads better on phones.
 - Added a PDF download link for the visual guide at `/static/guide/VIZUELNO_UPUTSTVO.pdf`.
 - Created `AGENTS.md` with project rules, coding style, documentation requirements, and the rule to always maintain `SESSION.md`.
+- Committed the in-app guide, visual guide assets, and documentation updates into `ce658e8`.
 - Applied a small UI polish pass:
   - larger page titles and stronger card hierarchy
   - more prominent primary buttons
