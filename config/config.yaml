@@ -1,3 +1,5 @@
+env: "local"
+
 db:
   # for starting outside of docker use first one
   # url: postgresql://admin:secret@localhost:5560/krstenica?sslmode=disable

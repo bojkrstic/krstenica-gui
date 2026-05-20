@@ -195,6 +195,7 @@ func (h *httpHandler) renderKrsteniceTable() gin.HandlerFunc {
 func (h *httpHandler) renderKrsteniceNew() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		cx := ctx.Request.Context()
+		now := time.Now()
 
 		eparhije, err := h.listActiveEparhijeForForm(cx)
 		if err != nil {
@@ -213,8 +214,12 @@ func (h *httpHandler) renderKrsteniceNew() gin.HandlerFunc {
 		}
 
 		h.renderHTML(ctx, http.StatusOK, "krstenice/new.html", gin.H{
-			"Eparhije": eparhije,
-			"Hramovi":  hramovi,
+			"Eparhije":               eparhije,
+			"Hramovi":                hramovi,
+			"DefaultDateDisplay":     now.Format("2006/01/02"),
+			"DefaultDateNative":      now.Format("2006-01-02"),
+			"DefaultDateTimeDisplay": now.Format("2006/01/02 15:04"),
+			"DefaultDateTimeNative":  now.Format("2006-01-02T15:04"),
 		})
 	}
 }

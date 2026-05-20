@@ -168,6 +168,11 @@ func (h *httpHandler) requireUIAuth() gin.HandlerFunc {
 
 func (h *httpHandler) requireAPIAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		if h.isLocalAuthBypassed() {
+			ctx.Next()
+			return
+		}
+
 		if user, ok := h.authenticateAPIRequest(ctx); ok {
 			h.attachAuthenticatedUser(ctx, user)
 			ctx.Next()
@@ -483,11 +488,29 @@ func (h *httpHandler) currentUser(ctx *gin.Context) (*requestctx.User, bool) {
 func (h *httpHandler) requireRole(role string) gin.HandlerFunc {
 	normalized := strings.ToLower(strings.TrimSpace(role))
 	return func(ctx *gin.Context) {
+		if h.isLocalAuthBypassed() {
+			ctx.Next()
+			return
+		}
+
 		if user, ok := h.currentUser(ctx); ok && strings.ToLower(strings.TrimSpace(user.Role)) == normalized {
 			ctx.Next()
 			return
 		}
 		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+	}
+}
+
+func (h *httpHandler) isLocalAuthBypassed() bool {
+	if h == nil || h.conf == nil {
+		return false
+	}
+
+	switch strings.ToLower(strings.TrimSpace(h.conf.ENV)) {
+	case "local", "dev", "development":
+		return true
+	default:
+		return false
 	}
 }
 

@@ -88,6 +88,7 @@
                                     id="krstenice-new-birth-datetime"
                                     type="text"
                                     name="birth_date"
+                                    value="{{ .DefaultDateTimeDisplay }}"
                                     data-date-display
                                     placeholder="нпр. 2024/05/12 14:30"
                                     inputmode="numeric"
@@ -100,6 +101,7 @@
                                     data-native-picker
                                     tabindex="-1"
                                     aria-hidden="true"
+                                    value="{{ .DefaultDateTimeNative }}"
                                 >
                             </div>
                             <small class="date-input-hint">Формат: YYYY/MM/DD HH:MM</small>
@@ -127,6 +129,7 @@
                                     id="krstenice-new-baptism-date"
                                     type="text"
                                     name="baptism"
+                                    value="{{ .DefaultDateDisplay }}"
                                     data-date-display
                                     placeholder="нпр. 2024/05/12"
                                     inputmode="numeric"
@@ -139,6 +142,7 @@
                                     data-native-picker
                                     tabindex="-1"
                                     aria-hidden="true"
+                                    value="{{ .DefaultDateNative }}"
                                 >
                             </div>
                             <small class="date-input-hint">Формат: YYYY/MM/DD</small>
@@ -280,6 +284,7 @@
                                     id="krstenice-new-cert-date"
                                     type="text"
                                     name="certificate"
+                                    value="{{ .DefaultDateDisplay }}"
                                     data-date-display
                                     placeholder="нпр. 2024/05/12"
                                     inputmode="numeric"
@@ -292,6 +297,7 @@
                                     data-native-picker
                                     tabindex="-1"
                                     aria-hidden="true"
+                                    value="{{ .DefaultDateNative }}"
                                 >
                             </div>
                             <small class="date-input-hint">Формат: YYYY/MM/DD</small>

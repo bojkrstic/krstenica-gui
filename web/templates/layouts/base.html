@@ -91,6 +91,17 @@
             border-radius: var(--radius-lg);
             padding: 1.75rem;
             box-shadow: var(--surface-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.9), rgba(96, 165, 250, 0.2));
         }
         .data-grid-wrapper {
             margin-top: 1.25rem;
@@ -106,13 +117,22 @@
             font-weight: 700;
             color: #0f172a;
         }
+        h1 {
+            font-size: 2.05rem;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+        }
+        h4 {
+            font-size: 1.1rem;
+            letter-spacing: -0.01em;
+        }
         p {
             margin-top: 0;
             color: #1f2933;
         }
         .muted {
-            color: var(--text-muted);
-            font-size: 0.9rem;
+            color: #94a3b8;
+            font-size: 0.88rem;
         }
         label {
             display: block;
@@ -175,10 +195,13 @@
         .primary {
             background: var(--primary);
             color: #fff;
+            padding: 0.78rem 1.45rem;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22);
         }
         .primary:hover {
             background: var(--primary-dark);
             color: #fff;
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28);
         }
         .secondary {
             background: #eef2ff;
@@ -226,7 +249,7 @@
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            gap: 1.5rem;
+            gap: 1.25rem;
         }
         .page-title .muted {
             margin-bottom: 0;
@@ -237,6 +260,10 @@
             align-items: end;
             gap: 1rem;
             margin-top: 1.25rem;
+        }
+        .inline-filter .secondary {
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
         .inline-filter .field-group {
             display: flex;
@@ -333,7 +360,7 @@
         table.result-grid th,
         table.result-grid td {
             border: 1px solid #e6ecf5;
-            padding: 0.45rem 0.55rem;
+            padding: 0.35rem 0.5rem;
             text-align: left;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -349,7 +376,7 @@
         }
         table.result-grid th {
             background: #f7f9fc;
-            font-size: 0.65rem;
+            font-size: 0.62rem;
             letter-spacing: 0.03em;
             text-transform: uppercase;
             color: #475569;
@@ -394,24 +421,54 @@
         }
         .date-input-control input {
             flex: 1;
-            padding-left: 2.75rem;
+            padding-right: 2.75rem;
+        }
+        .modal .form-stack .date-input-control input {
+            padding-right: 2.75rem;
         }
         .date-input-icon {
             position: absolute;
-            left: 0.45rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            top: 0;
+            right: 0.45rem;
+            bottom: 0;
+            display: block;
             width: 2rem;
             height: 2rem;
-            color: #475569;
-            background: transparent;
-            border: none;
+            padding: 0;
+            margin: auto 0;
+            min-width: 0;
+            min-height: 0;
+            line-height: 1;
+            appearance: none;
+            color: #1e3a5f;
+            background: #eef5ff;
+            border: 1px solid #bfd3ef;
+            border-radius: 0.55rem;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
             cursor: pointer;
+            z-index: 1;
         }
         .date-input-icon svg {
-            width: 1.1rem;
-            height: 1.1rem;
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1rem;
+            height: 1rem;
+            pointer-events: none;
+        }
+        .date-input-icon:hover {
+            background: #dfeeff;
+            border-color: #8fb6e6;
+            color: #0f3a68;
+        }
+        .date-input-icon:focus {
+            outline: none;
+        }
+        .date-input-icon:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
         }
         .native-date-input {
             position: absolute;
@@ -598,6 +655,11 @@
             display: flex;
             justify-content: flex-end;
             gap: 0.5rem;
+            position: sticky;
+            bottom: 0;
+            padding-top: 0.75rem;
+            margin-top: 0.25rem;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), #fff 35%);
         }
         .field-comment {
             font-size: 0.8rem;
