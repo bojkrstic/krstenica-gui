@@ -136,3 +136,79 @@ Docker hub
   na taj nacin se formira izvrsna verzija i prebaci u dockerhub, na lokaciji https://app.docker.com/accounts/bojankrlekrstic
   user: bojankrlekrstic
   pass: Bokana1974!
+
+
+
+
+VaAzno za server :
+1. Napravi se nova verzija i pushuje na dokcer hubu
+2. Sledeci korak je d ase za server vrati opcija sa krstenica-db, sve to u config.yml
+
+# url: postgresql://admin:secret@krstenica-db:5432/krstenica?sslmode=disable ---> za server
+# url: postgresql://admin:secret@krstenica_database:5432/krstenica?sslmode=disable  --> ovo je za local
+
+3. docker ps
+4. docker rm -f krle-krstenica-svc-1
+5. docker run -d --name krle-krstenica-svc-1 --network krstenica-gui_global -p 8011:8011 -v ~/app/krstenica-gui/config:/app/config bojankrlekrstic/krstenica-svc:version1.1.2
+ovde se pokrece nova verzija
+6. docker logs krle-krstenica-svc-1 --tail=50
+7. to izgleda ovako:
+
+krle@ibbn:~/app/krstenica-gui$ docker ps
+CONTAINER ID   IMAGE                                        COMMAND                  CREATED         STATUS         PORTS                                                                          NAMES
+56b971de3a3c   bojankrlekrstic/krstenica-svc:version1.1.2   "./server"               6 seconds ago   Up 6 seconds   0.0.0.0:8011->8011/tcp, [::]:8011->8011/tcp                                    krle-krstenica-svc-1
+24a2ddbebfaa   nginx:alpine                                 "/docker-entrypoint.…"   4 weeks ago     Up 4 weeks     0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp   web
+d1f97b78c731   grafana/grafana:11.1.0                       "/run.sh"                4 weeks ago     Up 4 weeks     0.0.0.0:3001->3000/tcp, [::]:3001->3000/tcp                                    prometheus-grafana-1
+b470ca6d4347   prom/prometheus:latest                       "/bin/prometheus --c…"   4 weeks ago     Up 4 weeks     0.0.0.0:9091->9090/tcp, [::]:9091->9090/tcp                                    prometheus-prometheus-1
+9d7bfbff10aa   prometheus-app                               "/app/server"            4 weeks ago     Up 4 weeks     0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp                                    prometheus-app-1
+a000a65a01b4   prom/alertmanager:latest                     "/bin/alertmanager -…"   4 weeks ago     Up 4 weeks     0.0.0.0:9094->9093/tcp, [::]:9094->9093/tcp                                    prometheus-alertmanager-1
+ea352d2d26df   prom/blackbox-exporter:latest                "/bin/blackbox_expor…"   4 weeks ago     Up 4 weeks     0.0.0.0:9116->9115/tcp, [::]:9116->9115/tcp                                    prometheus-blackbox-exporter-1
+8e0df0039eec   msisdn-lookup:latest                         "/usr/local/bin/msis…"   3 months ago    Up 3 months    0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp                                    msisdn
+ecc2e620aab7   postgres:16-alpine                           "docker-entrypoint.s…"   5 months ago    Up 5 months    0.0.0.0:5560->5432/tcp, [::]:5560->5432/tcp                                    krstenica-db
+8. Poenta je da se napravi na docker hub-u nova verzija i onda se ona podize, tako sto se rucno spusti prethodna komanda od 1 do 6
+9. obavezno mora da bude config.yaml podesen za server to ti je ovo : 
+ cat  ~/app/krstenica-gui/config/config.yaml
+db:
+  # for starting outside of docker use first one
+  # url: postgresql://admin:secret@localhost:5560/krstenica?sslmode=disable
+
+  # for starting outside of docker use second one
+  url: postgresql://admin:secret@krstenica-db:5432/krstenica?sslmode=disable
+  #url: postgresql://admin:secret@krstenica_database:5432/krstenica?sslmode=disable
+  #local_url: postgresql://admin:secret@localhost:5560/krstenica?sslmode=disable
+  maxidletime: 1h
+  maxlifetime: 1h
+  maxopenconn: 100
+  maxidleconn: 10
+
+http_port: ":8011"
+
+migration:
+  direction: "up"
+  version: 0
+
+jwt_secret: "krstenica-backend-secret"
+admin_jwt_secret: "krstenica-backend-secret"
+
+auth:
+  username: "admin"
+  password: "admin"
+  session_secret: "replace-this-secret"
+10. znaci ova 3:  
+  url: postgresql://admin:secret@krstenica-db:5432/krstenica?sslmode=disable  taj mora d aje aktivan za server ova druga dva su za lokalno podizanje
+  #url: postgresql://admin:secret@krstenica_database:5432/krstenica?sslmode=disable
+  #local_url: postgresql://admin:secret@localhost:5560/krstenica?sslmode=disable
+11. Znaci imas dockerhub i imas github
+dockerhub ti je nova verzija pokrenes sve iz build-and-push.sh i tu stavis novu verziju kao na primer v1.1.2. od njega ide kompletno pokretanje
+
+evo za dockerhub ponavljam:
+Docker hub
+  Kada se napravi nova verzija, onda se pokrene ./build-and-push.sh samo se promeni verzija v1.1.2 recimo
+  na taj nacin se formira izvrsna verzija i prebaci u dockerhub, na lokaciji https://app.docker.com/accounts/bojankrlekrstic
+  user: bojankrlekrstic
+  pass: Bokana1974!
+  bitno je da se ulogujes na dockerhub
+
+
+github je znaci za server tamo se samo nalazi kod nista drugo
+ ->  obavezno za github obrati paznju na grane, develop i main
