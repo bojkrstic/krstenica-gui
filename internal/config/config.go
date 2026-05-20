@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"net"
 	neturl "net/url"
 	"strings"
@@ -40,26 +41,61 @@ type AuthConfig struct {
 func Load() (*Config, error) {
 	var config Config
 
-	viper.SetConfigName("config") // } config.yaml
-	viper.SetConfigType("yaml")   // }
-	viper.AddConfigPath(".")      // for local use
-	viper.AddConfigPath("config")
-	viper.AddConfigPath("./../../config") // for local use
-	viper.AddConfigPath("./config")
-	viper.SetEnvPrefix("krstenica") // set env vars prefix
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	if err := viper.ReadInConfig(); err != nil {
+	baseViper, err := loadConfigFile("config")
+	if err != nil {
 		return nil, err
 	}
-	viper.AutomaticEnv() // check ENV variables
 
-	if err := viper.Unmarshal(&config); err != nil {
+	if localViper, err := loadOptionalConfigFile("config.local"); err != nil {
+		return nil, err
+	} else if localViper != nil {
+		if err := baseViper.MergeConfigMap(localViper.AllSettings()); err != nil {
+			return nil, err
+		}
+	}
+
+	baseViper.SetEnvPrefix("krstenica") // set env vars prefix
+	baseViper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	baseViper.AutomaticEnv() // check ENV variables
+
+	if err := baseViper.Unmarshal(&config); err != nil {
 		return nil, err
 	}
 
 	config.applyDefaults()
 
 	return &config, nil
+}
+
+func loadConfigFile(name string) (*viper.Viper, error) {
+	v := newConfigViper(name)
+	if err := v.ReadInConfig(); err != nil {
+		return nil, err
+	}
+	return v, nil
+}
+
+func loadOptionalConfigFile(name string) (*viper.Viper, error) {
+	v := newConfigViper(name)
+	if err := v.ReadInConfig(); err != nil {
+		var notFound viper.ConfigFileNotFoundError
+		if errors.As(err, &notFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return v, nil
+}
+
+func newConfigViper(name string) *viper.Viper {
+	v := viper.New()
+	v.SetConfigName(name)
+	v.SetConfigType("yaml")
+	v.AddConfigPath(".")
+	v.AddConfigPath("config")
+	v.AddConfigPath("./../../config")
+	v.AddConfigPath("./config")
+	return v
 }
 
 func (c *Config) applyDefaults() {

@@ -17,7 +17,8 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
   - more prominent primary buttons
   - denser table rows for faster scanning
   - sticky modal footer styling for form actions
-- Added `env: "local"` to `config/config.yaml`.
+- Made the shared config server-safe again and moved local-only overrides to `config/config.local.yaml` with `.gitignore` protection.
+- Verified that the local/server config split works as intended for development and deployment.
 - Added local/development API auth shortcut logic in `internal/handler/auth.go`.
 - `requireAPIAuth()` now skips API authentication when `config.ENV` is `local`, `dev`, or `development`.
 - `requireRole()` now skips role checks in the same local/dev environments.
@@ -36,7 +37,9 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 - `USER_GUIDE.md`
 - `AGENTS.md`
 - `SESSION.md`
+- `.gitignore`
 - `config/config.yaml`
+- `config/config.local.yaml`
 - `internal/handler/auth.go`
 - `internal/handler/gui.go`
 - `web/templates/krstenice/new.html`
@@ -48,6 +51,7 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 - If the icon is still low, inspect computed browser styles for `.date-input-icon` and `.date-input-icon svg`; likely a global button style or browser rendering detail is still affecting alignment.
 - Confirm the new hierarchy and denser table styling feel balanced in the running GUI.
 - Decide whether the local/development API auth shortcut should remain committed as-is.
+- Confirm whether `config/config.local.yaml` should stay local-only or be replaced with an environment-variable-based override.
 - Add tests for `requireAPIAuth()`, `requireRole()`, and the local/development environment helper.
 - Verify the new krstenica defaults in the running GUI by opening `/ui/krstenice/new` multiple times and confirming the time updates each time.
 
@@ -65,6 +69,7 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 - `go test ./internal/handler ./internal/dto ./internal/service` passed after allowing normal Go build cache access.
 - `go test ./internal/handler` passed after the date picker CSS changes.
 - `go test ./internal/handler` passed after the UI hierarchy/table polish pass.
+- `go test ./internal/config` passed after the config loader changes.
 - No new tests were run for this documentation update.
 
 ## Next Steps
@@ -73,4 +78,4 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 2. If still misaligned, replace the current button-based trigger with a non-button wrapper plus explicit click handler, or use a CSS pseudo-element icon to avoid inherited button styles completely.
 3. Start local Postgres on `127.0.0.1:5560` and run `go test ./...`.
 4. Decide what to do with untracked files `2026-05-20_13-05.png` and `internal/dto/krstenica-api`.
-5. Review whether `env: "local"` should stay committed in `config/config.yaml` or move to a local-only config/env override.
+5. Review whether the local override should stay file-based or move to an environment-variable override.

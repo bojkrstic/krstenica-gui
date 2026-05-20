@@ -4,3 +4,4 @@ cmd/krstenica/main_test.go
 cmd/krstenica/krstenica-api
 cmd/krstenica/krstenica
 .vscode
+config/config.local.yaml
