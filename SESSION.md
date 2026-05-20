@@ -6,6 +6,8 @@ Date: `2026-05-20`
 
 Branch: `develop`
 
+Last commit: `0e622a9` (`Make config server-safe`)
+
 Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 
 ## Completed Work
