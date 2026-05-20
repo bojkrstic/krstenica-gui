@@ -1,0 +1,144 @@
+{{ define "uputstvo/index.html" }}
+{{ template "layouts/base" . }}
+{{ end }}
+
+{{ define "uputstvo/content" }}
+<style>
+    .guide-page {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .guide-page .guide-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .guide-page figure {
+        margin: 0;
+        padding: 0.9rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: #fbfdff;
+    }
+    .guide-page img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+    .guide-page figcaption {
+        margin-top: 0.7rem;
+        color: #334155;
+        line-height: 1.45;
+    }
+    .guide-page figcaption strong {
+        display: block;
+        margin-bottom: 0.2rem;
+        color: #0f172a;
+    }
+    .guide-page figcaption p {
+        margin: 0;
+        color: #475569;
+    }
+    @media (max-width: 768px) {
+        .guide-page {
+            gap: 0.8rem;
+        }
+        .guide-page .card {
+            padding: 1rem;
+        }
+        .guide-page h1 {
+            font-size: 1.5rem;
+        }
+        .guide-page h4 {
+            font-size: 1rem;
+        }
+        .guide-page figure {
+            padding: 0.7rem;
+        }
+    }
+</style>
+<div class="guide-page">
+<section class="card">
+    <div class="page-title">
+        <div>
+            <h1>Упутство за рад</h1>
+            <p class="muted">Кратко упутство са најважнијим корацима, редом како се систем користи.</p>
+        </div>
+        <div class="actions">
+            <a class="secondary outline" href="/static/guide/VIZUELNO_UPUTSTVO.pdf" download>Преузми PDF</a>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <h4>1. Пријава</h4>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/01-prijava.png" alt="Пријава у систем">
+        <figcaption><strong>Пријава у систем</strong><p>Унеси корисничко име и лозинку, па потврди улазак.</p></figcaption>
+    </figure>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/02-pocetni-ekran.png" alt="Почетни екран">
+        <figcaption><strong>Почетни екран</strong><p>После пријаве отвара се главна страница.</p></figcaption>
+    </figure>
+</section>
+
+<section class="card">
+    <h4>2. Крштенице</h4>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/03-pregled-krstenica.png" alt="Преглед крштеница">
+        <figcaption><strong>Преглед крштеница</strong><p>Табела приказује све већ унете крштенице.</p></figcaption>
+    </figure>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/04-nova-krstenica.png" alt="Нова крштеница">
+        <figcaption><strong>Нова крштеница</strong><p>Овде се уноси нова крштеница. Датумска поља се попуњавају аутоматски текућим датумом и временом.</p></figcaption>
+    </figure>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/05-pregled-krstenica.png" alt="Сачуване крштенице">
+        <figcaption><strong>Сачуване крштенице</strong><p>После уписа ставка се појављује у табели и може да се мења, брише или штампа.</p></figcaption>
+    </figure>
+</section>
+
+<section class="card">
+    <h4>3. Епархије и храмови</h4>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/06-eparhije-izmena.png" alt="Унос и измена епархија">
+        <figcaption><strong>Епархије</strong><p>Овде се прегледају, мењају и додају епархије.</p></figcaption>
+    </figure>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/07-eparhija-nova.png" alt="Нова епархија">
+        <figcaption><strong>Нова епархија</strong><p>Унос нове епархије.</p></figcaption>
+    </figure>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/08-hram-izmena.png" alt="Унос и измена храма">
+        <figcaption><strong>Храмови</strong><p>Овде се мењају и додају храмови.</p></figcaption>
+    </figure>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/09-hram-novi.png" alt="Нови храм">
+        <figcaption><strong>Нови храм</strong><p>Додаје се нови храм уз избор епархије и града.</p></figcaption>
+    </figure>
+</section>
+
+<section class="card">
+    <h4>4. Свештеници и особе</h4>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/10-svestenik-izmena.png" alt="Унос и измена свештеника">
+        <figcaption><strong>Свештеници</strong><p>Овде се мењају подаци о свештенику.</p></figcaption>
+    </figure>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/11-svestenik-novi.png" alt="Нови свештеник">
+        <figcaption><strong>Нови свештеник</strong><p>Унос новог свештеника.</p></figcaption>
+    </figure>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/12-osobe-izmena.png" alt="Унос и измена особа">
+        <figcaption><strong>Особе, родитељи и кумови</strong><p>Овде се уносе лица која се касније бирају у крштеници.</p></figcaption>
+    </figure>
+    <figure style="margin: 1rem 0 1.5rem;">
+        <img src="/static/guide/13-osoba-nova.png" alt="Нова особа">
+        <figcaption><strong>Нова особа</strong><p>Додаје се нова особа за родитеља, кума или другу везану улогу.</p></figcaption>
+    </figure>
+</section>
+</div>
+{{ end }}

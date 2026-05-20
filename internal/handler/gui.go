@@ -29,6 +29,7 @@ func (h *httpHandler) addGuiRoutes() {
 
 	protected.GET("/ui", h.renderDashboard())
 	protected.GET("/ui/", h.renderDashboard())
+	protected.GET("/ui/uputstvo", h.renderUputstvoPage())
 	protected.GET("/ui/krstenice", h.renderKrstenicePage())
 	protected.GET("/ui/krstenice/table", h.renderKrsteniceTable())
 	protected.GET("/ui/krstenice/new", h.renderKrsteniceNew())
@@ -88,6 +89,15 @@ func (h *httpHandler) renderDashboard() gin.HandlerFunc {
 		h.renderHTML(ctx, http.StatusOK, "dashboard/index.html", gin.H{
 			"Title":           "Kontrolna tabla",
 			"ContentTemplate": "dashboard/content",
+		})
+	}
+}
+
+func (h *httpHandler) renderUputstvoPage() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		h.renderHTML(ctx, http.StatusOK, "uputstvo/index.html", gin.H{
+			"Title":           "Упутство",
+			"ContentTemplate": "uputstvo/content",
 		})
 	}
 }
