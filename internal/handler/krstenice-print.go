@@ -77,7 +77,7 @@ func (h *httpHandler) getKrstenicePrint() gin.HandlerFunc {
 		}
 		defer os.RemoveAll(targetDir)
 
-		backgroundImage := resolveFile("krstenica_obrada.jpg")
+		backgroundImage := resolveFile(filepath.Join("pictures", "krstenica_obrada.jpg"))
 		backgroundFullBleed := true
 		fontKey := ""
 		if v, ok := filters.Filters[pkg.FilterKey{Property: "template_version", Operator: "eq"}]; ok && len(v) > 0 {

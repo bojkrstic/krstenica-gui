@@ -24,8 +24,8 @@ COPY --from=builder /app/server .
 # 🔹 OVO JE KLJUČNO: kopiramo web/ da bi /app/web/templates postojao
 COPY web /app/web
 
-# 🔹 dodaj slike koje PDF koristi
-COPY krstenica-obrada2.jpg krstenica_obrada.jpg /app/
+# 🔹 dodaj slike koje PDF i štampa koriste
+COPY pictures /app/pictures
 
 EXPOSE 8011
 

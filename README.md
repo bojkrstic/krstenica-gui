@@ -16,8 +16,8 @@ U nastavku su objedinjena uputstva za podizanje okruzenja, debug, pristup bazi i
 - Poseti `http://localhost:8011/ui` za dashboard i listu krstenica.
 - Stranica koristi HTMX pa se podaci dinamicki ucitavaju iz `api/v1/adminv2/krstenice` endpoint-a.
 - Pretragu po imenu pokrecemo direktno sa stranice; paginacija radi kroz HTMX bez reload-a.
-- U koloni "Akcije" dostupno je dugme `Stampaj` koje generise Excel krstenicu sa pozadinskim obrascem ( `krstenica_obrada.jpg` ).
-- Fajl `krstenica_obrada.jpg` treba da stoji u korenu repozitorijuma kako bi pozadina bila podvučena ispod popunjenih polja prilikom štampe.
+- U koloni "Akcije" dostupno je dugme `Stampaj` koje generise Excel krstenicu sa pozadinskim obrascem ( `pictures/krstenica_obrada.jpg` ).
+- Fajl `pictures/krstenica_obrada.jpg` treba da stoji u `pictures/` direktorijumu kako bi pozadina bila podvučena ispod popunjenih polja prilikom štampe.
 
 ## Rad sa PostgreSQL bazom u kontejneru
 ```
@@ -148,8 +148,9 @@ VaAzno za server :
 # url: postgresql://admin:secret@krstenica_database:5432/krstenica?sslmode=disable  --> ovo je za local
 
 3. docker ps
-4. docker rm -f krle-krstenica-svc-1
+4. docker rm -f krle-krstenica-svc-1   --- obori se prethodni docker kontejner
 5. docker run -d --name krle-krstenica-svc-1 --network krstenica-gui_global -p 8011:8011 -v ~/app/krstenica-gui/config:/app/config bojankrlekrstic/krstenica-svc:version1.1.2
+5-2. docker run -d --name krle-krstenica-svc-1 --network krstenica-gui_global -p 8011:8011 -v ~/app/krstenica-gui/config:/app/config -v ~/app/krstenica-gui/doc:/app/doc bojankrlekrstic/krstenica-svc:version1.1.3     --- ovde je bitno da se -v uradi zbog mountovanja
 ovde se pokrece nova verzija
 6. docker logs krle-krstenica-svc-1 --tail=50
 7. to izgleda ovako:

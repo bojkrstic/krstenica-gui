@@ -18,6 +18,7 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 - Copied the visual guide images into `web/static/guide/` and linked them from inside the app.
 - Tightened the in-app guide copy and added mobile-friendly layout rules so the page reads better on phones.
 - Added a PDF download link for the visual guide at `/static/guide/VIZUELNO_UPUTSTVO.pdf`.
+- Moved the root documentation/background images into `pictures/` and updated the visual guide and print path references.
 - Created `AGENTS.md` with project rules, coding style, documentation requirements, and the rule to always maintain `SESSION.md`.
 - Committed the in-app guide, visual guide assets, and documentation updates into `ce658e8`.
 - Updated `build-and-push.sh` to point at `version1.1.3`.
@@ -71,6 +72,22 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 - `web/static/guide/12-osobe-izmena.png`
 - `web/static/guide/13-osoba-nova.png`
 - `web/static/guide/VIZUELNO_UPUTSTVO.pdf`
+- `pictures/2026-05-20_13-05.png`
+- `pictures/Sl1-prijava u sistem.png`
+- `pictures/krstenica-obrada2.jpg`
+- `pictures/krstenica_obrada.jpg`
+- `pictures/sl2-pocetni ekran.png`
+- `pictures/sl3-pregled-postojecih krstenica.png`
+- `pictures/sl4-nova-krstenica.png`
+- `pictures/sl5-pregled-krstenica.png`
+- `pictures/sl6-prozor za unos izmenu eparhija.png`
+- `pictures/sl7-unos nove eparhije.png`
+- `pictures/sl8-prozor za unos izmenu hrama.png`
+- `pictures/sl9-unos novog hrama.png`
+- `pictures/sl10-prozor za unos izmenu svestenika.png`
+- `pictures/sl11-unos novog svestenika.png`
+- `pictures/sl12-prozor za unos izmenu osoba-roditelja-kumova.png`
+- `pictures/sl13-unos nove osobe.png`
 - `build-and-push.sh`
 
 ## Pending Tasks
@@ -83,6 +100,7 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 - Confirm whether `config/config.local.yaml` should stay local-only or be replaced with an environment-variable-based override.
 - Add tests for `requireAPIAuth()`, `requireRole()`, and the local/development environment helper.
 - Verify the new krstenica defaults in the running GUI by opening `/ui/krstenice/new` multiple times and confirming the time updates each time.
+- Regenerate `VIZUELNO_UPUTSTVO.pdf` only if you need a fresh export after the asset move.
 
 ## Blockers
 
@@ -90,7 +108,7 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 - The sandbox blocks normal Go build cache writes; targeted tests need elevated execution or a writable cache.
 - Full visual verification was not possible from terminal-only execution; browser screenshot/user feedback is still needed for final icon positioning.
 - Untracked files currently present and not part of these code changes:
-  - `2026-05-20_13-05.png`
+  - `pictures/2026-05-20_13-05.png`
   - `internal/dto/krstenica-api`
   - `VIZUELNO_UPUTSTVO.html`
 - PDF export on the server is blocked unless `doc/template_files/krstenica-template-empty.xlsx` and `doc/template_files/krstenica-template.xlsx` are copied into the runtime image.
@@ -114,5 +132,5 @@ Project root: `/home/bojan/develop/horisen/Krstenica/Krstenica-gui/krstenica`
 2. If still misaligned, replace the current button-based trigger with a non-button wrapper plus explicit click handler, or use a CSS pseudo-element icon to avoid inherited button styles completely.
 3. Review the `/ui/uputstvo` page in the browser on desktop and mobile and adjust copy or image order if needed.
 4. Start local Postgres on `127.0.0.1:5560` and run `go test ./...`.
-5. Decide what to do with untracked files `2026-05-20_13-05.png`, the source `Sl*.png` images, `internal/dto/krstenica-api`, and `VIZUELNO_UPUTSTVO.html`.
+5. Decide what to do with untracked files in `pictures/`, `internal/dto/krstenica-api`, and `VIZUELNO_UPUTSTVO.html`.
 6. Review whether the local override should stay file-based or move to an environment-variable override.
